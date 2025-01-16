@@ -41,7 +41,7 @@ jobs:
           SOURCE: "/"
           REMOTE_HOST: "flightplan.eaglesoftwareteam.com"
           REMOTE_USER: ubuntu
-          TARGET: "nodeapps/2025/flightplan/t2"
+          TARGET: "nodeapps/2025/flight-plan/t2"
       - name: Execute SSH commmands on remote server
         uses: JimCronqvist/action-ssh@master
         env:
@@ -51,7 +51,7 @@ jobs:
           privateKey: ${{ secrets.SERVER_SSH_KEY }}
           debug: false
           command: |
-            cd nodeapps/2025/flightplan/t2
+            cd nodeapps/2025/flight-plan/t2
             npm install
             sudo systemctl stop flightplan-backend-t2
             sudo cp flightplan-backend-t2.service /lib/systemd/system/flightplan-backend-t2.service
