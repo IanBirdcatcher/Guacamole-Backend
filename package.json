@@ -1,0 +1,19 @@
+{
+  "name": "guacamole-backend",
+  "version": "1.0.0",
+  "description": "Backend for the flight plan system",
+  "main": "index.js",
+  "scripts": {
+    "start": "node server.js",
+    "bundle": "mv .env dist"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "mariadb": "^3.4.0",
+    "sequelize": "^6.37.5"
+  }
+}
