@@ -5,17 +5,45 @@ module.exports = (sequelize, Sequelize) => {
         autoIncrement: true,
         primaryKey: true,
       },
-      jobTitle: {
+      name: {
         type: Sequelize.STRING,
         allowNull: false,
       },
-      jobDesc: {
+      desc: {
         type: Sequelize.STRING,
         allowNull: false,
       },
-      dateRange: {
-        type: Sequelize.JSON,
+      points: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+      },
+      type: {
+        type: Sequelize.STRING,
+        allowNull: false,
+      },
+      requestedByStudent: {
+        type: Sequelize.BOOLEAN,
+        allowNull: false,
+      },
+      approved: {
+        type: Sequelize.BOOLEAN,
+        allowNull: false,
+      },
+      subtext: {
+        type: Sequelize.STRING,
         allowNull: true,
+      },
+      priority: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+      },
+      semestersFromGraduation: {
+        type: Sequelize.TINYBLOB,
+        allowNull: false,
+      },
+      documentRequired: {
+        type: Sequelize.BOOLEAN,
+        allowNull: false,
       },
     });
   
