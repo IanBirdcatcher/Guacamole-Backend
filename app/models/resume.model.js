@@ -17,10 +17,6 @@ module.exports = (sequelize, Sequelize) => {
         type: Sequelize.STRING,
         allowNull: false,
       },
-      id: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
-      },
       templateName: {
         type: Sequelize.STRING,
         allowNull: true,

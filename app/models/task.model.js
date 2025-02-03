@@ -30,7 +30,7 @@ module.exports = (sequelize, Sequelize) => {
       allowNull: false,
     },
     semestersFromGraduation: {
-      type: Sequelize.TINYBLOB,
+      type: Sequelize.BLOB,
       allowNull: false,
     },
     documentRequired: {
