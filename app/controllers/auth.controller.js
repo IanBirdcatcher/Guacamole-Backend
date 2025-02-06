@@ -77,7 +77,7 @@ exports.login = async (req, res) => {
       }
     })
     .catch((err) => {
-      res.status(500).send({ message: err.message });
+      res.status(500).send({ message: "user not found 80 " + err.message });
     });
 
   // this lets us get the user id
@@ -91,7 +91,7 @@ exports.login = async (req, res) => {
         // res.send({ message: "User was registered successfully!" });
       })
       .catch((err) => {
-        res.status(500).send({ message: err.message });
+        res.status(500).send({ message: "user not created 94 " + err.message });
       });
   } else {
     console.log(user);
@@ -142,7 +142,7 @@ exports.login = async (req, res) => {
             .catch((err) => {
               console.log(err);
               res.status(500).send({
-                message: "Error logging out user.",
+                message: "Error logging out user 145 ",
               });
             });
           //reset session to be null since we need to make another one
@@ -167,7 +167,7 @@ exports.login = async (req, res) => {
     .catch((err) => {
       res.status(500).send({
         message:
-          err.message || "Some error occurred while retrieving sessions.",
+          " Line 170 " + err.message || "Some error occurred while retrieving sessions.",
       });
     });
 
@@ -190,6 +190,12 @@ exports.login = async (req, res) => {
 
     await Session.create(session)
       .then(() => {
+        
+        console.log("INFO: " + user.email);
+        console.log(user.fName);
+        console.log(user.lName);
+        console.log(user.id);
+        console.log(token);
         let userInfo = {
           email: user.email,
           fName: user.fName,
@@ -199,11 +205,10 @@ exports.login = async (req, res) => {
           // refresh_token: user.refresh_token,
           // expiration_date: user.expiration_date
         };
-        console.log(userInfo);
         res.send(userInfo);
       })
       .catch((err) => {
-        res.status(500).send({ message: err.message });
+        res.status(500).send({ message: "Cant create session 206 " + err.message })
       });
   }
 };
@@ -235,7 +240,7 @@ exports.authorize = async (req, res) => {
       }
     })
     .catch((err) => {
-      res.status(500).send({ message: err.message });
+      res.status(500).send({ message: "Can't find user 238 " + err.message });
       return;
     });
   console.log("user");
@@ -262,7 +267,7 @@ exports.authorize = async (req, res) => {
       res.send(userInfo);
     })
     .catch((err) => {
-      res.status(500).send({ message: err.message });
+      res.status(500).send({ message: "Can't update user 265" + err.message });
     });
 
   console.log(tokens);
@@ -280,47 +285,55 @@ exports.logout = async (req, res) => {
 
   // invalidate session -- delete token out of session table
   let session = {};
-
-  await Session.findAll({ where: { token: req.body.token } })
-    .then((data) => {
-      if (data[0] !== undefined) session = data[0].dataValues;
+  await Session.destroy({ where: { token: req.body.token } })
+    .then(() => {
+      console.log("session destroyed")
     })
-    .catch((err) => {
-      res.status(500).send({
-        message:
-          err.message || "Some error occurred while retrieving sessions.",
-      });
-      return;
-    });
+    .catch(() => {
+      console.log("session not destroyed")
+    })
 
-  session.token = "";
+  // await Session.findAll({ where: { token: req.body.token } })
+  //   .then((data) => {
+  //     if (data[0] !== undefined) session = data[0].dataValues;
+  //   })
+  //   .catch((err) => {
+  //     res.status(500).send({
+  //       message:
+  //         err.message || "Some error occurred while retrieving sessions.",
+  //     });
+  //     return;
+  //   });
 
-  // session won't be null but the id will if no session was found
-  if (session.id !== undefined) {
-    Session.update(session, { where: { id: session.id } })
-      .then((num) => {
-        if (num == 1) {
-          console.log("successfully logged out");
-          res.send({
-            message: "User has been successfully logged out!",
-          });
-        } else {
-          console.log("failed");
-          res.send({
-            message: `Error logging out user.`,
-          });
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-        res.status(500).send({
-          message: "Error logging out user.",
-        });
-      });
-  } else {
-    console.log("already logged out");
-    res.send({
-      message: "User has already been successfully logged out!",
-    });
-  }
+  // session.token = "";
+  // console.log(session)
+
+  // // session won't be null but the id will if no session was found
+  // if (session.id !== undefined) {
+  //   Session.update(session, { where: { id: session.id } })
+  //     .then((num) => {
+  //       if (num == 1) {
+  //         console.log("successfully logged out");
+  //         res.send({
+  //           message: "User has been successfully logged out!",
+  //         });
+  //       } else {
+  //         console.log("failed");
+  //         res.send({
+  //           message: `Error logging out user.`,
+  //         });
+  //       }
+  //     })
+  //     .catch((err) => {
+  //       console.log(err);
+  //       res.status(500).send({
+  //         message: "Error logging out user.",
+  //       });
+  //     });
+  // } else {
+  //   console.log("already logged out");
+  //   res.send({
+  //     message: "User has already been successfully logged out!",
+  //   });
+  // }
 };

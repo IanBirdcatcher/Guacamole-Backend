@@ -5,7 +5,7 @@ After=network.target
 [Service]
 Type=simple
 User=ubuntu
-WorkingDirectory=/home/ubuntu/nodeapps/2025/flightplan/t2
+WorkingDirectory=/home/ubuntu/nodeapps/2025/flight-plan/t2
 ExecStart=/usr/bin/npm run start
 Restart=on-failure
  
