@@ -49,7 +49,6 @@ exports.findAll = (req, res) => {
 // Find a single User with an userId
 exports.findOne = (req, res) => {
   const userId = req.params.id;
-
   User.findByPk(userId)
     .then((data) => {
       if (data) {
