@@ -128,7 +128,7 @@ exports.login = async (req, res) => {
         if (session.expirationDate < Date.now()) {
           session.token = "";
           // clear session's token if it's expired
-          await Session.update(session, { where: { id: session.id } })
+          await Session.destroy(session, { where: { id: session.id } })
             .then((num) => {
               if (num == 1) {
                 console.log("successfully logged out");
@@ -142,7 +142,7 @@ exports.login = async (req, res) => {
             .catch((err) => {
               console.log(err);
               res.status(500).send({
-                message: "Error logging out user 145 ",
+                message: "Error logging out user ",
               });
             });
           //reset session to be null since we need to make another one
@@ -153,7 +153,6 @@ exports.login = async (req, res) => {
             email: user.email,
             fName: user.fName,
             lName: user.lName,
-            userId: user.id,
             id: user.id,
             token: session.token,
             // refresh_token: user.refresh_token,
@@ -182,8 +181,8 @@ exports.login = async (req, res) => {
     const session = {
       token: token,
       email: email,
-      id: user.id,
       expirationDate: tempExpirationDate,
+      userId: user.id,
     };
 
     console.log("making a new session");
@@ -195,14 +194,13 @@ exports.login = async (req, res) => {
           email: user.email,
           fName: user.fName,
           lName: user.lName,
-          userId: user.id,
-          token: token,
           id: user.id,
+          token: token,
         };
         res.send(userInfo);
       })
       .catch((err) => {
-        res.status(500).send({ message: "Cant create session 206 " + err.message })
+        res.status(500).send({ message: "Cant create session " + err.message })
       });
   }
 };
