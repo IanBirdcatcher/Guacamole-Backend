@@ -153,6 +153,7 @@ exports.login = async (req, res) => {
             email: user.email,
             fName: user.fName,
             lName: user.lName,
+            userId: user.id,
             id: user.id,
             token: session.token,
             // refresh_token: user.refresh_token,
@@ -190,20 +191,13 @@ exports.login = async (req, res) => {
 
     await Session.create(session)
       .then(() => {
-        
-        console.log("INFO: " + user.email);
-        console.log(user.fName);
-        console.log(user.lName);
-        console.log(user.id);
-        console.log(token);
         let userInfo = {
           email: user.email,
           fName: user.fName,
           lName: user.lName,
-          id: user.id,
+          userId: user.id,
           token: token,
-          // refresh_token: user.refresh_token,
-          // expiration_date: user.expiration_date
+          id: user.id,
         };
         res.send(userInfo);
       })
@@ -305,31 +299,4 @@ exports.logout = async (req, res) => {
   //     return;
   //   });
   // session won't be null but the id will if no session was found
-  if (session.id !== undefined) {
-    Session.update(session, { where: { id: session.id } })
-      .then((num) => {
-        if (num == 1) {
-          console.log("successfully logged out");
-          res.send({
-            message: "User has been successfully logged out!",
-          });
-        } else {
-          console.log("failed");
-          res.send({
-            message: `Error logging out user.`,
-          });
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-        res.status(500).send({
-          message: "Error logging out user.",
-        });
-      });
-  } else {
-    console.log("already logged out");
-    res.send({
-      message: "User has already been successfully logged out!",
-    });
-  }
 };
