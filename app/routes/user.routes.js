@@ -10,5 +10,5 @@ module.exports = (app) => {
   router.put("/:id", [authenticate, hasAccess(ENUM.CHANGE_STUDENT_INFO)], user.update);
   router.delete("/:id", [authenticate, hasAccess(ENUM.CHANGE_STUDENT_INFO)], user.delete);
 
-  app.use("/user", router);
+  app.use("/flightplan-t2/user", router);
 };
