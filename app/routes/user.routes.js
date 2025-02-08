@@ -9,5 +9,5 @@ module.exports = (app) => {
   router.put("/:id", [authenticate], user.update);
   router.delete("/:id", [authenticate], user.delete);
 
-  app.use("/flightplan-t2/user", router);
+  app.use("/flight-plan-t2/user", router);
 };
