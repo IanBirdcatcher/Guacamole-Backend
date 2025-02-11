@@ -128,7 +128,7 @@ exports.login = async (req, res) => {
         if (session.expirationDate < Date.now()) {
           session.token = "";
           // clear session's token if it's expired
-          await Session.update(session, { where: { id: session.id } })
+          await Session.destroy(session, { where: { id: session.id } })
             .then((num) => {
               if (num == 1) {
                 console.log("successfully logged out");
@@ -142,7 +142,7 @@ exports.login = async (req, res) => {
             .catch((err) => {
               console.log(err);
               res.status(500).send({
-                message: "Error logging out user 145 ",
+                message: "Error logging out user ",
               });
             });
           //reset session to be null since we need to make another one
@@ -181,8 +181,8 @@ exports.login = async (req, res) => {
     const session = {
       token: token,
       email: email,
-      id: user.id,
       expirationDate: tempExpirationDate,
+      userId: user.id,
     };
 
     console.log("making a new session");
@@ -190,25 +190,17 @@ exports.login = async (req, res) => {
 
     await Session.create(session)
       .then(() => {
-        
-        console.log("INFO: " + user.email);
-        console.log(user.fName);
-        console.log(user.lName);
-        console.log(user.id);
-        console.log(token);
         let userInfo = {
           email: user.email,
           fName: user.fName,
           lName: user.lName,
           id: user.id,
           token: token,
-          // refresh_token: user.refresh_token,
-          // expiration_date: user.expiration_date
         };
         res.send(userInfo);
       })
       .catch((err) => {
-        res.status(500).send({ message: "Cant create session 206 " + err.message })
+        res.status(500).send({ message: "Cant create session " + err.message })
       });
   }
 };
@@ -304,36 +296,5 @@ exports.logout = async (req, res) => {
   //     });
   //     return;
   //   });
-
-  // session.token = "";
-  // console.log(session)
-
-  // // session won't be null but the id will if no session was found
-  // if (session.id !== undefined) {
-  //   Session.update(session, { where: { id: session.id } })
-  //     .then((num) => {
-  //       if (num == 1) {
-  //         console.log("successfully logged out");
-  //         res.send({
-  //           message: "User has been successfully logged out!",
-  //         });
-  //       } else {
-  //         console.log("failed");
-  //         res.send({
-  //           message: `Error logging out user.`,
-  //         });
-  //       }
-  //     })
-  //     .catch((err) => {
-  //       console.log(err);
-  //       res.status(500).send({
-  //         message: "Error logging out user.",
-  //       });
-  //     });
-  // } else {
-  //   console.log("already logged out");
-  //   res.send({
-  //     message: "User has already been successfully logged out!",
-  //   });
-  // }
+  // session won't be null but the id will if no session was found
 };
