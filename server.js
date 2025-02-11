@@ -31,6 +31,8 @@ app.get("/", (req, res) => {
 // Import routes
 require("./app/routes/auth.routes.js")(app);
 require("./app/routes/user.routes")(app);
+require("./app/routes/studentInfo.routes")(app);
+
 
 
 // Set the server to listen on a specified port

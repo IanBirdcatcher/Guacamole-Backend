@@ -88,6 +88,7 @@ exports.login = async (req, res) => {
       .then((data) => {
         console.log("user was registered");
         user = data.dataValues;
+        
         // res.send({ message: "User was registered successfully!" });
       })
       .catch((err) => {
