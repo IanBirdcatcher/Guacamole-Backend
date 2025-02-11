@@ -33,6 +33,7 @@ authenticate = async (req, res, next) => {
     });
   }
 };
+
 function hasAccess(permType) { // Wrapper for hasAccess
   return async (req, res, next) => { // Actual has access
     let auth = req.get("authorization");
@@ -75,14 +76,18 @@ function hasAccess(permType) { // Wrapper for hasAccess
               .catch((error) => {
                 console.log(error);
               });
-            if (userPerms[permType]) {
-              next();
-              return;
-            } else {
-              return res.status(401).send({
-                message: "Unauthorized! Insufficient Permissions",
-              });
-            }
+              try {
+                if (userPerms[permType]) {
+                  next();
+                  return;
+                } else {
+                  return res.status(401).send({
+                    message: "Unauthorized! Insufficient Permissions",
+                  });
+                }
+              } catch (error) {
+                console.log(error);
+              }
           } else {
             return res.status(401).send({
               message: "Unauthorized! Expired Token, Logout and Login again",
