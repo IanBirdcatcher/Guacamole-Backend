@@ -13,21 +13,33 @@ module.exports = (sequelize, Sequelize) => {
         type: Sequelize.STRING,
         allowNull: true,
       },
-      dateTime: {
+      startDateTime: {
         type: Sequelize.DATE,
-        allowNull: true,
+        allowNull: false,
+      },
+      endDateTime: {
+        type: Sequelize.DATE,
+        allowNull: false,
+      },
+      type: {
+        type: Sequelize.STRING,
+        allowNull: false,
       },
       location: {
         type: Sequelize.STRING,
-        allowNull: true,
+        allowNull: false,
       },
       attendanceType: {
         type: Sequelize.STRING,
-        allowNull: true,
+        allowNull: false,
       },
       completionType: {
         type: Sequelize.STRING,
-        allowNull: true,
+        allowNull: false,
+      },
+      registrationType: {
+        type: Sequelize.STRING,
+        allowNull: false,
       },
       
     });
