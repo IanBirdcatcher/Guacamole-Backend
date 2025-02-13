@@ -35,6 +35,7 @@ db.category = require("./category.model.js")(sequelize, Sequelize);
 db.document = require("./document.model.js")(sequelize, Sequelize);
 db.event = require("./event.model.js")(sequelize, Sequelize);
 db.experience = require("./experience.model.js")(sequelize, Sequelize);
+db.experienceEvent = require("./experienceEvent.model.js")(sequelize, Sequelize);
 db.experienceMajor = require("./experienceMajor.model.js")(sequelize, Sequelize);
 db.flightPlan = require("./flightPlan.model.js")(sequelize, Sequelize);
 db.flightPlanExperience = require("./flightPlanExperience.model.js")(sequelize, Sequelize);
@@ -248,11 +249,20 @@ db.major.belongsTo(db.event, {
   onDelete: "CASCADE",
 });
 
-db.event.hasMany(db.experience, {
+db.event.hasMany(db.experienceEvent, {
   allowNull: true,
   onDelete: "CASCADE",
 });
-db.experience.belongsTo(db.event, {
+db.experienceEvent.belongsTo(db.event, {
+  allowNull: true,
+  onDelete: "CASCADE",
+});
+
+db.experience.hasMany(db.experienceEvent, {
+  allowNull: true,
+  onDelete: "CASCADE",
+});
+db.experienceEvent.belongsTo(db.experience, {
   allowNull: true,
   onDelete: "CASCADE",
 });
@@ -370,15 +380,6 @@ db.badge.hasMany(db.event, {
   onDelete: "CASCADE",
 });
 db.event.belongsTo(db.badge, {
-  allowNull: true,
-  onDelete: "CASCADE",
-});
-
-db.experience.hasMany(db.event, {
-  allowNull: true,
-  onDelete: "CASCADE",
-});
-db.event.belongsTo(db.experience, {
   allowNull: true,
   onDelete: "CASCADE",
 });
