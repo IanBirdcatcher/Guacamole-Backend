@@ -38,7 +38,11 @@ module.exports = (sequelize, Sequelize) => {
         allowNull: false,
       },
       semestersFromGraduation: {
-        type: Sequelize.BLOB,
+        type: Sequelize.INTEGER,
+        allowNull: false,
+      },
+      reflectionRequired: {
+        type: Sequelize.BOOLEAN,
         allowNull: false,
       },
       documentRequired: {

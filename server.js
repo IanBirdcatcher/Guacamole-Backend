@@ -29,8 +29,9 @@ app.get("/", (req, res) => {
 });
 
 // Import routes
-require("./app/routes/auth.routes.js")(app);
+require("./app/routes/auth.routes")(app);
 require("./app/routes/user.routes")(app);
+require("./app/routes/experience.routes")(app);
 
 
 // Set the server to listen on a specified port
