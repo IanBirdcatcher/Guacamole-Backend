@@ -22,12 +22,6 @@ module.exports = (sequelize, Sequelize) => {
       allowNull: false,
       defaultValue: false,
     },
-    role: {
-      type: Sequelize.STRING,
-      allowNull: false,
-      defaultValue: 'Student',
-    }
-    
   });
 
   return User;
