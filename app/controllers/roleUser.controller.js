@@ -80,4 +80,57 @@ exports.findUsersByRoleId = (req, res) => {
     });
 };
 
+// New method to get role information by user ID
+exports.getRoleInfoByUserId = (req, res) => {
+  const userId = req.params.userId;
+
+  UserRole.findOne({
+    where: { userId: userId },
+    include: [{
+      model: User,
+      as: 'user'
+    }]
+  })
+    .then((data) => {
+      if (data) {
+        res.send(data);
+      } else {
+        res.status(404).send({
+          message: `Cannot find role information for userId=${userId}.`,
+        });
+      }
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message: err.message || "Error retrieving role information for user with id=" + userId,
+      });
+    });
+};
+
+// Update user role
+exports.updateUserRole = (req, res) => {
+  const userId = req.params.userId;
+  const roleId = req.body.roleId;
+
+  UserRole.update({ roleId: roleId }, {
+    where: { userId: userId }
+  })
+    .then((num) => {
+      if (num == 1) {
+        res.send({
+          message: "User role was updated successfully." 
+        });
+      } else {
+        res.status(404).send({
+          message: `Cannot update user role with userId=${userId}. Maybe user role was not found or req.body is empty!`
+        });
+      }
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message: err.message || "Error updating user role with userId=" + userId,
+      });
+    }); 
+};
+
 

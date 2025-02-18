@@ -12,5 +12,11 @@ module.exports = (app) => {
   // Find all users with a specific role ID
   router.get("/role/:roleId/users", [authenticate], roleUser.findUsersByRoleId);
 
+  // New route to get role information by user ID
+  router.get("/roleInfo/:userId", [authenticate], roleUser.getRoleInfoByUserId);
+
+  // Update user role
+  router.put("/:userId/role", [authenticate], roleUser.updateUserRole); 
+
   app.use("/flight-plan-t2/roleUser", router);
-};
+};  
