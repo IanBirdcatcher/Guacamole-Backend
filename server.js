@@ -34,6 +34,8 @@ require("./app/routes/user.routes.js")(app);
 require("./app/routes/event.routes.js")(app);
 require("./app/routes/experience.routes.js")(app);
 require("./app/routes/experienceEvent.routes.js")(app);
+require("./app/routes/roleUser.routes")(app);
+require("./app/routes/permission.routes")(app);
 
 
 // Set the server to listen on a specified port
