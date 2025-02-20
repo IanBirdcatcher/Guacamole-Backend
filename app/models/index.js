@@ -50,6 +50,10 @@ db.strength = require("./strength.model.js")(sequelize, Sequelize);
 db.studentInfo = require("./studentInfo.model.js")(sequelize, Sequelize);
 db.task = require("./task.model.js")(sequelize, Sequelize);
 db.taskMajor = require("./taskMajor.model.js")(sequelize, Sequelize);
+db.role = require("./role.model.js")(sequelize, Sequelize);
+db.roleUser = require("./roleUser.model.js")(sequelize, Sequelize);
+
+
 
 // resume items 
 db.award = require("./award.model.js")(sequelize, Sequelize);
@@ -76,6 +80,27 @@ db.skillResume = require("./skillResume.model.js")(sequelize, Sequelize);
 // Relations
 
 // flight plan
+// User and RoleUser
+db.user.hasMany(db.roleUser, {
+  allowNull: true,
+  onDelete: "CASCADE",
+});
+db.roleUser.belongsTo(db.user, {
+  allowNull: true,
+  onDelete: "CASCADE",
+});
+
+// RoleUser and Role
+db.roleUser.belongsTo(db.role, {
+  allowNull: true,
+  onDelete: "CASCADE",
+});
+db.role.hasMany(db.roleUser, {
+  allowNull: true,
+  onDelete: "CASCADE",
+});
+
+
 
 db.studentInfo.hasMany(db.rewardStudentInfo, {
   allowNull: true,
@@ -721,5 +746,17 @@ db.skillResume.belongsTo(db.skill, {
   allowNull: true,
   onDelete: "CASCADE",
 });
+
+db.user.hasMany(
+  db.session,
+  { as: "session" },
+  { foreignKey: { allowNull: false }, onDelete: "CASCADE" }
+);
+db.session.belongsTo(
+  db.user,
+  { as: "user" },
+  { foreignKey: { allowNull: false }, onDelete: "CASCADE" }
+);
+
 
 module.exports = db;

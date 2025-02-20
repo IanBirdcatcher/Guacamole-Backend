@@ -32,6 +32,9 @@ app.get("/", (req, res) => {
 require("./app/routes/auth.routes.js")(app);
 require("./app/routes/user.routes")(app);
 require("./app/routes/studentInfo.routes")(app);
+require("./app/routes/role.routes")(app);
+require("./app/routes/roleUser.routes")(app);
+require("./app/routes/permission.routes")(app);
 
 
 
