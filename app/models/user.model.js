@@ -22,6 +22,11 @@ module.exports = (sequelize, Sequelize) => {
       allowNull: false,
       defaultValue: false,
     },
+    points: {
+      type: Sequelize.INTEGER,
+      allowNull: true,
+      defaulValue: 0,
+    }
   });
 
   return User;
