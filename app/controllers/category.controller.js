@@ -1,8 +1,8 @@
 const db = require("../models");
-const Experience = db.experience;
+const Category = db.category;
 const Op = db.Sequelize.Op;
 
-// Create and Save a new Experience entry
+// Create and Save a new Category entry
 exports.create = (req, res) => {
   // Validate request
   if (!req.body.userId) {
@@ -10,23 +10,15 @@ exports.create = (req, res) => {
     return;
   }
 
-  // Define the data object for the new Experience entry
-  const ExperienceData = {
+  // Define the data object for the new Category entry
+  const CategoryData = {
     id: req.body.id,
     name: req.body.name,
     desc: req.body.desc,
-    points: req.body.points,
-    type: req.body.type,
-    subtext: req.body.subtext,
-    priority: req.body.priority,
-    reflectionRequired: req.body.reflectionRequired,
-    semestersFromGraduation: req.body.semestersFromGraduation,
-    documentRequired: req.body.documentRequired,
-    userId: req.body.userId,
   };
 
-  // Save the Experience entry in the database
-  Experience.create(ExperienceData)
+  // Save the Category entry in the database
+  Category.create(CategoryData)
     .then((data) => {
       res.send(data);
     })
@@ -38,21 +30,21 @@ exports.create = (req, res) => {
           .send({ message: `The ${missingField} could not be found.` });
       } else {
         res.status(500).send({
-          message: err.message || "Error creating the Experience entry.",
+          message: err.message || "Error creating the Category entry.",
         });
       }
     });
 };
 
-// Retrieve all Experience entries
+// Retrieve all Category entries
 exports.findAll = (req, res) => {
-  Experience.findAll()
+  Category.findAll()
     .then((data) => {
       if (data && data.length > 0) {
         res.send(data);
       } else {
         res.status(404).send({
-          message: `No Experience entries found.`,
+          message: `No Category entries found.`,
         });
       }
     })
@@ -60,42 +52,42 @@ exports.findAll = (req, res) => {
       res.status(500).send({
         message:
           err.message ||
-          `Error retrieving Experience entries.`,
+          `Error retrieving Category entries.`,
       });
     });
 };
 
-// Retrieve a single Experience entry by ID
+// Retrieve a single Category entry by ID
 exports.findOne = (req, res) => {
   const id = req.params.id;
-  Experience.findByPk(id)
+  Category.findByPk(id)
     .then((data) => {
       if (data) {
         res.send(data);
       } else {
         res
           .status(404)
-          .send({ message: `No Experience entry found with id=${id}.` });
+          .send({ message: `No Category entry found with id=${id}.` });
       }
     })
     .catch((err) => {
       res.status(500).send({
         message:
-          err.message || `Error retrieving Experience entry with id=${id}.`,
+          err.message || `Error retrieving Category entry with id=${id}.`,
       });
     });
 };
 
-// Update an Experience entry by ID
+// Update an Category entry by ID
 exports.update = (req, res) => {
   const id = req.params.id;
-  Experience.update(req.body, { where: { id: id } })
+  Category.update(req.body, { where: { id: id } })
     .then((num) => {
       if (num == 1) {
-        res.send({ message: "Experience entry was updated successfully." });
+        res.send({ message: "Category entry was updated successfully." });
       } else {
         res.status(400).send({
-          message: `Could not update Experience entry with id=${id}.`,
+          message: `Could not update Category entry with id=${id}.`,
         });
       }
     })
@@ -107,22 +99,22 @@ exports.update = (req, res) => {
           .send({ message: `The ${missingField} could not be found.` });
       } else {
         res.status(500).send({
-          message: err.message || "Error updating the Experience entry.",
+          message: err.message || "Error updating the Category entry.",
         });
       }
     });
 };
 
-// Delete an Experience entry by ID
+// Delete an Category entry by ID
 exports.delete = (req, res) => {
   const id = req.params.id;
-  Experience.destroy({ where: { id: id } })
+  Category.destroy({ where: { id: id } })
     .then((num) => {
       if (num == 1) {
-        res.send({ message: "Experience entry was deleted successfully!" });
+        res.send({ message: "Category entry was deleted successfully!" });
       } else {
         res.status(404).send({
-          message: `Could not delete Experience entry with id=${id}.`,
+          message: `Could not delete Category entry with id=${id}.`,
         });
       }
     })
@@ -130,7 +122,7 @@ exports.delete = (req, res) => {
       res.status(500).send({
         message:
           err.message ||
-          `Error deleting Experience entry with id=${id}.`,
+          `Error deleting Category entry with id=${id}.`,
       });
     });
 };

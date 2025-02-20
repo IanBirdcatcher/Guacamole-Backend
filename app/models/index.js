@@ -153,6 +153,7 @@ db.studentInfo.hasMany(db.major, {
   allowNull: true,
   onDelete: "CASCADE",
 });
+
 db.major.belongsTo(db.studentInfo, {
   allowNull: true,
   onDelete: "CASCADE",
@@ -243,10 +244,10 @@ db.event.hasMany(db.major, {
   allowNull: true,
   onDelete: "CASCADE",
 });
-db.major.belongsTo(db.event, {
-  allowNull: true,
-  onDelete: "CASCADE",
-});
+// db.major.belongsTo(db.event, {
+//   allowNull: true,
+//   onDelete: "CASCADE",
+// });
 
 db.event.hasMany(db.experience, {
   allowNull: true,
@@ -306,19 +307,21 @@ db.major.hasMany(db.experienceMajor, {
   allowNull: true,
   onDelete: "CASCADE",
 });
-db.experienceMajor.belongsTo(db.major, {
-  allowNull: true,
-  onDelete: "CASCADE",
-});
+
+// db.experienceMajor.belongsTo(db.major, {
+//   allowNull: true,
+//   onDelete: "CASCADE",
+// });
 
 db.major.hasMany(db.taskMajor, {
   allowNull: true,
   onDelete: "CASCADE",
 });
-db.taskMajor.belongsTo(db.major, {
-  allowNull: true,
-  onDelete: "CASCADE",
-});
+
+// db.taskMajor.belongsTo(db.major, {
+//   allowNull: true,
+//   onDelete: "CASCADE",
+// });
 
 db.category.hasMany(db.task, {
   allowNull: true,

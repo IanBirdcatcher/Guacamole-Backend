@@ -1,8 +1,8 @@
 const db = require("../models");
-const Experience = db.experience;
+const Task = db.task;
 const Op = db.Sequelize.Op;
 
-// Create and Save a new Experience entry
+// Create and Save a new Task entry
 exports.create = (req, res) => {
   // Validate request
   if (!req.body.userId) {
@@ -10,8 +10,8 @@ exports.create = (req, res) => {
     return;
   }
 
-  // Define the data object for the new Experience entry
-  const ExperienceData = {
+  // Define the data object for the new Task entry
+  const TaskData = {
     id: req.body.id,
     name: req.body.name,
     desc: req.body.desc,
@@ -25,8 +25,8 @@ exports.create = (req, res) => {
     userId: req.body.userId,
   };
 
-  // Save the Experience entry in the database
-  Experience.create(ExperienceData)
+  // Save the Task entry in the database
+  Task.create(TaskData)
     .then((data) => {
       res.send(data);
     })
@@ -38,21 +38,21 @@ exports.create = (req, res) => {
           .send({ message: `The ${missingField} could not be found.` });
       } else {
         res.status(500).send({
-          message: err.message || "Error creating the Experience entry.",
+          message: err.message || "Error creating the Task entry.",
         });
       }
     });
 };
 
-// Retrieve all Experience entries
+// Retrieve all Task entries
 exports.findAll = (req, res) => {
-  Experience.findAll()
+  Task.findAll()
     .then((data) => {
       if (data && data.length > 0) {
         res.send(data);
       } else {
         res.status(404).send({
-          message: `No Experience entries found.`,
+          message: `No Task entries found.`,
         });
       }
     })
@@ -60,42 +60,42 @@ exports.findAll = (req, res) => {
       res.status(500).send({
         message:
           err.message ||
-          `Error retrieving Experience entries.`,
+          `Error retrieving Task entries.`,
       });
     });
 };
 
-// Retrieve a single Experience entry by ID
+// Retrieve a single Task entry by ID
 exports.findOne = (req, res) => {
   const id = req.params.id;
-  Experience.findByPk(id)
+  Task.findByPk(id)
     .then((data) => {
       if (data) {
         res.send(data);
       } else {
         res
           .status(404)
-          .send({ message: `No Experience entry found with id=${id}.` });
+          .send({ message: `No Task entry found with id=${id}.` });
       }
     })
     .catch((err) => {
       res.status(500).send({
         message:
-          err.message || `Error retrieving Experience entry with id=${id}.`,
+          err.message || `Error retrieving Task entry with id=${id}.`,
       });
     });
 };
 
-// Update an Experience entry by ID
+// Update an Task entry by ID
 exports.update = (req, res) => {
   const id = req.params.id;
-  Experience.update(req.body, { where: { id: id } })
+  Task.update(req.body, { where: { id: id } })
     .then((num) => {
       if (num == 1) {
-        res.send({ message: "Experience entry was updated successfully." });
+        res.send({ message: "Task entry was updated successfully." });
       } else {
         res.status(400).send({
-          message: `Could not update Experience entry with id=${id}.`,
+          message: `Could not update Task entry with id=${id}.`,
         });
       }
     })
@@ -107,22 +107,22 @@ exports.update = (req, res) => {
           .send({ message: `The ${missingField} could not be found.` });
       } else {
         res.status(500).send({
-          message: err.message || "Error updating the Experience entry.",
+          message: err.message || "Error updating the Task entry.",
         });
       }
     });
 };
 
-// Delete an Experience entry by ID
+// Delete an Task entry by ID
 exports.delete = (req, res) => {
   const id = req.params.id;
-  Experience.destroy({ where: { id: id } })
+  Task.destroy({ where: { id: id } })
     .then((num) => {
       if (num == 1) {
-        res.send({ message: "Experience entry was deleted successfully!" });
+        res.send({ message: "Task entry was deleted successfully!" });
       } else {
         res.status(404).send({
-          message: `Could not delete Experience entry with id=${id}.`,
+          message: `Could not delete Task entry with id=${id}.`,
         });
       }
     })
@@ -130,7 +130,7 @@ exports.delete = (req, res) => {
       res.status(500).send({
         message:
           err.message ||
-          `Error deleting Experience entry with id=${id}.`,
+          `Error deleting Task entry with id=${id}.`,
       });
     });
 };
