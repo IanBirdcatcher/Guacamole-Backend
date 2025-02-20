@@ -7,8 +7,8 @@ const Op = db.Sequelize.Op;
 exports.create = (req, res) => {
   // Create a userRole
   const userRoleData = {
-    userId: req.body.contactInfoId,
-    roleId: req.body.resumeId
+    userId: req.body.userId,  
+    roleId: req.body.roleId
   };
 
   // Save userRole in the database
@@ -18,8 +18,8 @@ exports.create = (req, res) => {
     })
     .catch((err) => {
       if (err.message.includes("problem with foreign key")) {
-        res.status(404).send({
-          message: `problem`
+        res.status(404).send({ 
+          message: `problem` 
         });
       } else if (err.message.includes("big problem")) {
         res.status(404).send({
