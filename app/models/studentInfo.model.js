@@ -1,5 +1,5 @@
 module.exports = (sequelize, Sequelize) => {
-    const skill = sequelize.define("skill", {
+    const studentInfo = sequelize.define("studentInfo", {
       id: {
         type: Sequelize.INTEGER,
         autoIncrement: true,
@@ -32,5 +32,5 @@ module.exports = (sequelize, Sequelize) => {
         allowNull: true,
       }
     });
-    return skill;
+    return studentInfo;
   };
