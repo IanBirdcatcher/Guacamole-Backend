@@ -47,14 +47,11 @@ db.reward = require("./reward.model.js")(sequelize, Sequelize);
 db.rewardStudentInfo = require("./rewardStudentInfo.model.js")(sequelize, Sequelize);
 db.semester = require("./semester.model.js")(sequelize, Sequelize);
 db.strength = require("./strength.model.js")(sequelize, Sequelize);
-db.studentInfo = require("./strength.model.js")(sequelize, Sequelize);
+db.studentInfo = require("./studentInfo.model.js")(sequelize, Sequelize);
 db.task = require("./task.model.js")(sequelize, Sequelize);
 db.taskMajor = require("./taskMajor.model.js")(sequelize, Sequelize);
-db.role = require("./role.model.js")(sequelize, Sequelize);
-db.roleUser = require("./roleUser.model.js")(sequelize, Sequelize);
-
-
-
+db.eventType = require("./eventType.model.js")(sequelize, Sequelize);
+db.experienceEventType = require("./experienceEventType.model.js")(sequelize, Sequelize);
 // resume items 
 db.award = require("./award.model.js")(sequelize, Sequelize);
 db.contactInfo = require("./contactInfo.model.js")(sequelize, Sequelize);
@@ -80,27 +77,6 @@ db.skillResume = require("./skillResume.model.js")(sequelize, Sequelize);
 // Relations
 
 // flight plan
-// User and RoleUser
-db.user.hasMany(db.roleUser, {
-  allowNull: true,
-  onDelete: "CASCADE",
-});
-db.roleUser.belongsTo(db.user, {
-  allowNull: true,
-  onDelete: "CASCADE",
-});
-
-// RoleUser and Role
-db.roleUser.belongsTo(db.role, {
-  allowNull: true,
-  onDelete: "CASCADE",
-});
-db.role.hasMany(db.roleUser, {
-  allowNull: true,
-  onDelete: "CASCADE",
-});
-
-
 
 db.studentInfo.hasMany(db.rewardStudentInfo, {
   allowNull: true,
@@ -174,11 +150,12 @@ db.flightPlan.belongsTo(db.studentInfo, {
   onDelete: "CASCADE",
 });
 
-db.studentInfo.hasMany(db.major, {
+db.major.hasMany(db.studentInfo, {
   allowNull: true,
   onDelete: "CASCADE",
 });
-db.major.belongsTo(db.studentInfo, {
+
+db.studentInfo.belongsTo(db.major, {
   allowNull: true,
   onDelete: "CASCADE",
 });
@@ -264,23 +241,32 @@ db.semester.belongsTo(db.event, {
   onDelete: "CASCADE",
 });
 
-db.event.hasMany(db.major, {
+db.eventType.hasMany(db.event, {
   allowNull: true,
   onDelete: "CASCADE",
 });
-db.major.belongsTo(db.event, {
+db.event.belongsTo(db.eventType, {
   allowNull: true,
   onDelete: "CASCADE",
 });
 
-db.event.hasMany(db.experience, {
-  allowNull: true,
-  onDelete: "CASCADE",
-});
-db.experience.belongsTo(db.event, {
-  allowNull: true,
-  onDelete: "CASCADE",
-});
+// db.event.hasMany(db.major, {
+//   allowNull: true,
+//   onDelete: "CASCADE",
+// });
+// db.major.belongsTo(db.event, {
+//   allowNull: true,
+//   onDelete: "CASCADE",
+// });
+
+// db.event.hasMany(db.experience, {
+//   allowNull: true,
+//   onDelete: "CASCADE",
+// });
+// db.experience.belongsTo(db.event, {
+//   allowNull: true,
+//   onDelete: "CASCADE",
+// });
 
 db.event.hasMany(db.badge, {
   allowNull: true,
@@ -327,23 +313,45 @@ db.flightPlanTask.belongsTo(db.flightPlan, {
   onDelete: "CASCADE",
 });
 
+db.experience.hasMany(db.experienceEventType, {
+  allowNull: true,
+  onDelete: "CASCADE",
+});
+db.experienceEventType.belongsTo(db.experience, {
+  allowNull: true,
+  onDelete: "CASCADE",
+});
+
+db.eventType.hasMany(db.experienceEventType, {
+  allowNull: true,
+  onDelete: "CASCADE",
+});
+db.experienceEventType.belongsTo(db.eventType, {
+  allowNull: true,
+  onDelete: "CASCADE",
+});
+
+
+
 db.major.hasMany(db.experienceMajor, {
   allowNull: true,
   onDelete: "CASCADE",
 });
-db.experienceMajor.belongsTo(db.major, {
-  allowNull: true,
-  onDelete: "CASCADE",
-});
+
+// db.experienceMajor.belongsTo(db.major, {
+//   allowNull: true,
+//   onDelete: "CASCADE",
+// });
 
 db.major.hasMany(db.taskMajor, {
   allowNull: true,
   onDelete: "CASCADE",
 });
-db.taskMajor.belongsTo(db.major, {
-  allowNull: true,
-  onDelete: "CASCADE",
-});
+
+// db.taskMajor.belongsTo(db.major, {
+//   allowNull: true,
+//   onDelete: "CASCADE",
+// });
 
 db.category.hasMany(db.task, {
   allowNull: true,
@@ -399,14 +407,14 @@ db.event.belongsTo(db.badge, {
   onDelete: "CASCADE",
 });
 
-db.experience.hasMany(db.event, {
-  allowNull: true,
-  onDelete: "CASCADE",
-});
-db.event.belongsTo(db.experience, {
-  allowNull: true,
-  onDelete: "CASCADE",
-});
+// db.experience.hasMany(db.event, {
+//   allowNull: true,
+//   onDelete: "CASCADE",
+// });
+// db.event.belongsTo(db.experience, {
+//   allowNull: true,
+//   onDelete: "CASCADE",
+// });
 
 db.experience.hasMany(db.badge, {
   allowNull: true,
@@ -512,15 +520,6 @@ db.task.hasMany(db.flightPlanTask, {
   onDelete: "CASCADE",
 });
 db.flightPlanTask.belongsTo(db.task, {
-  allowNull: true,
-  onDelete: "CASCADE",
-});
-
-db.task.hasMany(db.task, {
-  allowNull: true,
-  onDelete: "CASCADE",
-});
-db.task.belongsTo(db.task, {
   allowNull: true,
   onDelete: "CASCADE",
 });
@@ -757,6 +756,26 @@ db.session.belongsTo(
   { as: "user" },
   { foreignKey: { allowNull: false }, onDelete: "CASCADE" }
 );
+
+// User and RoleUser
+db.user.hasMany(db.roleUser, {
+  allowNull: true,
+  onDelete: "CASCADE",
+});
+db.roleUser.belongsTo(db.user, {
+  allowNull: true,
+  onDelete: "CASCADE",
+});
+
+// RoleUser and Role
+db.roleUser.belongsTo(db.role, {
+  allowNull: true,
+  onDelete: "CASCADE",
+});
+db.role.hasMany(db.roleUser, {
+  allowNull: true,
+  onDelete: "CASCADE",
+});
 
 
 module.exports = db;
