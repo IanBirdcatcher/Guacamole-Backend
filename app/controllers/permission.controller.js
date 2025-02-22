@@ -21,6 +21,9 @@ exports.create = (req, res) => {
     removeReward: req.body.removeReward,
     redeemReward: req.body.redeemReward,
     readStrengths: req.body.readStrengths,
+    addEvent: req.body.addEvent,
+    changeEvent: req.body.changeEvent,
+    removeEvent: req.body.removeEvent,
     userId: req.body.userId,
   };
 
