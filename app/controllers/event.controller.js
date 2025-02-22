@@ -8,8 +8,6 @@ exports.create = (req, res) => {
   validationMessage = "Must contain a "
   if (!req.body.name) {
     validationMessage += "name, "
-  } else if (!req.body.type) {
-    validationMessage += "type, "
   } else if (!req.body.attendanceType) {
     validationMessage += "attendanceType, "
   } else if (!req.body.completionType) {
@@ -27,11 +25,10 @@ exports.create = (req, res) => {
   // Create a Event
   const event = {
     id: req.body.id,
-    name: req.body.id,
+    name: req.body.name,
     desc: req.body.desc,
     startDateTime: req.body.startDateTime,
     endDateTime: req.body.endDateTime,
-    type: req.body.type,
     location: req.body.location,
     attendanceType: req.body.attendanceType,
     completionType: req.body.completionType,
