@@ -151,9 +151,12 @@ db.flightPlan.belongsTo(db.studentInfo, {
 });
 
 db.major.hasMany(db.studentInfo, {
+db.major.hasMany(db.studentInfo, {
   allowNull: true,
   onDelete: "CASCADE",
 });
+
+db.studentInfo.belongsTo(db.major, {
 
 db.studentInfo.belongsTo(db.major, {
   allowNull: true,
@@ -242,14 +245,33 @@ db.semester.belongsTo(db.event, {
 });
 
 db.eventType.hasMany(db.event, {
+db.eventType.hasMany(db.event, {
   allowNull: true,
   onDelete: "CASCADE",
 });
+db.event.belongsTo(db.eventType, {
 db.event.belongsTo(db.eventType, {
   allowNull: true,
   onDelete: "CASCADE",
 });
 
+// db.event.hasMany(db.major, {
+//   allowNull: true,
+//   onDelete: "CASCADE",
+// });
+// db.major.belongsTo(db.event, {
+//   allowNull: true,
+//   onDelete: "CASCADE",
+// });
+
+// db.event.hasMany(db.experience, {
+//   allowNull: true,
+//   onDelete: "CASCADE",
+// });
+// db.experience.belongsTo(db.event, {
+//   allowNull: true,
+//   onDelete: "CASCADE",
+// });
 // db.event.hasMany(db.major, {
 //   allowNull: true,
 //   onDelete: "CASCADE",
@@ -323,14 +345,28 @@ db.experienceEventType.belongsTo(db.experience, {
 });
 
 db.eventType.hasMany(db.experienceEventType, {
+db.experience.hasMany(db.experienceEventType, {
   allowNull: true,
   onDelete: "CASCADE",
 });
+db.experienceEventType.belongsTo(db.experience, {
+  allowNull: true,
+  onDelete: "CASCADE",
+});
+
+db.eventType.hasMany(db.experienceEventType, {
+  allowNull: true,
+  onDelete: "CASCADE",
+});
+db.experienceEventType.belongsTo(db.eventType, {
 db.experienceEventType.belongsTo(db.eventType, {
   allowNull: true,
   onDelete: "CASCADE",
 });
 
+
+
+db.major.hasMany(db.experienceMajor, {
 
 
 db.major.hasMany(db.experienceMajor, {
@@ -344,9 +380,21 @@ db.major.hasMany(db.experienceMajor, {
 // });
 
 db.major.hasMany(db.taskMajor, {
+
+// db.experienceMajor.belongsTo(db.major, {
+//   allowNull: true,
+//   onDelete: "CASCADE",
+// });
+
+db.major.hasMany(db.taskMajor, {
   allowNull: true,
   onDelete: "CASCADE",
 });
+
+// db.taskMajor.belongsTo(db.major, {
+//   allowNull: true,
+//   onDelete: "CASCADE",
+// });
 
 // db.taskMajor.belongsTo(db.major, {
 //   allowNull: true,
@@ -407,6 +455,14 @@ db.event.belongsTo(db.badge, {
   onDelete: "CASCADE",
 });
 
+// db.experience.hasMany(db.event, {
+//   allowNull: true,
+//   onDelete: "CASCADE",
+// });
+// db.event.belongsTo(db.experience, {
+//   allowNull: true,
+//   onDelete: "CASCADE",
+// });
 // db.experience.hasMany(db.event, {
 //   allowNull: true,
 //   onDelete: "CASCADE",
@@ -756,6 +812,26 @@ db.session.belongsTo(
   { as: "user" },
   { foreignKey: { allowNull: false }, onDelete: "CASCADE" }
 );
+
+// User and RoleUser
+db.user.hasMany(db.roleUser, {
+  allowNull: true,
+  onDelete: "CASCADE",
+});
+db.roleUser.belongsTo(db.user, {
+  allowNull: true,
+  onDelete: "CASCADE",
+});
+
+// RoleUser and Role
+db.roleUser.belongsTo(db.role, {
+  allowNull: true,
+  onDelete: "CASCADE",
+});
+db.role.hasMany(db.roleUser, {
+  allowNull: true,
+  onDelete: "CASCADE",
+});
 
 
 module.exports = db;
