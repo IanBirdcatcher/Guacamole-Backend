@@ -31,7 +31,14 @@ app.get("/", (req, res) => {
 // Import routes
 require("./app/routes/auth.routes.js")(app);
 require("./app/routes/user.routes")(app);
+<<<<<<< HEAD
 require("./app/routes/reward.routes.js")(app);
+=======
+require("./app/routes/role.routes")(app);
+require("./app/routes/roleUser.routes")(app);
+require("./app/routes/permission.routes")(app);
+
+>>>>>>> 7a0c5daf3855a2d9a4c42dd83819bff2f20659ee
 
 
 // Set the server to listen on a specified port
