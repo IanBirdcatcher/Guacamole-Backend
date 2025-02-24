@@ -17,8 +17,7 @@ exports.create = (req, res) => {
     id: req.body.id,
     name: req.body.name,
     desc: req.body.desc,
-    requiredPoints: req.body.requiredPoints,
-    purchaseCount: req.body.purchaseCount,
+    requiredPoints: req.body.requiredPoints
   };
 
   // Save reward in the database
