@@ -1,8 +1,8 @@
 const db = require("../models");
-const Reward = db.reward;
+const icon = db.icon;
 const Op = db.Sequelize.Op;
 
-// Create and Save a new reward
+// Create and Save a new icon
 exports.create = (req, res) => {
   // Validate request
   if (!req.body.name) {
@@ -12,109 +12,109 @@ exports.create = (req, res) => {
     return;
   }
 
-  // Create a reward
-  const reward = {
+  // Create a icon
+  const icon = {
     id: req.body.id,
     name: req.body.name,
-    desc: req.body.desc,
-    requiredPoints: req.body.requiredPoints,
+    link: req.body.link,
+    forBadge: req.body.forBadge
   };
 
-  // Save reward in the database
-  Reward.create(reward)
+  // Save icon in the database
+  icon.create(icon)
     .then((data) => {
       res.send(data);
     })
     .catch((err) => {
       res.status(500).send({
-        message: err.message || "Some error occurred while creating the reward.",
+        message: err.message || "Some error occurred while creating the icon.",
       });
     });
 };
 
-// Retrieve all rewards from the database.
+// Retrieve all icons from the database.
 exports.findAll = (req, res) => {
   const id = req.query.id;
   var condition = id ? { id: { [Op.like]: `%${id}%` } } : null;
 
-  Reward.findAll({ where: condition })
+  icon.findAll({ where: condition })
     .then((data) => {
       res.send(data);
     })
     .catch((err) => {
       res.status(500).send({
-        message: err.message || "Some error occurred while retrieving rewards.",
+        message: err.message || "Some error occurred while retrieving icons.",
       });
     });
 };
 
-// Find a single reward with an id
+// Find a single icon with an id
 exports.findOne = (req, res) => {
   const id = req.params.id;
-  Reward.findByPk(id)
+  icon.findByPk(id)
     .then((data) => {
       if (data) {
         res.send(data);
       } else {
         res.status(404).send({
-          message: `Cannot find reward with id=${id}.`,
+          message: `Cannot find icon with id=${id}.`,
         });
       }
     })
     .catch((err) => {
       res.status(500).send({
-        message: "Error retrieving reward with id=" + id,
+        message: "Error retrieving icon with id=" + id,
       });
     });
 };
 
 
-// Update a reward by the id in the request
+// Update a icon by the id in the request
 exports.update = (req, res) => {
   const id = req.params.id;
 
-  Reward.update(req.body, {
+  icon.update(req.body, {
     where: { id: id },
   })
     .then((num) => {
       if (num == 1) {
         res.send({
-          message: "reward was updated successfully.",
+          message: "icon was updated successfully.",
         });
       } else {
         res.send({
-          message: `Cannot update reward with id=${id}. Maybe reward was not found or req.body is empty!`,
+          message: `Cannot update icon with id=${id}. Maybe icon was not found or req.body is empty!`,
         });
       }
     })
     .catch((err) => {
       res.status(500).send({
-        message: "Error updating reward with id=" + id,
+        message: "Error updating icon with id=" + id,
       });
     });
 };
 
-// Delete a reward with the specified id in the request
+// Delete a icon with the specified id in the request
 exports.delete = (req, res) => {
   const id = req.params.id;
 
-  Reward.destroy({
+  icon.destroy({
     where: { id: id },
   })
     .then((num) => {
       if (num == 1) {
         res.send({
-          message: "reward was deleted successfully!",
+          message: "icon was deleted successfully!",
         });
       } else {
         res.send({
-          message: `Cannot delete reward with id=${id}. Maybe reward was not found!`,
+          message: `Cannot delete icon with id=${id}. Maybe icon was not found!`,
         });
       }
     })
     .catch((err) => {
       res.status(500).send({
-        message: "Could not delete reward with id=" + id,
+        message: "Could not delete icon with id=" + id,
       });
     });
 };

@@ -23,7 +23,7 @@ module.exports = (sequelize, Sequelize) => {
       defaultValue: 0,
     },
     image: {
-      type: Sequelize.BLOB("long"), // Store as BLOB
+      type: Sequelize.BLOB("long"),
       allowNull: true,
       get() {
         const imageData = this.getDataValue("image");
