@@ -9,9 +9,6 @@ module.exports = (app) => {
     // Get all taskStrengths for a specific task
     router.get("/:taskId", [authenticate], taskStrength.findAllForTask);
   
-    // Find a taskStrength by ID
-    router.get("/:id", [authenticate], taskStrength.findOne); 
-  
     // Update a taskStrength by ID
     router.put("/:id", [authenticate], taskStrength.update);
   

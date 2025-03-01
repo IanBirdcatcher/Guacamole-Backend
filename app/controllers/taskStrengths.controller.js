@@ -96,7 +96,6 @@ exports.findAllForTask = (req, res) => {
       });
     });
 };
-
 // Update an TaskStrength entry by ID
 exports.update = (req, res) => {
   const taskId = req.params.taskId;

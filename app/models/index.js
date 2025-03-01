@@ -93,6 +93,11 @@ db.jobExperienceResume = require("./jobExperienceResume.model.js")(
   sequelize,
   Sequelize
 );
+db.experienceStrength = require("./experienceStrength.model.js")(
+  sequelize,
+  Sequelize
+);
+db.taskStrength = require("./taskStrength.model.js")(sequelize, Sequelize);
 db.interestResume = require("./interestResume.model.js")(sequelize, Sequelize);
 db.linkResume = require("./linkResume.model.js")(sequelize, Sequelize);
 db.projectResume = require("./projectResume.model.js")(sequelize, Sequelize);
@@ -395,22 +400,44 @@ db.major.hasMany(db.experienceMajor, {
 //   allowNull: true,
 //   onDelete: "CASCADE",
 // });
+db.experience.hasMany(db.experienceStrength, {
+  allowNull: true,
+  onDelete: "CASCADE",
+})
+db.experienceStrength.belongsTo(db.experience, {
+  allowNull: true,
+  onDelete: "CASCADE",
+});
+db.strength.hasMany(db.experienceStrength, {
+  allowNull: true,
+  onDelete: "CASCADE",
+});
+db.experienceStrength.belongsTo(db.strength, {
+  allowNull: true,
+  onDelete: "CASCADE",
+});
+
+db.task.hasMany(db.taskStrength, {
+  allowNull: true,
+  onDelete: "CASCADE",
+});
+db.taskStrength.belongsTo(db.task, {
+  allowNull: false,
+  onDelete: "CASCADE",
+});
+db.strength.hasMany(db.taskStrength, {
+  allowNull: true,
+  onDelete: "CASCADE",
+});
+db.taskStrength.belongsTo(db.strength, {
+  allowNull: false,
+  onDelete: "CASCADE",
+});
 
 db.major.hasMany(db.taskMajor, {
   allowNull: true,
   onDelete: "CASCADE",
 });
-
-// db.taskMajor.belongsTo(db.major, {
-//   allowNull: true,
-//   onDelete: "CASCADE",
-// });
-
-// db.taskMajor.belongsTo(db.major, {
-//   allowNull: true,
-//   onDelete: "CASCADE",
-// });
-
 db.category.hasMany(db.task, {
   allowNull: true,
   onDelete: "CASCADE",
@@ -820,7 +847,6 @@ db.session.belongsTo(db.user, {
   allowNull: true,
   onDelete: "CASCADE",
 });
-
 // User and RoleUser
 db.user.hasMany(db.roleUser, {
   allowNull: true,

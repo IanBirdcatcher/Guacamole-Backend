@@ -9,9 +9,6 @@ module.exports = (app) => {
     // Get all experienceMajors for a specific experience
     router.get("/:experienceId", [authenticate], experienceMajor.findAllForExperience);
   
-    // Find a experienceMajor by ID
-    router.get("/:id", [authenticate], experienceMajor.findOne); 
-  
     // Update a experienceMajor by ID
     router.put("/:id", [authenticate], experienceMajor.update);
   

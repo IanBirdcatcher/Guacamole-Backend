@@ -9,9 +9,6 @@ module.exports = (app) => {
   // Get all experienceEventTypes for a specific experience
   router.get("/:experienceId", [authenticate], experienceEventType.findAllForExperience);
 
-  // Find a experienceEventType by ID
-  router.get("/:id", [authenticate], experienceEventType.findOne); 
-
   // Update a experienceEventType by ID
   router.put("/:id", [authenticate], experienceEventType.update);
 

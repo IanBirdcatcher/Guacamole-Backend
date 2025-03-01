@@ -1,5 +1,5 @@
 module.exports = (app) => {
-    const experienceStrength = require("../controllers/experienceStrength.controller.js");
+    const experienceStrength = require("../controllers/experienceStrengths.controller.js");
     const { authenticate } = require("../authorization/authorization.js");
     var router = require("express").Router();
   
@@ -8,9 +8,6 @@ module.exports = (app) => {
   
     // Get all experienceStrengths for a specific experience
     router.get("/:experienceId", [authenticate], experienceStrength.findAllForExperience);
-  
-    // Find a experienceStrength by ID
-    router.get("/:id", [authenticate], experienceStrength.findOne); 
   
     // Update a experienceStrength by ID
     router.put("/:id", [authenticate], experienceStrength.update);

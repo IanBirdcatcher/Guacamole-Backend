@@ -9,9 +9,6 @@ module.exports = (app) => {
     // Get all taskMajors for a specific task
     router.get("/:taskId", [authenticate], taskMajor.findAllForTask);
   
-    // Find a taskMajor by ID
-    router.get("/:id", [authenticate], taskMajor.findOne); 
-  
     // Update a taskMajor by ID
     router.put("/:id", [authenticate], taskMajor.update);
   

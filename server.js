@@ -45,7 +45,7 @@ require("./app/routes/taskStrengths.routes")(app);
 require("./app/routes/experience.routes")(app);
 require("./app/routes/experienceMajors.routes")(app);
 require("./app/routes/experienceEventType.routes")(app);
-require("./app/routes/experienceMajors.routes")(app);
+require("./app/routes/experienceStrengths.routes")(app);
 // Select item routes 
 require("./app/routes/category.routes")(app);
 require("./app/routes/eventType.routes")(app);
