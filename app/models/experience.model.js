@@ -23,10 +23,12 @@ module.exports = (sequelize, Sequelize) => {
       },
       requestedByStudent: {
         type: Sequelize.BOOLEAN,
+        defaultValue: false,
         allowNull: false,
       },
       approved: {
         type: Sequelize.BOOLEAN,
+        defaultValue: false,
         allowNull: false,
       },
       subtext: {
