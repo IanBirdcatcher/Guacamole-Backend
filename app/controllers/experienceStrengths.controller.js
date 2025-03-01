@@ -1,17 +1,17 @@
 const db = require("../models");
-const ExperienceEventType = db.experienceEventType;
+const ExperienceStrength = db.experienceStrength;
 const Op = db.Sequelize.Op;
 
-// Create and Save a new ExperienceEventType entry
+// Create and Save a new ExperienceStrength entry
 exports.create = (req, res) => {
-  // Define the data object for the new ExperienceEventType entry
-  const ExperienceEventTypeData = {
-    eventTypeId: req.body.eventTypeId,
+  // Define the data object for the new ExperienceStrength entry
+  const ExperienceStrengthData = {
+    strengthId: req.body.strengthId,
     experienceId: req.body.experienceId,
   };
 
-  // Save the ExperienceEventType entry in the database
-  ExperienceEventType.create(ExperienceEventTypeData)
+  // Save the ExperienceStrength entry in the database
+  ExperienceStrength.create(ExperienceStrengthData)
     .then((data) => {
       res.send(data);
     })
@@ -19,19 +19,19 @@ exports.create = (req, res) => {
       if (err.message.includes("foreign key constraint fails")) {
         res
           .status(404)
-          .send({ message: `The eventTypeId could not be found.` });
+          .send({ message: `The strengthId could not be found.` });
       } else {
         res.status(500).send({
           message:
-            err.message || "Error creating the ExperienceEventType entry.",
+            err.message || "Error creating the ExperienceStrength entry.",
         });
       }
     });
 };
 
-// Retrieve all ExperienceEventType entries for an experience
+// Retrieve all ExperienceStrength entries for an experience
 exports.findAll = (req, res) => {
-  ExperienceEventType.findAll({
+  ExperienceStrength.findAll({
     where: { experienceId: req.params.experienceId },
   })
     .then((data) => {
@@ -39,21 +39,21 @@ exports.findAll = (req, res) => {
         res.send(data);
       } else {
         res.status(404).send({
-          message: `No ExperienceEventType entries found for experienceId=${req.params.experienceId}.`,
+          message: `No ExperienceStrength entries found for experienceId=${req.params.experienceId}.`,
         });
       }
     })
     .catch((err) => {
       res.status(500).send({
-        message: err.message || `Error retrieving ExperienceEventType entries.`,
+        message: err.message || `Error retrieving ExperienceStrength entries.`,
       });
     });
 };
 
-// Retrieve a single ExperienceEventType entry by ID
+// Retrieve a single ExperienceStrength entry by ID
 exports.findOne = (req, res) => {
   const id = req.params.id;
-  ExperienceEventType.findByPk(id)
+  ExperienceStrength.findByPk(id)
     .then((data) => {
       if (data) {
         res.send(data);
@@ -61,7 +61,7 @@ exports.findOne = (req, res) => {
         res
           .status(404)
           .send({
-            message: `No ExperienceEventType entry found with id=${id}.`,
+            message: `No ExperienceStrength entry found with id=${id}.`,
           });
       }
     })
@@ -69,14 +69,14 @@ exports.findOne = (req, res) => {
       res.status(500).send({
         message:
           err.message ||
-          `Error retrieving ExperienceEventType entry with id=${id}.`,
+          `Error retrieving ExperienceStrength entry with id=${id}.`,
       });
     });
 };
 
 exports.findAllForExperience = (req, res) => {
   const experienceId = req.params.experienceId;
-  ExperienceEventType.findAll({ where: { experienceId: experienceId } })
+  ExperienceStrength.findAll({ where: { experienceId: experienceId } })
     .then((data) => {
       if (data && data.length > 0) {
         res.send(data);
@@ -84,7 +84,7 @@ exports.findAllForExperience = (req, res) => {
         res
           .status(404)
           .send({
-            message: `No ExperienceEventType entries found for experienceId=${experienceId}.`,
+            message: `No ExperienceStrength entries found for experienceId=${experienceId}.`,
           });
       }
     })
@@ -92,25 +92,25 @@ exports.findAllForExperience = (req, res) => {
       res.status(500).send({
         message:
           err.message ||
-          `Error retrieving ExperienceEventType entry with id=${id}.`,
+          `Error retrieving ExperienceStrength entry with id=${id}.`,
       });
     });
 };
 
-// Update an ExperienceEventType entry by ID
+// Update an ExperienceStrength entry by ID
 exports.update = (req, res) => {
   const experienceId = req.params.experienceId;
-  ExperienceEventType.update(req.body, {
+  ExperienceStrength.update(req.body, {
     where: { experienceId: experienceId },
   })
     .then((num) => {
       if (num == 1) {
         res.send({
-          message: "ExperienceEventType entry was updated successfully.",
+          message: "ExperienceStrength entry was updated successfully.",
         });
       } else {
         res.status(400).send({
-          message: `Could not update ExperienceEventType entry with id=${experienceId}.`,
+          message: `Could not update ExperienceStrength entry with id=${experienceId}.`,
         });
       }
     })
@@ -123,26 +123,26 @@ exports.update = (req, res) => {
       } else {
         res.status(500).send({
           message:
-            err.message || "Error updating the ExperienceEventType entry.",
+            err.message || "Error updating the ExperienceStrength entry.",
         });
       }
     });
 };
 
-// Delete an ExperienceEventType entry by ID
+// Delete an ExperienceStrength entry by ID
 exports.delete = (req, res) => {
   const experienceId = req.params.experienceId;
-  ExperienceEventType.destroy({ where: { experienceId: experienceId } })
+  ExperienceStrength.destroy({ where: { experienceId: experienceId } })
     .then(() => {
       res.send({
-        message: "ExperienceEventType entry was deleted successfully!",
+        message: "ExperienceStrength entry was deleted successfully!",
       });
     })
     .catch((err) => {
       res.status(500).send({
         message:
           err.message ||
-          `Error deleting ExperienceEventType entry with id=${experienceId}.`,
+          `Error deleting ExperienceStrength entry with id=${experienceId}.`,
       });
     });
 };

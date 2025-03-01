@@ -4,12 +4,6 @@ const Op = db.Sequelize.Op;
 
 // Create and Save a new Experience entry
 exports.create = (req, res) => {
-  // Validate request
-  if (!req.body.userId) {
-    res.status(400).send({ message: "UserId cannot be empty!" });
-    return;
-  }
-
   // Define the data object for the new Experience entry
   const ExperienceData = {
     id: req.body.id,
@@ -24,23 +18,15 @@ exports.create = (req, res) => {
     documentRequired: req.body.documentRequired,
     userId: req.body.userId,
   };
-
   // Save the Experience entry in the database
   Experience.create(ExperienceData)
     .then((data) => {
       res.send(data);
     })
     .catch((err) => {
-      if (err.message.includes("foreign key constraint fails")) {
-        const missingField = err.message.includes("userId");
-        res
-          .status(404)
-          .send({ message: `The ${missingField} could not be found.` });
-      } else {
-        res.status(500).send({
-          message: err.message || "Error creating the Experience entry.",
-        });
-      }
+      res.status(500).send({
+        message: err.message || "Error creating the Experience entry.",
+      });
     });
 };
 
@@ -58,9 +44,7 @@ exports.findAll = (req, res) => {
     })
     .catch((err) => {
       res.status(500).send({
-        message:
-          err.message ||
-          `Error retrieving Experience entries.`,
+        message: err.message || `Error retrieving Experience entries.`,
       });
     });
 };
@@ -129,8 +113,7 @@ exports.delete = (req, res) => {
     .catch((err) => {
       res.status(500).send({
         message:
-          err.message ||
-          `Error deleting Experience entry with id=${id}.`,
+          err.message || `Error deleting Experience entry with id=${id}.`,
       });
     });
 };

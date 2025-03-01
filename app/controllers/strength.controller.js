@@ -1,31 +1,23 @@
 const db = require("../models");
-const Task = db.task;
+const Strength = db.strength;
 const Op = db.Sequelize.Op;
 
-// Create and Save a new Task entry
+// Create and Save a new Strength entry
 exports.create = (req, res) => {
   // Validate request
   if (!req.body.name) {
     res.status(400).send({ message: "Name cannot be empty!" });
     return;
   }
-
-  // Define the data object for the new Task entry
-  const TaskData = {
+  // Define the data object for the new Strength entry
+  const StrengthData = {
     id: req.body.id,
     name: req.body.name,
     desc: req.body.desc,
-    points: req.body.points,
-    type: req.body.type,
-    subtext: req.body.subtext,
-    priority: req.body.priority,
-    reflectionRequired: req.body.reflectionRequired,
-    semestersFromGraduation: req.body.semestersFromGraduation,
-    documentRequired: req.body.documentRequired,
   };
 
-  // Save the Task entry in the database
-  Task.create(TaskData)
+  // Save the Strength entry in the database
+  Strength.create(StrengthData)
     .then((data) => {
       res.send(data);
     })
@@ -33,24 +25,24 @@ exports.create = (req, res) => {
       if (err.message.includes("foreign key constraint fails")) {
         res
           .status(404)
-          .send({ message: `An error occurred while creating the Task entry.` });
+          .send({ message: `An error occurred while creating the Strength entry.` });
       } else {
         res.status(500).send({
-          message: err.message || "Error creating the Task entry.",
+          message: err.message || "Error creating the Strength entry.",
         });
       }
     });
 };
 
-// Retrieve all Task entries
+// Retrieve all Strength entries
 exports.findAll = (req, res) => {
-  Task.findAll()
+  Strength.findAll()
     .then((data) => {
       if (data && data.length > 0) {
         res.send(data);
       } else {
         res.status(404).send({
-          message: `No Task entries found.`,
+          message: `No Strength entries found.`,
         });
       }
     })
@@ -58,42 +50,42 @@ exports.findAll = (req, res) => {
       res.status(500).send({
         message:
           err.message ||
-          `Error retrieving Task entries.`,
+          `Error retrieving Strength entries.`,
       });
     });
 };
 
-// Retrieve a single Task entry by ID
+// Retrieve a single Strength entry by ID
 exports.findOne = (req, res) => {
   const id = req.params.id;
-  Task.findByPk(id)
+  Strength.findByPk(id)
     .then((data) => {
       if (data) {
         res.send(data);
       } else {
         res
           .status(404)
-          .send({ message: `No Task entry found with id=${id}.` });
+          .send({ message: `No Strength entry found with id=${id}.` });
       }
     })
     .catch((err) => {
       res.status(500).send({
         message:
-          err.message || `Error retrieving Task entry with id=${id}.`,
+          err.message || `Error retrieving Strength entry with id=${id}.`,
       });
     });
 };
 
-// Update an Task entry by ID
+// Update an Strength entry by ID
 exports.update = (req, res) => {
   const id = req.params.id;
-  Task.update(req.body, { where: { id: id } })
+  Strength.update(req.body, { where: { id: id } })
     .then((num) => {
       if (num == 1) {
-        res.send({ message: "Task entry was updated successfully." });
+        res.send({ message: "Strength entry was updated successfully." });
       } else {
         res.status(400).send({
-          message: `Could not update Task entry with id=${id}.`,
+          message: `Could not update Strength entry with id=${id}.`,
         });
       }
     })
@@ -105,22 +97,22 @@ exports.update = (req, res) => {
           .send({ message: `The ${missingField} could not be found.` });
       } else {
         res.status(500).send({
-          message: err.message || "Error updating the Task entry.",
+          message: err.message || "Error updating the Strength entry.",
         });
       }
     });
 };
 
-// Delete an Task entry by ID
+// Delete an Strength entry by ID
 exports.delete = (req, res) => {
   const id = req.params.id;
-  Task.destroy({ where: { id: id } })
+  Strength.destroy({ where: { id: id } })
     .then((num) => {
       if (num == 1) {
-        res.send({ message: "Task entry was deleted successfully!" });
+        res.send({ message: "Strength entry was deleted successfully!" });
       } else {
         res.status(404).send({
-          message: `Could not delete Task entry with id=${id}.`,
+          message: `Could not delete Strength entry with id=${id}.`,
         });
       }
     })
@@ -128,7 +120,7 @@ exports.delete = (req, res) => {
       res.status(500).send({
         message:
           err.message ||
-          `Error deleting Task entry with id=${id}.`,
+          `Error deleting Strength entry with id=${id}.`,
       });
     });
 };

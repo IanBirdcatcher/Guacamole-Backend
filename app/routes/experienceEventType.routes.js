@@ -6,15 +6,17 @@ module.exports = (app) => {
   // Create a new experienceEventType
   router.post("/", [authenticate], experienceEventType.create);
 
-  // Get all experienceEventTypes
-  router.get("/", [authenticate], experienceEventType.findAll);
+  // Get all experienceEventTypes for a specific experience
+  router.get("/:experienceId", [authenticate], experienceEventType.findAllForExperience);
 
   // Find a experienceEventType by ID
   router.get("/:id", [authenticate], experienceEventType.findOne); 
 
-  router.put("/:id", [authenticate], experienceEventType.update)
+  // Update a experienceEventType by ID
+  router.put("/:id", [authenticate], experienceEventType.update);
+
   // Delete a experienceEventType by ID
-  router.delete("/:id", [authenticate], experienceEventType.delete);
+  router.delete("/:experienceId", [authenticate], experienceEventType.delete);
 
   app.use("/flight-plan-t2/experienceEventType", router);
 };

@@ -28,17 +28,29 @@ app.get("/", (req, res) => {
   res.json({ message: "Welcome to the flight plan application." });
 });
 
-// Import routes
+// Auth routes
 require("./app/routes/auth.routes")(app);
-require("./app/routes/user.routes")(app);
-require("./app/routes/experience.routes")(app);
-require("./app/routes/task.routes")(app);
-require("./app/routes/category.routes")(app);
+
+// User controll routes
 require("./app/routes/role.routes")(app);
 require("./app/routes/roleUser.routes")(app);
 require("./app/routes/permission.routes")(app);
+require("./app/routes/user.routes")(app);
+
+// Task routes
+require("./app/routes/task.routes")(app);
+require("./app/routes/taskMajors.routes")(app);
+require("./app/routes/taskStrengths.routes")(app);
+// Experience Routes
+require("./app/routes/experience.routes")(app);
+require("./app/routes/experienceMajors.routes")(app);
 require("./app/routes/experienceEventType.routes")(app);
+require("./app/routes/experienceMajors.routes")(app);
+// Select item routes 
+require("./app/routes/category.routes")(app);
 require("./app/routes/eventType.routes")(app);
+require("./app/routes/major.routes")(app);
+require("./app/routes/strength.routes")(app);
 
 
 
