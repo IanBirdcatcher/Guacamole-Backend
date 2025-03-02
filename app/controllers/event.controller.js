@@ -29,6 +29,7 @@ exports.create = (req, res) => {
     desc: req.body.desc,
     startDateTime: req.body.startDateTime,
     endDateTime: req.body.endDateTime,
+    type: req.body.type,
     location: req.body.location,
     attendanceType: req.body.attendanceType,
     completionType: req.body.completionType,
