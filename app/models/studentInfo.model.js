@@ -17,7 +17,7 @@ module.exports = (sequelize, Sequelize) => {
     },
     studentId: {
       type: Sequelize.INTEGER,
-      allowNull: false, 
+      allowNull: true, 
     },
     startingSemester: {
       type: Sequelize.DATE,
@@ -25,7 +25,7 @@ module.exports = (sequelize, Sequelize) => {
     },
     semestersTillGraduation: {
       type: Sequelize.INTEGER,
-      allowNull: false,
+      allowNull: true,
     },
     graduationSemester: {
       type: Sequelize.INTEGER,

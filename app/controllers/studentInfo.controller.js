@@ -11,11 +11,12 @@ exports.create = async (req, res) => {
     const studentInfo = {
       userId: req.body.userId, 
       earnedPoints: req.body.earnedPoints,
-      spentPoints: req.body.spentPoints,
-      graduationSemester: req.body.graduationSemester,
-      semestersTillGraduation: req.body.semestersTillGraduation,
+      currentPoints: req.body.spentPoints,
       studentId: req.body.studentId,
       startingSemester: req.body.startingSemester, 
+      semestersTillGraduation: req.body.semestersTillGraduation,
+      graduationSemester: req.body.graduationSemester,
+
     };
 
     // Save StudentInfo in the database
