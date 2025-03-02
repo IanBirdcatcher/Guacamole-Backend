@@ -36,8 +36,30 @@ require("./app/routes/type.routes.js")(app);
 require("./app/routes/eventType.routes.js")(app);
 require("./app/routes/experience.routes.js")(app);
 require("./app/routes/experienceEvent.routes.js")(app);
+// Auth routes
+require("./app/routes/auth.routes")(app);
+
+// User controll routes
+require("./app/routes/role.routes")(app);
 require("./app/routes/roleUser.routes")(app);
 require("./app/routes/permission.routes")(app);
+require("./app/routes/user.routes")(app);
+
+// Task routes
+require("./app/routes/task.routes")(app);
+require("./app/routes/taskMajors.routes")(app);
+require("./app/routes/taskStrengths.routes")(app);
+// Experience Routes
+require("./app/routes/experience.routes")(app);
+require("./app/routes/experienceMajors.routes")(app);
+require("./app/routes/experienceEventType.routes")(app);
+require("./app/routes/experienceStrengths.routes")(app);
+// Select item routes 
+require("./app/routes/category.routes")(app);
+require("./app/routes/eventType.routes")(app);
+require("./app/routes/major.routes")(app);
+require("./app/routes/strength.routes")(app);
+
 
 
 // Set the server to listen on a specified port
