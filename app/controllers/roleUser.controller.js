@@ -7,8 +7,8 @@ const Op = db.Sequelize.Op;
 exports.create = (req, res) => {
   // Create a userRole
   const userRoleData = {
-    userId: req.body.contactInfoId,
-    roleId: req.body.resumeId
+    userId: req.body.userId,
+    roleId: req.body.roleId
   };
 
   // Save userRole in the database
