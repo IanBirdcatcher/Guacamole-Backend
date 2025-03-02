@@ -17,7 +17,7 @@ module.exports = (sequelize, Sequelize) => {
     },
     studentId: {
       type: Sequelize.INTEGER,
-      allowNull: false,
+      allowNull: false, 
     },
     startingSemester: {
       type: Sequelize.DATE,
