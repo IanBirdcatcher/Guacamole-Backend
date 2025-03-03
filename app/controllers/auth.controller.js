@@ -32,6 +32,7 @@ exports.login = async (req, res) => {
   let email = googleUser.email;
   let firstName = googleUser.given_name;
   let lastName = googleUser.family_name;
+  let profilePicture = googleUser.picture; 
 
   // if we don't have their email or name, we need to make another request
   // this is solely for testing purposes
@@ -52,6 +53,7 @@ exports.login = async (req, res) => {
     email = data.email;
     firstName = data.given_name;
     lastName = data.family_name;
+    profilePicture = data.picture; 
   }
 
   console.log(lastName);
@@ -73,6 +75,7 @@ exports.login = async (req, res) => {
           fName: firstName,
           lName: lastName,
           email: email,
+          profilePicture: profilePicture, // Store profile picture URL
         };
       }
     })
@@ -98,6 +101,7 @@ exports.login = async (req, res) => {
     // doing this to ensure that the user's name is the one listed with Google
     user.fName = firstName;
     user.lName = lastName;
+    user.profilePicture = profilePicture; // Update profile picture URL
     console.log(user);
     await User.update(user, { where: { id: user.id } })
       .then((num) => {
