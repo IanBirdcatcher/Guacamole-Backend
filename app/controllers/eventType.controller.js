@@ -1,127 +1,205 @@
 const db = require("../models");
-const EventType = db.eventType;
+const EventType = db.eventType; 
+const Event = db.event; 
+const Type = db.type;
 const Op = db.Sequelize.Op;
 
-// Create and Save a new EventType entry
+// Create and Save a new type
 exports.create = (req, res) => {
-  // Validate request
-  if (!req.body.userId) {
-    res.status(400).send({ message: "UserId cannot be empty!" });
-    return;
-  }
-
-  // Define the data object for the new EventType entry
-  const EventTypeData = {
-    id: req.body.id,
-    type: req.body.type,
+  // Create a eventType
+  const eventTypeData = {
+    eventId: req.body.eventId,
+    typeId: req.body.typeId
   };
 
-  // Save the EventType entry in the database
-  EventType.create(EventTypeData)
+  // Save eventType in the database
+  EventType.create(eventTypeData)
     .then((data) => {
       res.send(data);
     })
     .catch((err) => {
-      if (err.message.includes("foreign key constraint fails")) {
-        const missingField = err.message.includes("userId");
-        res
-          .status(404)
-          .send({ message: `The ${missingField} could not be found.` });
+      if (err.message.includes("problem with foreign key")) {
+        res.status(404).send({
+          message: `problem`
+        });
+      } else if (err.message.includes("big problem")) {
+        res.status(404).send({
+          message: `cannot be found.`
+        });
       } else {
         res.status(500).send({
-          message: err.message || "Error creating the EventType entry.",
+          message: err.message || "Some error occurred while retrieving eventType.",
         });
       }
     });
 };
 
-// Retrieve all EventType entries
+// Find all eventTypes
 exports.findAll = (req, res) => {
-  EventType.findAll()
+  
+  const id = req.query.id;
+  var condition = id ? { id: { [Op.like]: `%${id}%` } } : null;
+
+  EventType.findAll({ where: condition })
     .then((data) => {
-      if (data && data.length > 0) {
+      if (data.length > 0) {
         res.send(data);
       } else {
         res.status(404).send({
-          message: `No EventType entries found.`,
+          message: `Cannot find eventTypes`,
         });
       }
     })
     .catch((err) => {
       res.status(500).send({
-        message:
-          err.message ||
-          `Error retrieving EventType entries.`,
+        message: err.message || "Error retrieving eventTypes."
       });
     });
 };
 
-// Retrieve a single EventType entry by ID
-exports.findOne = (req, res) => {
-  const id = req.params.id;
-  EventType.findByPk(id)
+// Find all eventType for a event
+exports.findByEvent = (req, res) => {
+  const eventId= req.params.id;
+  EventType.findAll({ where: { eventId: eventId } })
+    .then((data) => {
+      if (data.length > 0) {
+        res.send(data);
+      } else {
+        res.status(404).send({
+          message: `Cannot find eventType for eventId with id=${eventId}.`,
+        });
+      }
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message: err.message || "Error retrieving eventType for event with id=" + eventId,
+      });
+    });
+};
+
+// Find all events with a specific type ID
+exports.findEventsByTypeId = (req, res) => {
+  const typeId = req.params.typeId;
+
+  EventType.findAll({
+    where: { typeId: typeId },
+    include: [{
+      model: Event,
+      as: 'event'
+    }]
+  })
+    .then((data) => {
+      if (data.length > 0) {
+        res.send(data.map(eventType => eventType.event));
+      } else {
+        res.status(404).send({
+          message: `Cannot find events with typeId=${typeId}.`,
+        });
+      }
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message: err.message || "Error retrieving events with typeId=" + typeId,
+      });
+    });
+};
+
+// New method to get types information by event ID
+exports.getTypeInfoByEventId = (req, res) => {
+  const eventId = req.params.eventId;
+
+  EventType.findAll({
+    where: { eventId: eventId },
+    include: [{
+      model: Type,
+      as: 'type'
+    }]
+  })
     .then((data) => {
       if (data) {
         res.send(data);
       } else {
-        res
-          .status(404)
-          .send({ message: `No EventType entry found with id=${id}.` });
+        res.status(404).send({
+          message: `Cannot find type information for eventId=${eventId}.`,
+        });
       }
     })
     .catch((err) => {
       res.status(500).send({
-        message:
-          err.message || `Error retrieving EventType entry with id=${id}.`,
+        message: err.message || "Error retrieving type information for event with id=" + eventId,
       });
     });
 };
 
-// Update an EventType entry by ID
-exports.update = (req, res) => {
-  const id = req.params.id;
-  EventType.update(req.body, { where: { id: id } })
-    .then((num) => {
-      if (num == 1) {
-        res.send({ message: "EventType entry was updated successfully." });
-      } else {
-        res.status(400).send({
-          message: `Could not update EventType entry with id=${id}.`,
-        });
-      }
-    })
-    .catch((err) => {
-      if (err.message.includes("foreign key constraint fails")) {
-        const missingField = err.message.includes("userId");
-        res
-          .status(404)
-          .send({ message: `The ${missingField} could not be found.` });
-      } else {
-        res.status(500).send({
-          message: err.message || "Error updating the EventType entry.",
-        });
-      }
-    });
-};
+// Update event type
+exports.updateEventType = (req, res) => {
+  const eventId = req.params.eventId;
+  const typeId = req.body.typeId;
 
-// Delete an EventType entry by ID
-exports.delete = (req, res) => {
-  const id = req.params.id;
-  EventType.destroy({ where: { id: id } })
+  EventType.update({ typeId: typeId }, {
+    where: { eventId: eventId }
+  })
     .then((num) => {
       if (num == 1) {
-        res.send({ message: "EventType entry was deleted successfully!" });
+        res.send({
+          message: "Event type was updated successfully." 
+        });
       } else {
         res.status(404).send({
-          message: `Could not delete EventType entry with id=${id}.`,
+          message: `Cannot update event type with eventId=${eventId}. Maybe event type was not found or req.body is empty!`
         });
       }
     })
     .catch((err) => {
       res.status(500).send({
+        message: err.message || "Error updating event type with eventId=" + eventId,
+      });
+    }); 
+};
+
+
+// Delete a Event with the specified id in the request
+exports.deleteEventType = (req, res) => {
+  const id = req.params.id;
+
+  EventType.destroy({
+    where: { id: id },
+  })
+    .then((num) => {
+      if (num == 1) {
+        res.send({
+          message: "EventType was deleted successfully!",
+        });
+      } else {
+        res.send({
+          message: `Cannot delete EventType with id=${id}. Maybe Event was not found!`,
+        });
+      }
+    })
+    .catch(() => {
+      res.status(500).send({
+        message: "Could not delete EventType with id=" + id,
+      });
+    });
+};
+
+
+
+// Delete all EventTypes from the database.
+exports.deleteAll = (req, res) => {
+  console.log(`EventId: ${req.params.eventId}`)
+  EventType.destroy({
+    where: {eventId: req.params.eventId},
+    truncate: false,
+  })
+    .then((nums) => {
+      res.send({ message: `${nums} eventTypes were deleted successfully!` });
+      console.log(`${nums} were deleted`)
+    })
+    .catch((err) => {
+      res.status(500).send({
         message:
-          err.message ||
-          `Error deleting EventType entry with id=${id}.`,
+          err.message || "Some error occurred while removing all people.",
       });
     });
 };

@@ -38,6 +38,8 @@ db.badge = require("./badge.model.js")(sequelize, Sequelize);
 db.category = require("./category.model.js")(sequelize, Sequelize);
 db.document = require("./document.model.js")(sequelize, Sequelize);
 db.event = require("./event.model.js")(sequelize, Sequelize);
+db.type = require("./type.model.js")(sequelize, Sequelize);
+db.eventType = require("./eventType.model.js")(sequelize, Sequelize);
 db.experience = require("./experience.model.js")(sequelize, Sequelize);
 db.experienceMajor = require("./experienceMajor.model.js")(
   sequelize,
@@ -274,7 +276,20 @@ db.eventType.hasMany(db.event, {
   onDelete: "CASCADE",
 });
 
-db.event.belongsTo(db.eventType, {
+db.event.hasMany(db.eventType, {
+  allowNull: true,
+  onDelete: "CASCADE",
+});
+db.eventType.belongsTo(db.event, {
+  allowNull: true,
+  onDelete: "CASCADE",
+});
+
+db.type.hasMany(db.eventType, {
+  allowNull: true,
+  onDelete: "CASCADE",
+});
+db.eventType.belongsTo(db.type, {
   allowNull: true,
   onDelete: "CASCADE",
 });

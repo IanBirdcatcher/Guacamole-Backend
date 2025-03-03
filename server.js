@@ -28,6 +28,14 @@ app.get("/", (req, res) => {
   res.json({ message: "Welcome to the flight plan application." });
 });
 
+// Import routes
+require("./app/routes/auth.routes.js")(app);
+require("./app/routes/user.routes.js")(app);
+require("./app/routes/event.routes.js")(app);
+require("./app/routes/type.routes.js")(app);
+require("./app/routes/eventType.routes.js")(app);
+require("./app/routes/experience.routes.js")(app);
+require("./app/routes/experienceEvent.routes.js")(app);
 // Auth routes
 require("./app/routes/auth.routes")(app);
 
@@ -51,7 +59,6 @@ require("./app/routes/category.routes")(app);
 require("./app/routes/eventType.routes")(app);
 require("./app/routes/major.routes")(app);
 require("./app/routes/strength.routes")(app);
-
 
 
 

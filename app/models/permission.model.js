@@ -61,6 +61,18 @@ module.exports = (sequelize, Sequelize) => {
         type: Sequelize.BOOLEAN,
         allowNull: false,
       },
+      addEvent: {
+        type: Sequelize.BOOLEAN,
+        allowNull: false,
+      },
+      changeEvent: {
+        type: Sequelize.BOOLEAN,
+        allowNull: false,
+      },
+      removeEvent: {
+        type: Sequelize.BOOLEAN,
+        allowNull: false,
+      },
     });
   
     return permission;
