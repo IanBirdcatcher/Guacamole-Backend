@@ -9,6 +9,10 @@ module.exports = (sequelize, Sequelize) => {
         type: Sequelize.STRING,
         allowNull: false,
       },
+      desc: {
+        type: Sequelize.STRING,
+        allowNull: false,
+      },
     });
   
     return badge;
