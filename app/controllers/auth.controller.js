@@ -12,6 +12,38 @@ let googleUser = {};
 
 const google_id = process.env.CLIENT_ID;
 
+const roles = [
+  { id: 1, name: 'student' },
+  { id: 2, name: 'student worker' },
+  { id: 3, name: 'admin' },
+  { id: 4, name: 'professor' }
+];
+
+const createRolesIfNotExist = async () => {
+  const rolePromises = roles.map(role =>
+    RoleServices.getRoleById(role.id)
+      .then((existingRole) => {
+        if (!existingRole) {
+          return RoleServices.createRole(role);
+        }
+      })
+      .catch((err) => {
+        console.error(`Error creating role ${role.name}: ${err.message}`);
+      })
+  );
+  await Promise.all(rolePromises);
+};
+
+const assignDefaultRoleToUser = async (userId) => {
+  const defaultRoleId = 1; // Default role id
+  try {
+    await RoleUser.create({ userId, roleId: defaultRoleId });
+    console.log(`Assigned default role ${defaultRoleId} to user ${userId}`);
+  } catch (err) {
+    console.error(`Error assigning default role to user ${userId}: ${err.message}`);
+  }
+};
+
 exports.login = async (req, res) => {
   console.log(req.body);
 
@@ -88,10 +120,12 @@ exports.login = async (req, res) => {
     console.log("need to get user's id");
     console.log(user);
     await User.create(user)
-      .then((data) => {
-        console.log("user was registered");
+      .then(async (data) => {
+        console.log("user was registered"); 
         user = data.dataValues;
-        // res.send({ message: "User was registered successfully!" });
+        await createRolesIfNotExist();
+        await assignDefaultRoleToUser(user.id); 
+        res.send({ message: "User was registered successfully!" }); 
       })
       .catch((err) => {
         res.status(500).send({ message: "user not created 94 " + err.message });
