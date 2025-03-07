@@ -36,7 +36,7 @@ const createRolesIfNotExist = async () => {
 };
 
 const assignDefaultRoleToUser = async (userId) => {
-  const defaultRoleId = 1; // Default role id
+  const defaultRoleId = 1; 
   try {
     await RoleUser.create({ userId, roleId: defaultRoleId });
     console.log(`Assigned default role ${defaultRoleId} to user ${userId}`);
