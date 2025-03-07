@@ -1,6 +1,8 @@
 const db = require("../models");
 const authconfig = require("../config/auth.config");
 const User = db.user;
+const Role = db.role; // Assuming you have a Role model
+const RoleUser = db.roleUser; // Assuming you have a RoleUser model
 const Session = db.session;
 const Op = db.Sequelize.Op;
 
@@ -20,17 +22,16 @@ const roles = [
 ];
 
 const createRolesIfNotExist = async () => {
-  const rolePromises = roles.map(role =>
-    RoleServices.getRoleById(role.id)
-      .then((existingRole) => {
-        if (!existingRole) {
-          return RoleServices.createRole(role);
-        }
-      })
-      .catch((err) => {
-        console.error(`Error creating role ${role.name}: ${err.message}`);
-      })
-  );
+  const rolePromises = roles.map(async (role) => {
+    try {
+      const existingRole = await Role.findByPk(role.id);
+      if (!existingRole) {
+        await Role.create(role);
+      }
+    } catch (err) {
+      console.error(`Error creating role ${role.name}: ${err.message}`);
+    }
+  });
   await Promise.all(rolePromises);
 };
 
@@ -50,7 +51,7 @@ exports.login = async (req, res) => {
   var googleToken = req.body.credential;
 
   const { OAuth2Client } = require("google-auth-library");
-  const client = new OAuth2Client(google_id);
+  const client = new OAuth2Client(google_id); 
   async function verify() {
     const ticket = await client.verifyIdToken({
       idToken: googleToken,
@@ -66,26 +67,24 @@ exports.login = async (req, res) => {
   let lastName = googleUser.family_name;
   let profilePicture = googleUser.picture; 
 
-  // if we don't have their email or name, we need to make another request
-  // this is solely for testing purposes
   if (
     (email === undefined ||
       firstName === undefined ||
       lastName === undefined) &&
     req.body.accessToken !== undefined
   ) {
-    let oauth2Client = new OAuth2Client(google_id); // create new auth client
-    oauth2Client.setCredentials({ access_token: req.body.accessToken }); // use the new auth client with the access_token
+    let oauth2Client = new OAuth2Client(google_id);
+    oauth2Client.setCredentials({ access_token: req.body.accessToken });
     let oauth2 = google.oauth2({
       auth: oauth2Client,
       version: "v2",
     });
-    let { data } = await oauth2.userinfo.get(); // get user info
+    let { data } = await oauth2.userinfo.get();
     console.log(data);
     email = data.email;
     firstName = data.given_name;
     lastName = data.family_name;
-    profilePicture = data.picture; 
+    profilePicture = data.picture;  
   }
 
   console.log(lastName);
@@ -93,124 +92,88 @@ exports.login = async (req, res) => {
   let user = {};
   let session = {};
 
-  await User.findOne({
-    where: {
-      email: email,
-    },
-  })
-    .then((data) => {
-      if (data != null) {
-        user = data.dataValues;
-      } else {
-        // create a new User and save to database
-        user = {
-          fName: firstName,
-          lName: lastName,
-          email: email,
-          profilePicture: profilePicture, // Store profile picture URL
-        };
-      }
-    })
-    .catch((err) => {
-      res.status(500).send({ message: "user not found 80 " + err.message });
-    });
+  try {
+    const data = await User.findOne({ where: { email: email } });
+    if (data != null) {
+      user = data.dataValues;
+    } else {
+      user = {
+        fName: firstName,
+        lName: lastName,
+        email: email,
+        profilePicture: profilePicture,
+      };
+    }
+  } catch (err) {
+    return res.status(500).send({ message: "user not found 80 " + err.message });
+  }
 
-  // this lets us get the user id
   if (user.id === undefined) {
     console.log("need to get user's id");
     console.log(user);
-    await User.create(user)
-      .then(async (data) => {
-        console.log("user was registered"); 
-        user = data.dataValues;
-        await createRolesIfNotExist();
-        await assignDefaultRoleToUser(user.id); 
-        res.send({ message: "User was registered successfully!" }); 
-      })
-      .catch((err) => {
-        res.status(500).send({ message: "user not created 94 " + err.message });
-      });
+    try {
+      const data = await User.create(user);
+      console.log("user was registered"); 
+      user = data.dataValues;
+      await createRolesIfNotExist();
+      await assignDefaultRoleToUser(user.id); 
+      return res.send({ message: "User was registered successfully!" }); 
+    } catch (err) {
+      return res.status(500).send({ message: "user not created 94 " + err.message });
+    }
   } else {
     console.log(user);
-    // doing this to ensure that the user's name is the one listed with Google
     user.fName = firstName;
     user.lName = lastName;
-    user.profilePicture = profilePicture; // Update profile picture URL
+    user.profilePicture = profilePicture;
     console.log(user);
-    await User.update(user, { where: { id: user.id } })
-      .then((num) => {
-        if (num == 1) {
-          console.log("updated user's name");
-        } else {
-          console.log(
-            `Cannot update User with id=${user.id}. Maybe User was not found or req.body is empty!`
-          );
-        }
-      })
-      .catch((err) => {
-        console.log("Error updating User with id=" + user.id + " " + err);
-      });
+    try {
+      const num = await User.update(user, { where: { id: user.id } });
+      if (num == 1) {
+        console.log("updated user's name and profile picture");
+      } else {
+        console.log(`Cannot update User with id=${user.id}. Maybe User was not found or req.body is empty!`);
+      }
+    } catch (err) {
+      console.log("Error updating User with id=" + user.id + " " + err);
+    }
   }
 
-  // try to find session first
-
-  await Session.findOne({
-    where: {
-      email: email,
-      token: { [Op.ne]: "" },
-    },
-  })
-    .then(async (data) => {
-      if (data !== null) {
-        session = data.dataValues;
-        if (session.expirationDate < Date.now()) {
-          session.token = "";
-          // clear session's token if it's expired
-          await Session.destroy(session, { where: { id: session.id } })
-            .then((num) => {
-              if (num == 1) {
-                console.log("successfully logged out");
-              } else {
-                console.log("failed");
-                res.send({
-                  message: `Error logging out user.`,
-                });
-              }
-            })
-            .catch((err) => {
-              console.log(err);
-              res.status(500).send({
-                message: "Error logging out user ",
-              });
-            });
-          //reset session to be null since we need to make another one
-          session = {};
-        } else {
-          // if the session is still valid, then send info to the front end
-          let userInfo = {
-            email: user.email,
-            fName: user.fName,
-            lName: user.lName,
-            id: user.id,
-            token: session.token,
-            // refresh_token: user.refresh_token,
-            // expiration_date: user.expiration_date
-          };
-          console.log("found a session, don't need to make another one");
-          console.log(userInfo);
-          res.send(userInfo);
-        }
-      }
-    })
-    .catch((err) => {
-      res.status(500).send({
-        message:
-          " Line 170 " + err.message || "Some error occurred while retrieving sessions.",
-      });
+  try {
+    const data = await Session.findOne({
+      where: {
+        email: email,
+        token: { [Op.ne]: "" },
+      },
     });
+    if (data !== null) {
+      session = data.dataValues;
+      if (session.expirationDate < Date.now()) {
+        session.token = "";
+        await Session.destroy(session, { where: { id: session.id } });
+        console.log("successfully logged out");
+        session = {};
+      } else {
+        let userInfo = {
+          email: user.email,
+          fName: user.fName,
+          lName: user.lName,
+          profilePicture: user.profilePicture,
+          id: user.id,
+          token: session.token,
+        };
+        console.log("found a session, don't need to make another one");
+        console.log(userInfo);
+        return res.send(userInfo);
+      }
+    }
+  } catch (err) {
+    return res.status(500).send({
+      message: " Line 170 " + err.message || "Some error occurred while retrieving sessions.",
+    });
+  }
 
   if (session.id === undefined) {
-    // create a new Session with an expiration date and save to database
     let token = jwt.sign({ id: email }, authconfig.secret, {
       expiresIn: 86400,
     });
@@ -226,20 +189,20 @@ exports.login = async (req, res) => {
     console.log("making a new session");
     console.log(session);
 
-    await Session.create(session)
-      .then(() => {
-        let userInfo = {
-          email: user.email,
-          fName: user.fName,
-          lName: user.lName,
-          id: user.id,
-          token: token,
-        };
-        res.send(userInfo);
-      })
-      .catch((err) => {
-        res.status(500).send({ message: "Cant create session " + err.message })
-      });
+    try {
+      await Session.create(session);
+      let userInfo = {
+        email: user.email,
+        fName: user.fName,
+        lName: user.lName,
+        profilePicture: user.profilePicture,
+        id: user.id,
+        token: token,
+      };
+      return res.send(userInfo);
+    } catch (err) {
+      return res.status(500).send({ message: "Cant create session " + err.message });
+    }
   }
 };
 

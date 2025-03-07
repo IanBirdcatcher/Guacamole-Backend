@@ -27,7 +27,7 @@ module.exports = (sequelize, Sequelize) => {
       allowNull: true,
       defaulValue: 0,
     },
-    profilePicure: {
+    profilePicture: {
       type: Sequelize.STRING, 
       allowNull: true,
     }
