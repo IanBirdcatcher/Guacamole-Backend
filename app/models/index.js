@@ -10,12 +10,15 @@ const sequelize = new Sequelize(dbConfig.DB, dbConfig.USER, dbConfig.PASSWORD, {
     idle: dbConfig.pool.idle,
   },
 });
-sequelize.authenticate()
+sequelize
+  .authenticate()
   .then(() => {
-    console.log('Connection to the database has been established successfully.');
+    console.log(
+      "Connection to the database has been established successfully."
+    );
   })
-  .catch(err => {
-    console.error('Unable to connect to the database:', err);
+  .catch((err) => {
+    console.error("Unable to connect to the database:", err);
   });
 
 const db = {};
@@ -29,32 +32,45 @@ db.resume = require("./resume.model.js")(sequelize, Sequelize);
 db.session = require("./session.model.js")(sequelize, Sequelize);
 
 // flight plan
-
+db.roleUser = require("./roleUser.model.js")(sequelize, Sequelize);
+db.role = require("./role.model.js")(sequelize, Sequelize);
 db.badge = require("./badge.model.js")(sequelize, Sequelize);
 db.category = require("./category.model.js")(sequelize, Sequelize);
 db.document = require("./document.model.js")(sequelize, Sequelize);
 db.event = require("./event.model.js")(sequelize, Sequelize);
+db.type = require("./type.model.js")(sequelize, Sequelize);
+db.eventType = require("./eventType.model.js")(sequelize, Sequelize);
 db.experience = require("./experience.model.js")(sequelize, Sequelize);
-db.experienceMajor = require("./experienceMajor.model.js")(sequelize, Sequelize);
+db.experienceMajor = require("./experienceMajor.model.js")(
+  sequelize,
+  Sequelize
+);
 db.flightPlan = require("./flightPlan.model.js")(sequelize, Sequelize);
-db.flightPlanExperience = require("./flightPlanExperience.model.js")(sequelize, Sequelize);
+db.flightPlanExperience = require("./flightPlanExperience.model.js")(
+  sequelize,
+  Sequelize
+);
 db.flightPlanTask = require("./flightPlanTask.model.js")(sequelize, Sequelize);
 db.icon = require("./icon.model.js")(sequelize, Sequelize);
 db.major = require("./major.model.js")(sequelize, Sequelize);
 db.notification = require("./notification.model.js")(sequelize, Sequelize);
 db.permission = require("./permission.model.js")(sequelize, Sequelize);
 db.reward = require("./reward.model.js")(sequelize, Sequelize);
-db.rewardStudentInfo = require("./rewardStudentInfo.model.js")(sequelize, Sequelize);
+db.rewardStudentInfo = require("./rewardStudentInfo.model.js")(
+  sequelize,
+  Sequelize
+);
 db.semester = require("./semester.model.js")(sequelize, Sequelize);
 db.strength = require("./strength.model.js")(sequelize, Sequelize);
-db.studentInfo = require("./studentInfo.model.js")(sequelize, Sequelize); 
+db.studentInfo = require("./studentInfo.model.js")(sequelize, Sequelize);
 db.task = require("./task.model.js")(sequelize, Sequelize);
 db.taskMajor = require("./taskMajor.model.js")(sequelize, Sequelize);
 db.eventType = require("./eventType.model.js")(sequelize, Sequelize);
-db.experienceEventType = require("./experienceEventType.model.js")(sequelize, Sequelize);
-db.role = require("./role.model.js")(sequelize, Sequelize);
-db.roleUser = require("./roleUser.model.js")(sequelize, Sequelize);
-// resume items 
+db.experienceEventType = require("./experienceEventType.model.js")(
+  sequelize,
+  Sequelize
+);
+// resume items
 db.award = require("./award.model.js")(sequelize, Sequelize);
 db.contactInfo = require("./contactInfo.model.js")(sequelize, Sequelize);
 db.education = require("./education.model.js")(sequelize, Sequelize);
@@ -64,13 +80,26 @@ db.link = require("./link.model.js")(sequelize, Sequelize);
 db.project = require("./project.model.js")(sequelize, Sequelize);
 db.skill = require("./skill.model.js")(sequelize, Sequelize);
 
-
 // bridge tables
 
 db.awardResume = require("./awardResume.model.js")(sequelize, Sequelize);
-db.contactInfoResume = require("./contactInfoResume.model.js")(sequelize, Sequelize);
-db.educationResume = require("./educationResume.model.js")(sequelize, Sequelize);
-db.jobExperienceResume = require("./jobExperienceResume.model.js")(sequelize, Sequelize);
+db.contactInfoResume = require("./contactInfoResume.model.js")(
+  sequelize,
+  Sequelize
+);
+db.educationResume = require("./educationResume.model.js")(
+  sequelize,
+  Sequelize
+);
+db.jobExperienceResume = require("./jobExperienceResume.model.js")(
+  sequelize,
+  Sequelize
+);
+db.experienceStrength = require("./experienceStrength.model.js")(
+  sequelize,
+  Sequelize
+);
+db.taskStrength = require("./taskStrength.model.js")(sequelize, Sequelize);
 db.interestResume = require("./interestResume.model.js")(sequelize, Sequelize);
 db.linkResume = require("./linkResume.model.js")(sequelize, Sequelize);
 db.projectResume = require("./projectResume.model.js")(sequelize, Sequelize);
@@ -156,7 +185,6 @@ db.major.hasMany(db.studentInfo, {
   allowNull: true,
   onDelete: "CASCADE",
 });
-
 db.studentInfo.belongsTo(db.major, {
   allowNull: true,
   onDelete: "CASCADE",
@@ -247,11 +275,42 @@ db.eventType.hasMany(db.event, {
   allowNull: true,
   onDelete: "CASCADE",
 });
-db.event.belongsTo(db.eventType, {
+
+db.event.hasMany(db.eventType, {
+  allowNull: true,
+  onDelete: "CASCADE",
+});
+db.eventType.belongsTo(db.event, {
   allowNull: true,
   onDelete: "CASCADE",
 });
 
+db.type.hasMany(db.eventType, {
+  allowNull: true,
+  onDelete: "CASCADE",
+});
+db.eventType.belongsTo(db.type, {
+  allowNull: true,
+  onDelete: "CASCADE",
+});
+
+// db.event.hasMany(db.major, {
+//   allowNull: true,
+//   onDelete: "CASCADE",
+// });
+// db.major.belongsTo(db.event, {
+//   allowNull: true,
+//   onDelete: "CASCADE",
+// });
+
+// db.event.hasMany(db.experience, {
+//   allowNull: true,
+//   onDelete: "CASCADE",
+// });
+// db.experience.belongsTo(db.event, {
+//   allowNull: true,
+//   onDelete: "CASCADE",
+// });
 // db.event.hasMany(db.major, {
 //   allowNull: true,
 //   onDelete: "CASCADE",
@@ -279,7 +338,7 @@ db.badge.belongsTo(db.event, {
   onDelete: "CASCADE",
 });
 
-db.event.hasOne(db.flightPlanExperience, { 
+db.event.hasOne(db.flightPlanExperience, {
   allowNull: true,
   onDelete: "CASCADE",
 });
@@ -301,7 +360,7 @@ db.flightPlan.hasMany(db.flightPlanExperience, {
   allowNull: true,
   onDelete: "CASCADE",
 });
-db.flightPlanExperience.belongsTo(db.flightPlan, { 
+db.flightPlanExperience.belongsTo(db.flightPlan, {
   allowNull: true,
   onDelete: "CASCADE",
 });
@@ -324,16 +383,24 @@ db.experienceEventType.belongsTo(db.experience, {
   onDelete: "CASCADE",
 });
 
+db.experience.hasMany(db.experienceEventType, {
+  allowNull: true,
+  onDelete: "CASCADE",
+});
+db.experienceEventType.belongsTo(db.experience, {
+  allowNull: true,
+  onDelete: "CASCADE",
+});
+
 db.eventType.hasMany(db.experienceEventType, {
   allowNull: true,
   onDelete: "CASCADE",
 });
+
 db.experienceEventType.belongsTo(db.eventType, {
   allowNull: true,
   onDelete: "CASCADE",
 });
-
-
 
 db.major.hasMany(db.experienceMajor, {
   allowNull: true,
@@ -344,17 +411,48 @@ db.major.hasMany(db.experienceMajor, {
 //   allowNull: true,
 //   onDelete: "CASCADE",
 // });
+// db.experienceMajor.belongsTo(db.major, {
+//   allowNull: true,
+//   onDelete: "CASCADE",
+// });
+db.experience.hasMany(db.experienceStrength, {
+  allowNull: true,
+  onDelete: "CASCADE",
+})
+db.experienceStrength.belongsTo(db.experience, {
+  allowNull: true,
+  onDelete: "CASCADE",
+});
+db.strength.hasMany(db.experienceStrength, {
+  allowNull: true,
+  onDelete: "CASCADE",
+});
+db.experienceStrength.belongsTo(db.strength, {
+  allowNull: true,
+  onDelete: "CASCADE",
+});
+
+db.task.hasMany(db.taskStrength, {
+  allowNull: true,
+  onDelete: "CASCADE",
+});
+db.taskStrength.belongsTo(db.task, {
+  allowNull: false,
+  onDelete: "CASCADE",
+});
+db.strength.hasMany(db.taskStrength, {
+  allowNull: true,
+  onDelete: "CASCADE",
+});
+db.taskStrength.belongsTo(db.strength, {
+  allowNull: false,
+  onDelete: "CASCADE",
+});
 
 db.major.hasMany(db.taskMajor, {
   allowNull: true,
   onDelete: "CASCADE",
 });
-
-// db.taskMajor.belongsTo(db.major, {
-//   allowNull: true,
-//   onDelete: "CASCADE",
-// });
-
 db.category.hasMany(db.task, {
   allowNull: true,
   onDelete: "CASCADE",
@@ -377,7 +475,7 @@ db.badge.hasMany(db.task, {
   allowNull: true,
   onDelete: "CASCADE",
 });
-db.task.belongsTo(db.badge, { 
+db.task.belongsTo(db.badge, {
   allowNull: true,
   onDelete: "CASCADE",
 });
@@ -409,6 +507,14 @@ db.event.belongsTo(db.badge, {
   onDelete: "CASCADE",
 });
 
+// db.experience.hasMany(db.event, {
+//   allowNull: true,
+//   onDelete: "CASCADE",
+// });
+// db.event.belongsTo(db.experience, {
+//   allowNull: true,
+//   onDelete: "CASCADE",
+// });
 // db.experience.hasMany(db.event, {
 //   allowNull: true,
 //   onDelete: "CASCADE",
@@ -748,17 +854,14 @@ db.skillResume.belongsTo(db.skill, {
   onDelete: "CASCADE",
 });
 
-db.user.hasMany(
-  db.session,
-  { as: "session" },
-  { foreignKey: { allowNull: false }, onDelete: "CASCADE" }
-);
-db.session.belongsTo(
-  db.user,
-  { as: "user" },
-  { foreignKey: { allowNull: false }, onDelete: "CASCADE" }
-);
-
+db.user.hasMany(db.session, {
+  allowNull: true,
+  onDelete: "CASCADE",
+});
+db.session.belongsTo(db.user, {
+  allowNull: true,
+  onDelete: "CASCADE",
+});
 // User and RoleUser
 db.user.hasMany(db.roleUser, {
   allowNull: true,
@@ -770,14 +873,14 @@ db.roleUser.belongsTo(db.user, {
 });
 
 // RoleUser and Role
-db.roleUser.belongsTo(db.role, {
-  allowNull: true,
-  onDelete: "CASCADE",
-});
 db.role.hasMany(db.roleUser, {
   allowNull: true,
   onDelete: "CASCADE",
 });
 
+db.roleUser.belongsTo(db.role, {
+  allowNull: true,
+  onDelete: "CASCADE",
+});
 
 module.exports = db;

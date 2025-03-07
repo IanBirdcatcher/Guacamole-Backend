@@ -8,7 +8,7 @@ exports.create = (req, res) => {
   // Create a userRole
   const userRoleData = {
     userId: req.body.userId,  
-    roleId: req.body.roleId
+    // roleId: req.body.roleId
   };
 
   // Save userRole in the database

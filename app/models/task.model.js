@@ -29,10 +29,14 @@ module.exports = (sequelize, Sequelize) => {
       type: Sequelize.INTEGER,
       allowNull: false,
     },
-    semestersFromGraduation: {
-      type: Sequelize.BLOB,
+    reflectionRequired: {
+      type: Sequelize.BOOLEAN,
       allowNull: false,
     },
+    semestersFromGraduation: {
+      type: Sequelize.INTEGER,
+      allowNull: false,
+    }, 
     documentRequired: {
       type: Sequelize.BOOLEAN,
       allowNull: false,

@@ -23,10 +23,12 @@ module.exports = (sequelize, Sequelize) => {
       },
       requestedByStudent: {
         type: Sequelize.BOOLEAN,
+        defaultValue: false,
         allowNull: false,
       },
       approved: {
         type: Sequelize.BOOLEAN,
+        defaultValue: false,
         allowNull: false,
       },
       subtext: {
@@ -38,7 +40,11 @@ module.exports = (sequelize, Sequelize) => {
         allowNull: false,
       },
       semestersFromGraduation: {
-        type: Sequelize.BLOB,
+        type: Sequelize.INTEGER,
+        allowNull: false,
+      },
+      reflectionRequired: {
+        type: Sequelize.BOOLEAN,
         allowNull: false,
       },
       documentRequired: {
