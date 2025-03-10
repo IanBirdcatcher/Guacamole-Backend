@@ -59,7 +59,9 @@ require("./app/routes/category.routes")(app);
 require("./app/routes/eventType.routes")(app);
 require("./app/routes/major.routes")(app);
 require("./app/routes/strength.routes")(app);
-
+// Flight Plan Routes
+require("./app/routes/flightPlan.routes.js")(app);
+require("./app/routes/semester.routes.js")(app);
 
 
 // Set the server to listen on a specified port
