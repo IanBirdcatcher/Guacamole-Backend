@@ -36,6 +36,8 @@ require("./app/routes/type.routes.js")(app);
 require("./app/routes/eventType.routes.js")(app);
 require("./app/routes/experience.routes.js")(app);
 require("./app/routes/experienceEvent.routes.js")(app);
+require("./app/routes/leaderboard.routes.js")(app);
+
 // Auth routes
 require("./app/routes/auth.routes")(app);
 
