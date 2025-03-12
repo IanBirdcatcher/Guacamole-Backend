@@ -36,6 +36,8 @@ require("./app/routes/type.routes.js")(app);
 require("./app/routes/eventType.routes.js")(app);
 require("./app/routes/experience.routes.js")(app);
 require("./app/routes/experienceEvent.routes.js")(app);
+require("./app/routes/leaderboard.routes.js")(app);
+
 // Auth routes
 require("./app/routes/auth.routes")(app);
 
@@ -43,6 +45,8 @@ require("./app/routes/auth.routes")(app);
 require("./app/routes/role.routes")(app);
 require("./app/routes/roleUser.routes")(app);
 require("./app/routes/permission.routes")(app);
+require("./app/routes/studentInfo.routes.js")(app);
+
 require("./app/routes/user.routes")(app);
 
 // Task routes
