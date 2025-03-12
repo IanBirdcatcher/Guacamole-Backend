@@ -1,8 +1,9 @@
 const db = require("../models");
 const authconfig = require("../config/auth.config");
 const User = db.user;
-const Role = db.role; // Assuming you have a Role model
-const RoleUser = db.roleUser; // Assuming you have a RoleUser model
+const Role = db.role; 
+const RoleUser = db.roleUser; 
+const studentInfo = db.studentInfo;
 const Session = db.session;
 const Op = db.Sequelize.Op;
 
@@ -33,6 +34,30 @@ const createRolesIfNotExist = async () => {
     }
   });
   await Promise.all(rolePromises);
+};
+
+const studentInfoIfNotExist = async (userId) => {
+  const studentInfoData = {
+    userId: userId,
+    earnedPoints: 0,
+    spentPoints: 0,
+    graduationSemester: 'spring 2025',
+    semestersTillGraduation: 8,
+    studentId: '0000',
+    startingSemester: 'freshman 1',
+  };
+
+  try {
+    const existingStudentInfo = await studentInfo.findOne({ where: { userId: userId } });
+    if (!existingStudentInfo) { 
+      await studentInfo.create(studentInfoData);
+      console.log(`Created studentInfo for user ${userId}`);
+    } else {
+      console.log(`studentInfo already exists for user ${userId}`);
+    }
+  } catch (err) {
+    console.error(`Error creating studentInfo for user ${userId}: ${err.message}`);
+  }
 };
 
 const assignDefaultRoleToUser = async (userId) => {
@@ -115,6 +140,8 @@ exports.login = async (req, res) => {
       const data = await User.create(user);
       console.log("user was registered"); 
       user = data.dataValues;
+      await studentInfoIfNotExist(user.id);
+
       await createRolesIfNotExist();
       await assignDefaultRoleToUser(user.id); 
       return res.send({ message: "User was registered successfully!" }); 

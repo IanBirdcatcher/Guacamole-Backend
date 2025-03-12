@@ -6,7 +6,6 @@ const Op = db.Sequelize.Op;
 
 // Retrieve all Major entries with specific fields for leaderboard
 exports.findAllLeaderboardInfo = async (req, res) => {
-  console.log("findAllLeaderboardInfo called");
   try {
     const studentInfos = await studentInfo.findAll({
       attributes: ['userId', 'earnedPoints', 'currentPoints'],
@@ -25,7 +24,6 @@ exports.findAllLeaderboardInfo = async (req, res) => {
     if (studentInfos && studentInfos.length > 0) {
       const leaderboard = studentInfos.map(entry => {
         const user = userMap[entry.userId] || {};
-        console.log("entry.userId:", entry.userId, "user:", user);
         return {
           userId: entry.userId,
           fname: user.fname || 'Unknown',
