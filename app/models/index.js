@@ -338,14 +338,14 @@ db.badge.belongsTo(db.event, {
   onDelete: "CASCADE",
 });
 
-db.event.hasOne(db.flightPlanExperience, {
-  allowNull: true,
-  onDelete: "CASCADE",
-});
-db.flightPlanExperience.belongsTo(db.event, {
-  allowNull: true,
-  onDelete: "CASCADE",
-});
+// db.event.hasOne(db.flightPlanExperience, {
+//   allowNull: true,
+//   onDelete: "CASCADE",
+// });
+// db.flightPlanExperience.belongsTo(db.event, {
+//   allowNull: true,
+//   onDelete: "CASCADE",
+// });
 
 db.flightPlan.hasMany(db.badge, {
   allowNull: true,

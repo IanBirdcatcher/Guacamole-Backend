@@ -61,6 +61,8 @@ require("./app/routes/major.routes")(app);
 require("./app/routes/strength.routes")(app);
 // Flight Plan Routes
 require("./app/routes/flightPlan.routes.js")(app);
+require("./app/routes/flightPlanTask.routes.js")(app);
+require("./app/routes/flightPlanExperience.routes.js")(app);
 require("./app/routes/semester.routes.js")(app);
 
 

@@ -97,6 +97,29 @@ exports.findAllForExperience = (req, res) => {
     });
 };
 
+exports.findAllExperiencesForMajor = (req, res) => {
+  const majorId = req.params.majorId;
+  ExperienceMajor.findAll({ where: { majorId: majorId } })
+    .then((data) => {
+      if (data && data.length > 0) {
+        res.send(data);
+      } else {
+        res
+          .status(404)
+          .send({
+            message: `No ExperienceMajor entries found for majorId=${majorId}.`,
+          });
+      }
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message:
+          err.message ||
+          `Error retrieving ExperienceMajor entry with id=${id}.`,
+      });
+    });
+};
+
 // Update an ExperienceMajor entry by ID
 exports.update = (req, res) => {
   const experienceId = req.params.experienceId;

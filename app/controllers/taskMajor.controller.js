@@ -97,6 +97,29 @@ exports.findAllForTask = (req, res) => {
     });
 };
 
+exports.findAllTasksForMajor = (req, res) => {
+  const majorId = req.params.majorId;
+  TaskMajor.findAll({ where: { majorId: majorId } })
+    .then((data) => {
+      if (data && data.length > 0) {
+        res.send(data);
+      } else {
+        res
+          .status(404)
+          .send({
+            message: `No TaskMajor entries found for majorId=${majorId}.`,
+          });
+      }
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message:
+          err.message ||
+          `Error retrieving TaskMajor entry with id=${id}.`,
+      });
+    });
+};
+
 // Update an TaskMajor entry by ID
 exports.update = (req, res) => {
   const taskId = req.params.taskId;
