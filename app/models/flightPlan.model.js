@@ -5,6 +5,11 @@ module.exports = (sequelize, Sequelize) => {
         autoIncrement: true,
         primaryKey: true,
       },
+      
+      semestersToGrad: {
+        type: Sequelize.INTEGER,
+        allowNull: false
+      }
     });
   
     return flightPlan;

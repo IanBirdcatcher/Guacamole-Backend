@@ -54,7 +54,8 @@ exports.create = async (req, res) => {
   // Define the data object for the new FlightPlan entry
   const FlightPlanData = {
     id: req.body.id,
-    studentInfoId: req.body.studentInfoId
+    studentInfoId: req.body.studentInfoId,
+    semestersToGrad: req.body.semestersToGrad
   };
 
   // Save the FlightPlan entry in the database

@@ -26,7 +26,7 @@ module.exports = (app) => {
     router.get(
       "/byUser/:id",
       [authenticate],
-      flightPlanExperience.findOne
+      flightPlanExperience.findByUser
     );
     router.put(
       "/:id",

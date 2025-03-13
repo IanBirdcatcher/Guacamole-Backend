@@ -1,5 +1,8 @@
 const db = require("../models");
 const FlightPlanExperience = db.flightPlanExperience;
+const StudentInfo = db.studentInfo;
+const FlightPlan = db.flightPlan;
+const Experience = db.experience;
 const Op = db.Sequelize.Op;
 
 // Create and Save a new FlightPlanExperience entry
@@ -58,6 +61,65 @@ exports.findAll = (req, res) => {
           `Error retrieving FlightPlanExperience entries.`,
       });
     });
+};
+
+
+// Retrieve a single FlightPlanExperience entry by ID
+exports.findByUser = (req, res) => {
+  const userId = req.params.id;
+  let flightPlanExperienceList = {flightPlanId: null, experiences: []}
+  // Get studentInfoId for userId
+  StudentInfo.findAll({ where: {userId: userId}})
+  .then((studentInfoData) => {
+    console.log(`Found studentInfo ${studentInfoData[0].dataValues.id}   ${studentInfoData[0].dataValues.semestersTillGraduation}`)
+  // Get current flightplanId for studentInfoId and semestersToGraduation
+    FlightPlan.findAll({ where: {studentInfoId: studentInfoData[0].dataValues.id, semestersToGrad: studentInfoData[0].dataValues.semestersTillGraduation}})
+    .then((flightPlanData) => {
+      if (!flightPlanData) {
+        res
+          .status(404)
+          .send({ message: `No FlightPlan entry found with id=${userId}.` });
+      }
+      
+      flightPlanExperienceList.flightPlanId = flightPlanData[0].dataValues.id;
+      // Get FlightPlanExperience experienceIds for flightplanId AND get experience objects, 
+        // return an object containing flightPlanId, experienceId, and experience object
+      FlightPlanExperience.findAll({ where: {flightPlanId: flightPlanData[0].dataValues.id}})
+      .then(async (flightPlanExperienceData) => {
+        for (const fPE of flightPlanExperienceData) {
+          await Experience.findByPk(fPE.experienceId)
+          .then((foundExp) => {
+            flightPlanExperienceList.experiences.push({ experienceId: fPE.experienceId, experience: foundExp })
+          })
+          .catch((err) => {
+            res.status(500).send({
+              message:
+                err.message || `Error retrieving Experience entry with id=${fPE.experienceId}.`,
+            });
+          });
+        }
+        res.send(flightPlanExperienceList);
+      })
+      .catch((err) => {
+        res.status(500).send({
+          message:
+            err.message || `Error retrieving flightPlanExperience entry with flightPlanId=${flightPlanData.id}.`,
+        });
+      });
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message:
+          err.message || `Error retrieving flightPlan entry with studentInfoId=${studentInfoData.id} and ${studentInfoData.semestersTillGraduation} semesters till graduation.`,
+      });
+    });
+  })
+  .catch((err) => {
+    res.status(500).send({
+      message:
+        err.message || `Error retrieving studentInfo entry with userId=${userId}.`,
+    });
+  });
 };
 
 // Retrieve a single FlightPlanExperience entry by ID

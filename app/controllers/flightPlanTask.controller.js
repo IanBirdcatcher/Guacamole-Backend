@@ -1,5 +1,8 @@
 const db = require("../models");
 const FlightPlanTask = db.flightPlanTask;
+const StudentInfo = db.studentInfo;
+const FlightPlan = db.flightPlan;
+const Task = db.task;
 const Op = db.Sequelize.Op;
 
 // Create and Save a new FlightPlanTask entry
@@ -59,6 +62,66 @@ exports.findAll = (req, res) => {
       });
     });
 };
+
+// Retrieve a single FlightPlanTask entry by ID
+exports.findByUser = (req, res) => {
+  const userId = req.params.id;
+  let flightPlanTaskList = {flightPlanId: null, tasks: []}
+  // Get studentInfoId for userId
+  StudentInfo.findAll({ where: {userId: userId}})
+  .then((studentInfoData) => {
+    console.log(`Found studentInfo ${studentInfoData[0].dataValues.id}   ${studentInfoData[0].dataValues.semestersTillGraduation}`)
+  // Get current flightplanId for studentInfoId and semestersToGraduation
+    FlightPlan.findAll({ where: {studentInfoId: studentInfoData[0].dataValues.id, semestersToGrad: studentInfoData[0].dataValues.semestersTillGraduation}})
+    .then((flightPlanData) => {
+      if (!flightPlanData) {
+        res
+          .status(404)
+          .send({ message: `No FlightPlan entry found with id=${userId}.` });
+      }
+      
+      flightPlanTaskList.flightPlanId = flightPlanData[0].dataValues.id;
+      // Get FlightPlanTask taskIds for flightplanId AND get task objects, 
+        // return an object containing flightPlanId, taskId, and task object
+      FlightPlanTask.findAll({ where: {flightPlanId: flightPlanData[0].dataValues.id}})
+      .then(async (flightPlanTaskData) => {
+        for (const fPT of flightPlanTaskData) {
+          await Task.findByPk(fPT.taskId)
+          .then((foundTask) => {
+            flightPlanTaskList.tasks.push({ taskId: fPT.taskId, task: foundTask })
+          })
+          .catch((err) => {
+            res.status(500).send({
+              message:
+                err.message || `Error retrieving Task entry with id=${fPT.taskId}.`,
+            });
+          });
+        }
+        res.send(flightPlanTaskList);
+      })
+      .catch((err) => {
+        res.status(500).send({
+          message:
+            err.message || `Error retrieving flightPlanTask entry with flightPlanId=${flightPlanData.id}.`,
+        });
+      });
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message:
+          err.message || `Error retrieving flightPlan entry with studentInfoId=${studentInfoData.id} and ${studentInfoData.semestersTillGraduation} semesters till graduation.`,
+      });
+    });
+  })
+  .catch((err) => {
+    res.status(500).send({
+      message:
+        err.message || `Error retrieving studentInfo entry with userId=${userId}.`,
+    });
+  });
+};
+
+
 
 // Retrieve a single FlightPlanTask entry by ID
 exports.findOne = (req, res) => {

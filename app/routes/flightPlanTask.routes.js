@@ -26,7 +26,7 @@ module.exports = (app) => {
     router.get(
       "/byUser/:id",
       [authenticate],
-      flightPlanTask.findOne
+      flightPlanTask.findByUser
     );
     router.put(
       "/:id",
