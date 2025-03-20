@@ -46,6 +46,7 @@ require("./app/routes/role.routes")(app);
 require("./app/routes/roleUser.routes")(app);
 require("./app/routes/permission.routes")(app);
 require("./app/routes/studentInfo.routes.js")(app);
+require("./app/routes/studentInfoMajor.routes.js")(app);
 
 require("./app/routes/user.routes")(app);
 
@@ -67,7 +68,6 @@ require("./app/routes/strength.routes")(app);
 require("./app/routes/flightPlan.routes.js")(app);
 require("./app/routes/flightPlanTask.routes.js")(app);
 require("./app/routes/flightPlanExperience.routes.js")(app);
-require("./app/routes/flightPlanMajor.routes.js")(app);
 require("./app/routes/semester.routes.js")(app);
 
 

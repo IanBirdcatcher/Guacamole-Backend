@@ -1,17 +1,17 @@
 const db = require("../models");
-const FlightPlanMajor = db.flightPlanMajor;
+const StudentInfoMajor = db.studentInfoMajor;
 const Op = db.Sequelize.Op;
 
-// Create and Save a new FlightPlanMajor entry
+// Create and Save a new StudentInfoMajor entry
 exports.create = (req, res) => {
-  // Define the data object for the new FlightPlanMajor entry
-  const FlightPlanMajorData = {
+  // Define the data object for the new StudentInfoMajor entry
+  const StudentInfoMajorData = {
     majorId: req.body.majorId,
-    flightPlanId: req.body.flightPlanId,
+    studentInfoId: req.body.studentInfoId,
   };
 
-  // Save the FlightPlanMajor entry in the database
-  FlightPlanMajor.create(FlightPlanMajorData)
+  // Save the StudentInfoMajor entry in the database
+  StudentInfoMajor.create(StudentInfoMajorData)
     .then((data) => {
       res.send(data);
     })
@@ -23,37 +23,37 @@ exports.create = (req, res) => {
       } else {
         res.status(500).send({
           message:
-            err.message || "Error creating the FlightPlanMajor entry.",
+            err.message || "Error creating the StudentInfoMajor entry.",
         });
       }
     });
 };
 
-// Retrieve all FlightPlanMajor entries for an flightPlan
+// Retrieve all StudentInfoMajor entries for an studentInfo
 exports.findAll = (req, res) => {
-  FlightPlanMajor.findAll({
-    where: { flightPlanId: req.params.flightPlanId },
+  StudentInfoMajor.findAll({
+    where: { studentInfoId: req.params.studentInfoId },
   })
     .then((data) => {
       if (data && data.length > 0) {
         res.send(data);
       } else {
         res.status(404).send({
-          message: `No FlightPlanMajor entries found for flightPlanId=${req.params.flightPlanId}.`,
+          message: `No StudentInfoMajor entries found for studentInfoId=${req.params.studentInfoId}.`,
         });
       }
     })
     .catch((err) => {
       res.status(500).send({
-        message: err.message || `Error retrieving FlightPlanMajor entries.`,
+        message: err.message || `Error retrieving StudentInfoMajor entries.`,
       });
     });
 };
 
-// Retrieve a single FlightPlanMajor entry by ID
+// Retrieve a single StudentInfoMajor entry by ID
 exports.findOne = (req, res) => {
   const id = req.params.id;
-  FlightPlanMajor.findByPk(id)
+  StudentInfoMajor.findByPk(id)
     .then((data) => {
       if (data) {
         res.send(data);
@@ -61,7 +61,7 @@ exports.findOne = (req, res) => {
         res
           .status(404)
           .send({
-            message: `No FlightPlanMajor entry found with id=${id}.`,
+            message: `No StudentInfoMajor entry found with id=${id}.`,
           });
       }
     })
@@ -69,14 +69,14 @@ exports.findOne = (req, res) => {
       res.status(500).send({
         message:
           err.message ||
-          `Error retrieving FlightPlanMajor entry with id=${id}.`,
+          `Error retrieving StudentInfoMajor entry with id=${id}.`,
       });
     });
 };
 
-exports.findAllForFlightPlan = (req, res) => {
-  const flightPlanId = req.params.flightPlanId;
-  FlightPlanMajor.findAll({ where: { flightPlanId: flightPlanId } })
+exports.findAllForStudentInfo = (req, res) => {
+  const studentInfoId = req.params.studentInfoId;
+  StudentInfoMajor.findAll({ where: { studentInfoId: studentInfoId } })
     .then((data) => {
       if (data && data.length > 0) {
         res.send(data);
@@ -84,7 +84,7 @@ exports.findAllForFlightPlan = (req, res) => {
         res
           .status(404)
           .send({
-            message: `No FlightPlanMajor entries found for flightPlanId=${flightPlanId}.`,
+            message: `No StudentInfoMajor entries found for studentInfoId=${studentInfoId}.`,
           });
       }
     })
@@ -92,14 +92,14 @@ exports.findAllForFlightPlan = (req, res) => {
       res.status(500).send({
         message:
           err.message ||
-          `Error retrieving FlightPlanMajor entry with id=${id}.`,
+          `Error retrieving StudentInfoMajor entry with id=${id}.`,
       });
     });
 };
 
-exports.findAllFlightPlansForMajor = (req, res) => {
+exports.findAllStudentInfosForMajor = (req, res) => {
   const majorId = req.params.majorId;
-  FlightPlanMajor.findAll({ where: { majorId: majorId } })
+  StudentInfoMajor.findAll({ where: { majorId: majorId } })
     .then((data) => {
       if (data && data.length > 0) {
         res.send(data);
@@ -107,7 +107,7 @@ exports.findAllFlightPlansForMajor = (req, res) => {
         res
           .status(404)
           .send({
-            message: `No FlightPlanMajor entries found for majorId=${majorId}.`,
+            message: `No StudentInfoMajor entries found for majorId=${majorId}.`,
           });
       }
     })
@@ -115,25 +115,25 @@ exports.findAllFlightPlansForMajor = (req, res) => {
       res.status(500).send({
         message:
           err.message ||
-          `Error retrieving FlightPlanMajor entry with id=${id}.`,
+          `Error retrieving StudentInfoMajor entry with id=${id}.`,
       });
     });
 };
 
-// Update an FlightPlanMajor entry by ID
+// Update an StudentInfoMajor entry by ID
 exports.update = (req, res) => {
-  const flightPlanId = req.params.flightPlanId;
-  FlightPlanMajor.update(req.body, {
-    where: { flightPlanId: flightPlanId },
+  const studentInfoId = req.params.studentInfoId;
+  StudentInfoMajor.update(req.body, {
+    where: { studentInfoId: studentInfoId },
   })
     .then((num) => {
       if (num == 1) {
         res.send({
-          message: "FlightPlanMajor entry was updated successfully.",
+          message: "StudentInfoMajor entry was updated successfully.",
         });
       } else {
         res.status(400).send({
-          message: `Could not update FlightPlanMajor entry with id=${flightPlanId}.`,
+          message: `Could not update StudentInfoMajor entry with id=${studentInfoId}.`,
         });
       }
     })
@@ -146,26 +146,26 @@ exports.update = (req, res) => {
       } else {
         res.status(500).send({
           message:
-            err.message || "Error updating the FlightPlanMajor entry.",
+            err.message || "Error updating the StudentInfoMajor entry.",
         });
       }
     });
 };
 
-// Delete an FlightPlanMajor entry by ID
+// Delete an StudentInfoMajor entry by ID
 exports.delete = (req, res) => {
-  const flightPlanId = req.params.flightPlanId;
-  FlightPlanMajor.destroy({ where: { flightPlanId: flightPlanId } })
+  const studentInfoId = req.params.studentInfoId;
+  StudentInfoMajor.destroy({ where: { studentInfoId: studentInfoId } })
     .then(() => {
       res.send({
-        message: "FlightPlanMajor entry was deleted successfully!",
+        message: "StudentInfoMajor entry was deleted successfully!",
       });
     })
     .catch((err) => {
       res.status(500).send({
         message:
           err.message ||
-          `Error deleting FlightPlanMajor entry with id=${flightPlanId}.`,
+          `Error deleting StudentInfoMajor entry with id=${studentInfoId}.`,
       });
     });
 };
