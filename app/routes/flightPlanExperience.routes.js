@@ -1,0 +1,43 @@
+module.exports = (app) => {
+    const flightPlanExperience = require("../controllers/flightPlanExperience.controller.js");
+    const {
+      authenticate,
+      hasAccess,
+    } = require("../authorization/authorization.js");
+    const ENUM = require("../config/PermisionsENUM.js");
+    var router = require("express").Router();
+  
+    router.post(
+      "/",
+      [authenticate],
+      hasAccess(ENUM.CHANGE_STUDENT_INFO),
+      flightPlanExperience.create
+    );
+    router.get(
+      "/",
+      [authenticate],
+      flightPlanExperience.findAll
+    );
+    router.get(
+      "/:id",
+      [authenticate],
+      flightPlanExperience.findOne
+    );
+    router.get(
+      "/byUser/:id",
+      [authenticate],
+      flightPlanExperience.findByUser
+    );
+    router.put(
+      "/:id",
+      [authenticate, hasAccess(ENUM.CHANGE_STUDENT_INFO)],
+      flightPlanExperience.update
+    );
+    router.delete(
+      "/:id",
+      [authenticate, hasAccess(ENUM.CHANGE_STUDENT_INFO)],
+      flightPlanExperience.delete
+    );
+    app.use("/flight-plan-t2/flightPlanExperience", router);
+  };
+  

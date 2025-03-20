@@ -1,17 +1,17 @@
 const db = require("../models");
-const TaskMajor = db.taskMajor;
+const StudentInfoMajor = db.studentInfoMajor;
 const Op = db.Sequelize.Op;
 
-// Create and Save a new TaskMajor entry
+// Create and Save a new StudentInfoMajor entry
 exports.create = (req, res) => {
-  // Define the data object for the new TaskMajor entry
-  const TaskMajorData = {
+  // Define the data object for the new StudentInfoMajor entry
+  const StudentInfoMajorData = {
     majorId: req.body.majorId,
-    taskId: req.body.taskId,
+    studentInfoId: req.body.studentInfoId,
   };
 
-  // Save the TaskMajor entry in the database
-  TaskMajor.create(TaskMajorData)
+  // Save the StudentInfoMajor entry in the database
+  StudentInfoMajor.create(StudentInfoMajorData)
     .then((data) => {
       res.send(data);
     })
@@ -19,41 +19,41 @@ exports.create = (req, res) => {
       if (err.message.includes("foreign key constraint fails")) {
         res
           .status(404)
-          .send({ message: `The eventTypeId could not be found.` });
+          .send({ message: `The majorId could not be found.` });
       } else {
         res.status(500).send({
           message:
-            err.message || "Error creating the TaskMajor entry.",
+            err.message || "Error creating the StudentInfoMajor entry.",
         });
       }
     });
 };
 
-// Retrieve all TaskMajor entries for an task
+// Retrieve all StudentInfoMajor entries for an studentInfo
 exports.findAll = (req, res) => {
-  TaskMajor.findAll({
-    where: { taskId: req.params.taskId },
+  StudentInfoMajor.findAll({
+    where: { studentInfoId: req.params.studentInfoId },
   })
     .then((data) => {
       if (data && data.length > 0) {
         res.send(data);
       } else {
         res.status(404).send({
-          message: `No TaskMajor entries found for taskId=${req.params.taskId}.`,
+          message: `No StudentInfoMajor entries found for studentInfoId=${req.params.studentInfoId}.`,
         });
       }
     })
     .catch((err) => {
       res.status(500).send({
-        message: err.message || `Error retrieving TaskMajor entries.`,
+        message: err.message || `Error retrieving StudentInfoMajor entries.`,
       });
     });
 };
 
-// Retrieve a single TaskMajor entry by ID
+// Retrieve a single StudentInfoMajor entry by ID
 exports.findOne = (req, res) => {
   const id = req.params.id;
-  TaskMajor.findByPk(id)
+  StudentInfoMajor.findByPk(id)
     .then((data) => {
       if (data) {
         res.send(data);
@@ -61,7 +61,7 @@ exports.findOne = (req, res) => {
         res
           .status(404)
           .send({
-            message: `No TaskMajor entry found with id=${id}.`,
+            message: `No StudentInfoMajor entry found with id=${id}.`,
           });
       }
     })
@@ -69,14 +69,14 @@ exports.findOne = (req, res) => {
       res.status(500).send({
         message:
           err.message ||
-          `Error retrieving TaskMajor entry with id=${id}.`,
+          `Error retrieving StudentInfoMajor entry with id=${id}.`,
       });
     });
 };
 
-exports.findAllForTask = (req, res) => {
-  const taskId = req.params.taskId;
-  TaskMajor.findAll({ where: { taskId: taskId } })
+exports.findAllForStudentInfo = (req, res) => {
+  const studentInfoId = req.params.studentInfoId;
+  StudentInfoMajor.findAll({ where: { studentInfoId: studentInfoId } })
     .then((data) => {
       if (data && data.length > 0) {
         res.send(data);
@@ -84,7 +84,7 @@ exports.findAllForTask = (req, res) => {
         res
           .status(404)
           .send({
-            message: `No TaskMajor entries found for taskId=${taskId}.`,
+            message: `No StudentInfoMajor entries found for studentInfoId=${studentInfoId}.`,
           });
       }
     })
@@ -92,14 +92,14 @@ exports.findAllForTask = (req, res) => {
       res.status(500).send({
         message:
           err.message ||
-          `Error retrieving TaskMajor entry with id=${id}.`,
+          `Error retrieving StudentInfoMajor entry with id=${id}.`,
       });
     });
 };
 
-exports.findAllTasksForMajor = (req, res) => {
+exports.findAllStudentInfosForMajor = (req, res) => {
   const majorId = req.params.majorId;
-  TaskMajor.findAll({ where: { majorId: majorId } })
+  StudentInfoMajor.findAll({ where: { majorId: majorId } })
     .then((data) => {
       if (data && data.length > 0) {
         res.send(data);
@@ -107,7 +107,7 @@ exports.findAllTasksForMajor = (req, res) => {
         res
           .status(404)
           .send({
-            message: `No TaskMajor entries found for majorId=${majorId}.`,
+            message: `No StudentInfoMajor entries found for majorId=${majorId}.`,
           });
       }
     })
@@ -115,25 +115,25 @@ exports.findAllTasksForMajor = (req, res) => {
       res.status(500).send({
         message:
           err.message ||
-          `Error retrieving TaskMajor entry with id=${id}.`,
+          `Error retrieving StudentInfoMajor entry with id=${id}.`,
       });
     });
 };
 
-// Update an TaskMajor entry by ID
+// Update an StudentInfoMajor entry by ID
 exports.update = (req, res) => {
-  const taskId = req.params.taskId;
-  TaskMajor.update(req.body, {
-    where: { taskId: taskId },
+  const studentInfoId = req.params.studentInfoId;
+  StudentInfoMajor.update(req.body, {
+    where: { studentInfoId: studentInfoId },
   })
     .then((num) => {
       if (num == 1) {
         res.send({
-          message: "TaskMajor entry was updated successfully.",
+          message: "StudentInfoMajor entry was updated successfully.",
         });
       } else {
         res.status(400).send({
-          message: `Could not update TaskMajor entry with id=${taskId}.`,
+          message: `Could not update StudentInfoMajor entry with id=${studentInfoId}.`,
         });
       }
     })
@@ -146,26 +146,26 @@ exports.update = (req, res) => {
       } else {
         res.status(500).send({
           message:
-            err.message || "Error updating the TaskMajor entry.",
+            err.message || "Error updating the StudentInfoMajor entry.",
         });
       }
     });
 };
 
-// Delete an TaskMajor entry by ID
+// Delete an StudentInfoMajor entry by ID
 exports.delete = (req, res) => {
-  const taskId = req.params.taskId;
-  TaskMajor.destroy({ where: { taskId: taskId } })
+  const studentInfoId = req.params.studentInfoId;
+  StudentInfoMajor.destroy({ where: { studentInfoId: studentInfoId } })
     .then(() => {
       res.send({
-        message: "TaskMajor entry was deleted successfully!",
+        message: "StudentInfoMajor entry was deleted successfully!",
       });
     })
     .catch((err) => {
       res.status(500).send({
         message:
           err.message ||
-          `Error deleting TaskMajor entry with id=${taskId}.`,
+          `Error deleting StudentInfoMajor entry with id=${studentInfoId}.`,
       });
     });
 };

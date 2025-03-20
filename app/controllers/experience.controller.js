@@ -49,6 +49,28 @@ exports.findAll = (req, res) => {
     });
 };
 
+// Retrieve all Experience entries
+exports.findExperienceBySemesterFromGraduation = (req, res) => {
+  Experience.findAll({ where: { semestersFromGraduation: req.body.semestersFromGraduation }})
+    .then((data) => {
+      if (data && data.length > 0) {
+        res.send(data);
+      } else {
+        res.status(404).send({
+          message: `No Experience entries found.`,
+        });
+      }
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message:
+          err.message ||
+          `Error retrieving Experience entries.`,
+      });
+    });
+};
+
+
 // Retrieve a single Experience entry by ID
 exports.findOne = (req, res) => {
   const id = req.params.id;
