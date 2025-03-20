@@ -3,6 +3,8 @@ const db = require("../models");
 const FlightPlan = db.flightPlan;
 const FlightPlanTask = db.flightPlanTask;
 const FlightPlanExperience = db.flightPlanExperience;
+const StudentInfoMajor = db.studentInfoMajor;
+const StudentInfo = db.studentInfo;
 const Op = db.Sequelize.Op;
 
 
@@ -40,22 +42,16 @@ exports.create = async (req, res) => {
     return;
   }
 
-  if (!req.body.majors) { // Expects array of strings
-    res.status(400).send({ message: "major cannot be empty" });
-    return;
-  }
-  
-  if (!req.body.semestersToGrad) { // Expects integer
-    res.status(400).send({ message: "semestersToGrad cannot be empty" });
-    return;
-  }
-
+  let studentInfo = await StudentInfo.findAll({where: {id: req.body.studentInfoId}})
+  console.log(`=========================================================== ${studentInfo[0].dataValues}`)
+  console.log(`=========================================================== ${studentInfo.dataValues}`)
+  let semestersToGrad = studentInfo[0].dataValues.semestersTillGraduation
 
   // Define the data object for the new FlightPlan entry
   const FlightPlanData = {
     id: req.body.id,
     studentInfoId: req.body.studentInfoId,
-    semestersToGrad: req.body.semestersToGrad
+    semestersToGrad: semestersToGrad
   };
 
   // Save the FlightPlan entry in the database
@@ -79,15 +75,10 @@ exports.create = async (req, res) => {
 
 
     // Get the current semesters from graduation based on the graduation semester and the date
-    let semestersToGrad = req.body.semestersToGrad
 
-    const majors = req.body.majors.split(", ");
-    let majorIds = [] 
-    let allMajors = await Major.findAll()
-
-    majors.forEach((major) => {
-      majorIds.push(allMajors.find((m) => {if (m.name == major) {return m.id}}).id)
-    })
+    let studentInfoMajors = await StudentInfoMajor.findAll({where: {studentInfoId: req.body.studentInfoId}})
+    let majorIds = studentInfoMajors.map((sm) => {return sm.majorId})
+    console.log(majorIds)
 
     // Get all taskMajors and experienceMajors for each given major
     let tMajors = []

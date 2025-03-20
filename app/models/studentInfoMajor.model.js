@@ -1,6 +1,6 @@
 module.exports = (sequelize, Sequelize) => {
-  const flightPlanMajor = sequelize.define("flightPlanMajor", {
+  const studentInfoMajor = sequelize.define("studentInfoMajor", {
   });
 
-  return flightPlanMajor;
+  return studentInfoMajor;
 };

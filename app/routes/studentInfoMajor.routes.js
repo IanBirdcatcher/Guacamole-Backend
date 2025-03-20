@@ -1,20 +1,20 @@
 module.exports = (app) => {
-    const flightPlanMajor = require("../controllers/flightPlanMajor.controller.js");
+    const studentInfoMajor = require("../controllers/studentInfoMajor.controller.js");
     const { authenticate } = require("../authorization/authorization.js");
     var router = require("express").Router();
   
-    // Create a new flightPlanMajor
-    router.post("/", [authenticate], flightPlanMajor.create);
+    // Create a new studentInfoMajor
+    router.post("/", [authenticate], studentInfoMajor.create);
   
-    // Get all flightPlanMajors for a specific flightPlan
-    router.get("/:flightPlanId", [authenticate], flightPlanMajor.findAllForFlightPlan);
+    // Get all studentInfoMajors for a specific studentInfo
+    router.get("/:studentInfoId", [authenticate], studentInfoMajor.findAllForStudentInfo);
   
-    // Update a flightPlanMajor by ID
-    router.put("/:id", [authenticate], flightPlanMajor.update);
+    // Update a studentInfoMajor by ID
+    router.put("/:id", [authenticate], studentInfoMajor.update);
   
-    // Delete a flightPlanMajor by ID
-    router.delete("/:flightPlanId", [authenticate], flightPlanMajor.delete);
+    // Delete a studentInfoMajor by ID
+    router.delete("/:studentInfoId", [authenticate], studentInfoMajor.delete);
   
-    app.use("/flight-plan-t2/flightPlanMajors", router);
+    app.use("/flight-plan-t2/studentInfoMajor", router);
   };
   
