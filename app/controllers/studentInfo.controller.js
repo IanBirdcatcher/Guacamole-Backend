@@ -16,7 +16,6 @@ exports.create = async (req, res) => {
       startingSemester: req.body.startingSemester, 
       semestersTillGraduation: req.body.semestersTillGraduation,
       graduationSemester: req.body.graduationSemester,
-
     };
 
     // Save StudentInfo in the database

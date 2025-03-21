@@ -10,7 +10,7 @@ module.exports = (app) => {
   
     router.post("/", [authenticate],hasAccess(ENUM.CHANGE_STUDENT_INFO),studentInfo.create); 
     router.put("/:userId",studentInfo.update); 
-    router.get("/user/:userId", [authenticate],hasAccess(ENUM.READ_STUDENT_INFO), studentInfo.findAllByUserId);
+    router.get("/user/:userId", [authenticate], studentInfo.findAllByUserId);
 
     app.use("/flight-plan-t2/studentInfo", router);
     

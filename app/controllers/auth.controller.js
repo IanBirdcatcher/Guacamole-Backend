@@ -45,6 +45,7 @@ const studentInfoIfNotExist = async (userId) => {
     semestersTillGraduation: 8,
     studentId: '0000',
     startingSemester: 'freshman 1',
+    firstLogin: true,
   };
 
   try {
