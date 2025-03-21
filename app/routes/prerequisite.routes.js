@@ -24,9 +24,9 @@ module.exports = (app) => {
       prerequisite.findOne
     );
     router.get(
-      "/byItem/:id",
+      "/byTask/:id",
       [authenticate],
-      prerequisite.findAllPrerequisitesForItem
+      prerequisite.findAllPrerequisitesForTask
     );
     router.get(
       "/byPrerequisite/:id",

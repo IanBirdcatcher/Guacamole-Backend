@@ -1,12 +1,13 @@
 const db = require("../models");
 const Prerequisite = db.prerequisite;
+const Task = db.task;
 const Op = db.Sequelize.Op;
 
 // Create and Save a new Prerequisite entry
 exports.create = (req, res) => {
   // Define the data object for the new Prerequisite entry
   const PrerequisiteData = {
-    itemId: req.body.itemId,
+    taskId: req.body.taskId,
     prerequisiteId: req.body.prerequisiteId,
   };
 
@@ -19,7 +20,7 @@ exports.create = (req, res) => {
       if (err.message.includes("foreign key constraint fails")) {
         res
           .status(404)
-          .send({ message: `The itemId could not be found.` });
+          .send({ message: `The taskId could not be found.` });
       } else {
         res.status(500).send({
           message:
@@ -31,16 +32,10 @@ exports.create = (req, res) => {
 
 // Retrieve all Prerequisite entries for an prerequisite
 exports.findAll = (req, res) => {
-  Prerequisite.findAll({
-    where: { prerequisiteId: req.params.prerequisiteId },
-  })
+  Prerequisite.findAll()
     .then((data) => {
       if (data && data.length > 0) {
         res.send(data);
-      } else {
-        res.status(404).send({
-          message: `No Prerequisite entries found for prerequisiteId=${req.params.prerequisiteId}.`,
-        });
       }
     })
     .catch((err) => {
@@ -75,7 +70,7 @@ exports.findOne = (req, res) => {
 };
 
 exports.findAllForPrerequisite = (req, res) => {
-  const prerequisiteId = req.params.prerequisiteId;
+  const prerequisiteId = req.params.id;
   Prerequisite.findAll({ where: { prerequisiteId: prerequisiteId } })
     .then((data) => {
       if (data && data.length > 0) {
@@ -97,17 +92,20 @@ exports.findAllForPrerequisite = (req, res) => {
     });
 };
 
-exports.findAllPrerequisitesForItem = (req, res) => {
-  const itemId = req.params.itemId;
-  Prerequisite.findAll({ where: { itemId: itemId } })
-    .then((data) => {
-      if (data && data.length > 0) {
-        res.send(data);
+exports.findAllPrerequisitesForTask = (req, res) => {
+  const taskId = req.params.id;
+  Prerequisite.findAll({ where: { taskId: taskId } })
+    .then((prereqData) => {
+      if (prereqData && prereqData.length > 0) {
+        Task.findByPk(taskId)
+        .then((tData) => {
+          res.send({prereq: prereqData, task: tData});
+        })
       } else {
         res
           .status(404)
           .send({
-            message: `No Prerequisite entries found for itemId=${itemId}.`,
+            message: `No Prerequisite entries found for taskId=${taskId}.`,
           });
       }
     })
@@ -122,7 +120,7 @@ exports.findAllPrerequisitesForItem = (req, res) => {
 
 // Update an Prerequisite entry by ID
 exports.update = (req, res) => {
-  const prerequisiteId = req.params.prerequisiteId;
+  const prerequisiteId = req.params.id;
   Prerequisite.update(req.body, {
     where: { prerequisiteId: prerequisiteId },
   })
@@ -154,7 +152,7 @@ exports.update = (req, res) => {
 
 // Delete an Prerequisite entry by ID
 exports.delete = (req, res) => {
-  const prerequisiteId = req.params.prerequisiteId;
+  const prerequisiteId = req.params.id;
   Prerequisite.destroy({ where: { prerequisiteId: prerequisiteId } })
     .then(() => {
       res.send({
