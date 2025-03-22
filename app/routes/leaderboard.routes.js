@@ -5,7 +5,7 @@ module.exports = (app) => {
   
 
     // Get all experienceStrengths for a specific experience
-    router.get("/leaderboard", [authenticate], leaderboard.findAllLeaderboardInfo);
+    router.get("/leaderboard/:userId", [authenticate], leaderboard.findAllLeaderboardInfo);
 
     app.use("/flight-plan-t2/", router);
   };
