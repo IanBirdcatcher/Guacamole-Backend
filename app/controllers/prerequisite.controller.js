@@ -94,12 +94,23 @@ exports.findAllForPrerequisite = (req, res) => {
 
 exports.findAllPrerequisitesForTask = (req, res) => {
   const taskId = req.params.id;
+  let allPrereqs = []
+  let pData = {prereq: null, task: null}
   Prerequisite.findAll({ where: { taskId: taskId } })
     .then((prereqData) => {
       if (prereqData && prereqData.length > 0) {
-        Task.findByPk(taskId)
-        .then((tData) => {
-          res.send({prereq: prereqData, task: tData});
+        Promise.all(
+          prereqData.map(async (p) => {
+            let tData = await Task.findByPk(p.dataValues.prerequisiteId)
+              pData = {prereq: p.dataValues, task: tData.dataValues};
+              console.log(pData)
+              return pData
+          })
+        ).then((allPrereqs) => {
+          console.log(`allPrereqs ============= ${allPrereqs}`)
+          console.log(`allPrereqs ============= ${Object.keys(allPrereqs)}`)
+          console.log(`allPrereqs ============= ${allPrereqs.dataValues}`)
+          res.send(allPrereqs)
         })
       } else {
         res
