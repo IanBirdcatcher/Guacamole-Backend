@@ -1,6 +1,6 @@
 const db = require("../models");
 const Prerequisite = db.prerequisite;
-const Task = db.task;
+const FlightPlanTask = db.flightPlanTask;
 const Op = db.Sequelize.Op;
 
 // Create and Save a new Prerequisite entry
@@ -94,22 +94,22 @@ exports.findAllForPrerequisite = (req, res) => {
 
 exports.findAllPrerequisitesForTask = (req, res) => {
   const taskId = req.params.id;
-  let allPrereqs = []
+  const flightPlanId = req.params.flightPlanId;
   let pData = {prereq: null, task: null}
   Prerequisite.findAll({ where: { taskId: taskId } })
     .then((prereqData) => {
       if (prereqData && prereqData.length > 0) {
         Promise.all(
           prereqData.map(async (p) => {
-            let tData = await Task.findByPk(p.dataValues.prerequisiteId)
-              pData = {prereq: p.dataValues, task: tData.dataValues};
+            let tData = await FlightPlanTask.findAll({where: {taskId: p.dataValues.prerequisiteId, flightPlanId: flightPlanId}})
+              console.log(tData[0].dataValues)
+              console.log(tData)
+              console.log(Object.keys(tData[0].dataValues))
+              pData = {prereq: p.dataValues, flightPlanTask: tData[0].dataValues};
               console.log(pData)
               return pData
           })
         ).then((allPrereqs) => {
-          console.log(`allPrereqs ============= ${allPrereqs}`)
-          console.log(`allPrereqs ============= ${Object.keys(allPrereqs)}`)
-          console.log(`allPrereqs ============= ${allPrereqs.dataValues}`)
           res.send(allPrereqs)
         })
       } else {

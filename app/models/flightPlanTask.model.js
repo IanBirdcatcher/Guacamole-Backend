@@ -8,6 +8,10 @@ module.exports = (sequelize, Sequelize) => {
       type: Sequelize.BOOLEAN,
       allowNull: false,
       defaultValue: false,
+    },
+    subtext: {
+      type: Sequelize.STRING,
+      allowNull: true,
     }
   });
 

@@ -24,7 +24,7 @@ module.exports = (app) => {
       prerequisite.findOne
     );
     router.get(
-      "/byTask/:id",
+      "/byTask/:id/:flightPlanId",
       [authenticate],
       prerequisite.findAllPrerequisitesForTask
     );
