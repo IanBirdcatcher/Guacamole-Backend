@@ -88,7 +88,7 @@ exports.findByUser = (req, res) => {
         for (const fPT of flightPlanTaskData) {
           await Task.findByPk(fPT.taskId)
           .then((foundTask) => {
-            flightPlanTaskList.tasks.push({ taskId: fPT.taskId, task: foundTask, fpTask: fPT })
+            flightPlanTaskList.tasks.push({ taskId: fPT.taskId, task: foundTask, flightPlanTask: fPT })
           })
           .catch((err) => {
             res.status(500).send({
