@@ -54,6 +54,7 @@ require("./app/routes/user.routes")(app);
 require("./app/routes/task.routes")(app);
 require("./app/routes/taskMajors.routes")(app);
 require("./app/routes/taskStrengths.routes")(app);
+require("./app/routes/prerequisite.routes")(app);
 // Experience Routes
 require("./app/routes/experience.routes")(app);
 require("./app/routes/experienceMajors.routes")(app);
