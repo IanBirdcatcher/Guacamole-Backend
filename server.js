@@ -18,7 +18,7 @@ app.use(cors(corsOptions));
 app.options("*", cors());
 
 // Parse requests with JSON payloads
-app.use(express.json());
+app.use(express.json({ limit: '10mb' }));
 
 // Parse requests with URL-encoded payloads
 app.use(express.urlencoded({ extended: true }));

@@ -22,14 +22,6 @@ module.exports = (sequelize, Sequelize) => {
       allowNull: false,
       defaultValue: 0,
     },
-    image: {
-      type: Sequelize.BLOB("long"),
-      allowNull: true,
-      get() {
-        const imageData = this.getDataValue("image");
-        return imageData ? `data:image/png;base64,${imageData.toString("base64")}` : null;
-      },
-    },
   });
 
   return reward;

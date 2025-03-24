@@ -1,27 +1,35 @@
 const db = require("../models");
 const icon = db.icon;
 const Op = db.Sequelize.Op;
+const path = require('path');
+const multer = require('multer');
+
+// Set up storage engine for multer to save the image in a directory
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'uploads/'); // save the file in the 'uploads' folder
+  },
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + path.extname(file.originalname)); // create a unique filename
+  }
+});
+
+const upload = multer({ storage: storage });
 
 // Create and Save a new icon
 exports.create = (req, res) => {
-  // Validate request
-  if (!req.body.name) {
-    res.status(400).send({
-      message: "Must contain a name",
+  if (!req.file) {
+    return res.status(400).send({
+      message: "No image uploaded."
     });
-    return;
   }
 
-  // Create a icon
-  const icon = {
-    id: req.body.id,
-    name: req.body.name,
-    link: req.body.link,
-    forBadge: req.body.forBadge
+  const iconData = {
+    image: `/uploads/${req.file.filename}`, // save the image URL path
+    forBadge: req.body.forBadge || false,
   };
 
-  // Save icon in the database
-  icon.create(icon)
+  icon.create(iconData)
     .then((data) => {
       res.send(data);
     })
@@ -32,7 +40,10 @@ exports.create = (req, res) => {
     });
 };
 
-// Retrieve all icons from the database.
+// Middleware to handle file upload
+exports.uploadIcon = upload.single('image');  // Handle single image upload
+
+// Retrieve all icons from the database
 exports.findAll = (req, res) => {
   const id = req.query.id;
   var condition = id ? { id: { [Op.like]: `%${id}%` } } : null;
@@ -68,53 +79,4 @@ exports.findOne = (req, res) => {
     });
 };
 
-
-// Update a icon by the id in the request
-exports.update = (req, res) => {
-  const id = req.params.id;
-
-  icon.update(req.body, {
-    where: { id: id },
-  })
-    .then((num) => {
-      if (num == 1) {
-        res.send({
-          message: "icon was updated successfully.",
-        });
-      } else {
-        res.send({
-          message: `Cannot update icon with id=${id}. Maybe icon was not found or req.body is empty!`,
-        });
-      }
-    })
-    .catch((err) => {
-      res.status(500).send({
-        message: "Error updating icon with id=" + id,
-      });
-    });
-};
-
-// Delete a icon with the specified id in the request
-exports.delete = (req, res) => {
-  const id = req.params.id;
-
-  icon.destroy({
-    where: { id: id },
-  })
-    .then((num) => {
-      if (num == 1) {
-        res.send({
-          message: "icon was deleted successfully!",
-        });
-      } else {
-        res.send({
-          message: `Cannot delete icon with id=${id}. Maybe icon was not found!`,
-        });
-      }
-    })
-    .catch((err) => {
-      res.status(500).send({
-        message: "Could not delete icon with id=" + id,
-      });
-    });
-};
+// Update a icon by
