@@ -1,17 +1,16 @@
 module.exports = (sequelize, Sequelize) => {
-    const flightPlan = sequelize.define("flightPlan", {
+    const type = sequelize.define("type", {
       id: {
         type: Sequelize.INTEGER,
         autoIncrement: true,
         primaryKey: true,
       },
-      
-      semestersToGrad: {
-        type: Sequelize.INTEGER,
-        allowNull: false
+      name: {
+        type: Sequelize.STRING,
+        allowNull: false,
       }
     });
   
-    return flightPlan;
+    return type;
   };
   

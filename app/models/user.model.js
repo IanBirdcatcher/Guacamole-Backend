@@ -14,7 +14,7 @@ module.exports = (sequelize, Sequelize) => {
       allowNull: false,
     },
     email: {
-      type: Sequelize.STRING,
+      type: Sequelize.STRING, 
       allowNull: false,
     },
     darkMode: {
@@ -22,6 +22,15 @@ module.exports = (sequelize, Sequelize) => {
       allowNull: false,
       defaultValue: false,
     },
+    points: {
+      type: Sequelize.INTEGER,
+      allowNull: true,
+      defaulValue: 0,
+    },
+    profilePicture: {
+      type: Sequelize.STRING, 
+      allowNull: true,
+    }
   });
 
   return User;

@@ -74,7 +74,7 @@ function hasAccess(permType) { // Wrapper for hasAccess
                 }
               })
               .catch((error) => {
-                console.log(error);
+                console.log(error); 
               });
               try {
                 if (userPerms[permType]) {
