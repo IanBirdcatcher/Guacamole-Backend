@@ -45,7 +45,7 @@ exports.findAllLeaderboardInfo = async (req, res) => {
     if (!studentInfos.length) {
       return res.status(404).send({ message: `No studentInfo entries found for classification: ${classification}.` });
     }
-    console.log("studentInfos: "+studentInfos[0].userId);
+    
     // Fetch all users corresponding to the studentInfos
     const userIds = studentInfos.map((info) => info.userId);
     console.log("userIds: "+userIds);
@@ -79,6 +79,9 @@ exports.findAllLeaderboardInfo = async (req, res) => {
         classification: classification,
       };
     });
+
+    leaderboard.sort((a, b) => b.earnedPoints - a.earnedPoints);
+
     res.send(leaderboard);
   } catch (err) {
     console.error("Error occurred:", err);
