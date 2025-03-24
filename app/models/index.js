@@ -40,6 +40,7 @@ db.document = require("./document.model.js")(sequelize, Sequelize);
 db.event = require("./event.model.js")(sequelize, Sequelize);
 db.type = require("./type.model.js")(sequelize, Sequelize);
 db.eventType = require("./eventType.model.js")(sequelize, Sequelize);
+db.prerequisite = require("./prerequisite.model.js")(sequelize, Sequelize);
 db.experience = require("./experience.model.js")(sequelize, Sequelize);
 db.experienceMajor = require("./experienceMajor.model.js")(
   sequelize,
@@ -446,6 +447,35 @@ db.experienceStrength.belongsTo(db.strength, {
   allowNull: true,
   onDelete: "CASCADE",
 });
+
+// db.task.hasMany(db.prerequisite, {
+//   allowNull: true,
+//   onDelete: "CASCADE",
+// });
+db.task.hasMany(db.prerequisite, {
+  as: "items",
+  foreignKey: "taskId",
+  allowNull: true,
+  onDelete: "CASCADE",
+});
+db.prerequisite.belongsTo(db.task, {
+  allowNull: true,
+  onDelete: "CASCADE",
+});
+db.task.hasMany(db.prerequisite, {
+  as: "prerequisites",
+  foreignKey: "prerequisiteId",
+  allowNull: true,
+  onDelete: "CASCADE",
+});
+db.prerequisite.belongsTo(db.task, {
+  allowNull: true,
+  onDelete: "CASCADE",
+});
+// db.task.belongsTo(db.prerequisite, {
+//   allowNull: true,
+//   onDelete: "CASCADE",
+// });
 
 db.task.hasMany(db.taskStrength, {
   allowNull: true,
