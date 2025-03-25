@@ -16,7 +16,6 @@ exports.create = async (req, res) => {
       startingSemester: req.body.startingSemester, 
       semestersTillGraduation: req.body.semestersTillGraduation,
       graduationSemester: req.body.graduationSemester,
-
     };
 
     // Save StudentInfo in the database
@@ -36,6 +35,40 @@ exports.create = async (req, res) => {
     }
   }
 };
+
+// Update an StudentInfo entry by ID
+exports.update = (req, res) => {
+  console.log("Params:", req.params); 
+  const id = req.params.userId;
+
+  if (!id) {
+    return res.status(400).send({ message: "User ID is missing!" });
+  }
+
+  StudentInfo.update(req.body, { where: { id: id } })
+    .then((num) => {
+      if (num == 1) {
+        res.send({ message: "StudentInfo entry was updated successfully." });
+      } else {
+        res.status(400).send({
+          message: `Could not update StudentInfo entry with id=${id}.`,
+        });
+      }
+    })
+    .catch((err) => {
+      if (err.message.includes("foreign key constraint fails")) {
+        const missingField = err.message.includes("userId");
+        res.status(404).send({
+          message: `The ${missingField} could not be found.`,
+        });
+      } else {
+        res.status(500).send({
+          message: err.message || "Error updating the StudentInfo entry.",
+        });
+      }
+    });
+};
+
 
 exports.findOne = (req, res) => {
     const id = req.params.id;

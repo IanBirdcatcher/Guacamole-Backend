@@ -45,6 +45,7 @@ const studentInfoIfNotExist = async (userId) => {
     semestersTillGraduation: 8,
     studentId: '0000',
     startingSemester: 'freshman 1',
+    firstLogin: true,
   };
 
   try {
@@ -109,7 +110,8 @@ exports.login = async (req, res) => {
     email = data.email;
     firstName = data.given_name;
     lastName = data.family_name;
-    profilePicture = data.picture;  
+    profilePicture = data.picture; 
+  
   }
 
   console.log(lastName);
@@ -127,6 +129,7 @@ exports.login = async (req, res) => {
         lName: lastName,
         email: email,
         profilePicture: profilePicture,
+
       };
     }
   } catch (err) {
@@ -188,6 +191,7 @@ exports.login = async (req, res) => {
           profilePicture: user.profilePicture,
           id: user.id,
           token: session.token,
+          firstLogin: true,
         };
         console.log("found a session, don't need to make another one");
         console.log(userInfo);
@@ -211,6 +215,8 @@ exports.login = async (req, res) => {
       email: email,
       expirationDate: tempExpirationDate,
       userId: user.id,
+      firstLogin: false,
+
     };
 
     console.log("making a new session");
