@@ -30,7 +30,12 @@ module.exports = (sequelize, Sequelize) => {
     profilePicture: {
       type: Sequelize.STRING, 
       allowNull: true,
-    }
+    },
+    firstLogin: {
+      type: Sequelize.BOOLEAN,
+      allowNull: false,
+      defaultValue: true,
+    },
   });
 
   return User;
