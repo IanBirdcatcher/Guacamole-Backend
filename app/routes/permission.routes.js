@@ -5,8 +5,7 @@ module.exports = (app) => {
   
     router.post("/", [authenticate], permission.create);
     router.get("/:userId", [authenticate], permission.findByUser);
+    router.get("/token/:permType", [authenticate], permission.findByAuthToken);
     router.put("/:userId", [authenticate], permission.updateByUserId);
-
-
     app.use("/flight-plan-t2/permission", router);
 };

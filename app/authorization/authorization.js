@@ -22,6 +22,11 @@ authenticate = async (req, res, next) => {
                 message: "Unauthorized! Expired Token, Logout and Login again",
               });
           }
+          else{
+            return res.status(401).send({
+              message: "Unauthorized! Invalid Token, Logout and Login again",
+            });
+          }
         })
         .catch((err) => {
           console.log(err.message);

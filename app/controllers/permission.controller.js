@@ -1,5 +1,7 @@
 const db = require("../models");
 const Permission = db.permission;
+const Session = db.session;
+const User = db.user;
 const Op = db.Sequelize.Op;
 
 // Create a new permission
@@ -34,7 +36,8 @@ exports.create = (req, res) => {
     })
     .catch((err) => {
       res.status(500).send({
-        message: err.message || "Some error occurred while creating permission.",
+        message:
+          err.message || "Some error occurred while creating permission.",
       });
     });
 };
@@ -44,7 +47,7 @@ exports.findByUser = (req, res) => {
 
   Permission.findOne({ where: { userId: userId } })
     .then((data) => {
-      if (data) { 
+      if (data) {
         res.send(data);
       } else {
         res.status(404).send({
@@ -54,9 +57,67 @@ exports.findByUser = (req, res) => {
     })
     .catch((err) => {
       res.status(500).send({
-        message: err.message || "Error retrieving Permission for user with id=" + userId,
+        message:
+          err.message ||
+          "Error retrieving Permission for user with id=" + userId,
       });
     });
+};
+
+//finds user by auth token then check their permissions
+exports.findByAuthToken = async (req, res) => {
+  const permType = req.params.permType;
+  let token = null;
+  let authHeader = req.get("authorization");
+  if (authHeader != null) {
+    if (authHeader.startsWith("Bearer ")) {
+      token = authHeader.slice(7);
+      await Session.findOne({ where: { token: token } })
+        .then((data) => {
+          let session = data;
+          if (session != null) {
+            if (session.expirationDate >= Date.now()) {
+              Permission.findOne({ where: { userId: session.userId } })
+                .then((data) => {
+                  try {
+                    if (data[permType])
+                      res.status(200).send({ message: "User is authorized" });
+                    else
+                      res
+                        .status(401)
+                        .send({ message: "User is not authorized" });
+                  } catch (err) {
+                    res.status(401).send({ message: "User is not authorized" });
+                  }
+                })
+                .catch((err) => {
+                  res.status(500).send({
+                    message:
+                      err.message ||
+                      "Error retrieving Permission for user with id=" +
+                        session.userId,
+                  });
+                });
+              return;
+            } else
+              return res.status(401).send({
+                message: "Unauthorized! Expired Token, Logout and Login again",
+              });
+          } else {
+            return res.status(401).send({
+              message: "Unauthorized! Invalid Token, Logout and Login again",
+            });
+          }
+        })
+        .catch((err) => {
+          console.log(err.message);
+        });
+    }
+  } else {
+    return res.status(401).send({
+      message: "Unauthorized! No Auth Header",
+    });
+  }
 };
 
 // Update a permission by userId
@@ -64,23 +125,23 @@ exports.updateByUserId = (req, res) => {
   const userId = req.params.userId;
 
   Permission.update(req.body, {
-    where: { userId: userId }
+    where: { userId: userId },
   })
     .then((num) => {
       if (num == 1) {
         res.send({
-          message: "Permission was updated successfully."
+          message: "Permission was updated successfully.",
         });
       } else {
         res.status(404).send({
-          message: `Cannot update Permission with userId=${userId}. Maybe Permission was not found or req.body is empty!`
+          message: `Cannot update Permission with userId=${userId}. Maybe Permission was not found or req.body is empty!`,
         });
       }
     })
     .catch((err) => {
       res.status(500).send({
-        message: err.message || "Error updating Permission with userId=" + userId,
+        message:
+          err.message || "Error updating Permission with userId=" + userId,
       });
     });
 };
-
