@@ -7,7 +7,7 @@ exports.create = (req, res) => {
   // Validate request
   if (!req.body.fName) {
     res.status(400).send({
-      message: "Must contain a first name",
+      message: "Must contain a first name", 
     });
     return;
   }
@@ -91,6 +91,30 @@ exports.findByEmail = (req, res) => {
       });
     });
   };
+
+// Retrieve the firstLogin attribute for a specific userId
+exports.getFirstLogin = (req, res) => {
+  const userId = req.params.userId;
+
+  User.findOne({
+    where: { id: userId },
+    attributes: ['firstLogin'], 
+  })
+    .then((data) => {
+      if (data) {
+        res.send(data);
+      } else {
+        res.status(404).send({
+          message: `Cannot find firstLogin for userId=${userId}.`,
+        });
+      }
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message: `Error retrieving firstLogin for userId=${userId}: ${err.message}`,
+      });
+    });
+};
 
 // Update a User by the id in the request
 exports.update = (req, res) => {

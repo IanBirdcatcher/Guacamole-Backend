@@ -28,8 +28,12 @@ module.exports = (sequelize, Sequelize) => {
       allowNull: true,
     },
     graduationSemester: {
-      type: Sequelize.INTEGER,
+      type: Sequelize.INTEGER, 
       allowNull: true,
+    },
+    firstLogin:{
+      type: Sequelize.BOOLEAN,
+      allowNull: false,
     },
   });
   return studentInfo;

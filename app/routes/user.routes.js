@@ -10,5 +10,8 @@ module.exports = (app) => {
   router.put("/:id", [authenticate, hasAccess(ENUM.CHANGE_STUDENT_INFO)], user.update);
   router.delete("/:id", [authenticate, hasAccess(ENUM.CHANGE_STUDENT_INFO)], user.delete);
 
+  router.get("/firstLogin/:userId", [authenticate], user.getFirstLogin); 
+
+
   app.use("/flight-plan-t2/user", router);
 };
