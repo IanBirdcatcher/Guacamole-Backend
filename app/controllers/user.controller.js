@@ -1,6 +1,7 @@
 const db = require("../models");
 const User = db.user;
 const Op = db.Sequelize.Op;
+const roleUser = db.roleUser
 
 // Create and Save a new User
 exports.create = (req, res) => {
@@ -91,6 +92,31 @@ exports.findByEmail = (req, res) => {
       });
     });
   };
+
+exports.getwantToBeAdmin = async (req, res) => {
+  try {
+    // Step 1: Retrieve all userId values from roleUser where roleId = 5
+    const roleUsers = await roleUser.findAll({
+      where: { roleId: 5 },
+      attributes: ['userId'], // Only select the userId field
+    });
+
+    // Step 2: Extract userId values from the result
+    const userIds = roleUsers.map((roleUser) => roleUser.userId);
+
+    const users = await User.findAll({
+      where: { id: userIds }, 
+      attributes: ['id','fName', 'lName', 'email'], 
+    });
+
+    res.send(users);
+  } catch (error) {
+    console.error("Error in getwantToBeAdmin:", error);
+    res.status(500).send({
+      message: "An error occurred while retrieving user details for roleId = 5.",
+    });
+  }
+};
 
 // Retrieve the firstLogin attribute for a specific userId
 exports.getFirstLogin = (req, res) => {
