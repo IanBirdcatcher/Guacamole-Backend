@@ -12,7 +12,7 @@ db.sequelize.sync();
 
 // Configure CORS options
 var corsOptions = {
-  origin: "http://localhost:8081",
+  origin: "http://localhost:8081",  // Your frontend URL
 };
 app.use(cors(corsOptions));
 app.options("*", cors());
@@ -72,6 +72,9 @@ require("./app/routes/flightPlan.routes.js")(app);
 require("./app/routes/flightPlanTask.routes.js")(app);
 require("./app/routes/flightPlanExperience.routes.js")(app);
 require("./app/routes/semester.routes.js")(app);
+
+// Icon Routes
+require("./app/routes/icon.routes.js")(app); 
 
 // Set the server to listen on a specified port
 const PORT = process.env.PORT || 3032;

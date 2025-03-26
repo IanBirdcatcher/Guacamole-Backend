@@ -79,4 +79,37 @@ exports.findOne = (req, res) => {
     });
 };
 
-// Update a icon by
+// Update a icon by ID
+exports.update = (req, res) => {
+  const id = req.params.id;
+  const updatedData = req.body;
+
+  icon.update(updatedData, { where: { id } })
+    .then((result) => {
+      if (result[0] === 0) {
+        return res.status(404).json({ message: "Icon not found" });
+      }
+      res.json({ message: "Icon updated successfully" });
+    })
+    .catch((err) => {
+      console.error("Error updating icon:", err);
+      res.status(500).json({ message: "Error updating icon" });
+    });
+};
+
+// Delete a icon by ID
+exports.delete = (req, res) => {
+  const id = req.params.id;
+
+  icon.destroy({ where: { id } })
+    .then((result) => {
+      if (result === 0) {
+        return res.status(404).json({ message: "Icon not found" });
+      }
+      res.json({ message: "Icon deleted successfully" });
+    })
+    .catch((err) => {
+      console.error("Error deleting icon:", err);
+      res.status(500).json({ message: "Error deleting icon" });
+    });
+};
