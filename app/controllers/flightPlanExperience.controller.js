@@ -3,6 +3,9 @@ const FlightPlanExperience = db.flightPlanExperience;
 const StudentInfo = db.studentInfo;
 const FlightPlan = db.flightPlan;
 const Experience = db.experience;
+const ExperienceEventType = db.experienceEventType;
+const EventType = db.eventType;
+const Event = db.event;
 const Op = db.Sequelize.Op;
 
 // Create and Save a new FlightPlanExperience entry
@@ -63,11 +66,41 @@ exports.findAll = (req, res) => {
     });
 };
 
+exports.findEventsForExperience = async (req, res) => {
+  const experienceId = req.params.id
+  let foundEvents = []
+    try {
+      const experienceEventTypes = await ExperienceEventType.findAll({ where: { experienceId } });      
+      for (const eET of experienceEventTypes) {
+        const eventTypes = await EventType.findAll({ where: { typeId: eET.eventTypeId } });
+        for (const eT of eventTypes) {          
+          const events = await Event.findAll({ where: { id: eT.eventId } });
+          for (const e of events) {
+            foundEvents.push(e);
+          }
+        }
+      }
+    } catch (err) {
+      res.status(500).send({
+        message: err.message || `Error retrieving ExperienceEventType entries.`,
+      });
+    } 
+  
+  let currDate = Date.now()
+  let filteredData = foundEvents.map((event) => {
+    if (Date.parse(event.startDateTime) >= currDate - 86400000) {
+      return event
+    }
+  })
+  sortedData = filteredData.sort((a, b) => {return Date.parse(a.startDateTime) - Date.parse(b.startDateTime)}).slice(0, 6)
+  res.send(sortedData.filter((item) => {return item !== undefined}))
+}
+
 
 // Retrieve a single FlightPlanExperience entry by ID
 exports.findByUser = (req, res) => {
   const userId = req.params.id;
-  let flightPlanExperienceList = {flightPlanId: null, experiences: []}
+  let flightPlanExperienceList = {flightPlanId: null, Experiences: []}
   // Get studentInfoId for userId
   StudentInfo.findAll({ where: {userId: userId}})
   .then((studentInfoData) => {
@@ -82,19 +115,19 @@ exports.findByUser = (req, res) => {
       }
       
       flightPlanExperienceList.flightPlanId = flightPlanData[0].dataValues.id;
-      // Get FlightPlanExperience experienceIds for flightplanId AND get experience objects, 
-        // return an object containing flightPlanId, experienceId, and experience object
+      // Get FlightPlanExperience ExperienceIds for flightplanId AND get Experience objects, 
+        // return an object containing flightPlanId, ExperienceId, and Experience object`
       FlightPlanExperience.findAll({ where: {flightPlanId: flightPlanData[0].dataValues.id}})
       .then(async (flightPlanExperienceData) => {
-        for (const fPE of flightPlanExperienceData) {
-          await Experience.findByPk(fPE.experienceId)
-          .then((foundExp) => {
-            flightPlanExperienceList.experiences.push({ experienceId: fPE.experienceId, experience: foundExp })
+        for (const fPT of flightPlanExperienceData) {
+          await Experience.findByPk(fPT.experienceId)
+          .then((foundExperience) => {
+            flightPlanExperienceList.Experiences.push({ ExperienceId: fPT.experienceId, Experience: foundExperience, flightPlanExperience: fPT })
           })
           .catch((err) => {
             res.status(500).send({
               message:
-                err.message || `Error retrieving Experience entry with id=${fPE.experienceId}.`,
+                err.message || `Error retrieving Experience entry with id=${fPT.experienceId}.`,
             });
           });
         }
