@@ -11,7 +11,7 @@ module.exports = (sequelize, Sequelize) => {
       },
       path: {
         type: Sequelize.STRING,
-        allowNull: false,
+        allowNull: true,
       },
       goodNews: {
         type: Sequelize.BOOLEAN,

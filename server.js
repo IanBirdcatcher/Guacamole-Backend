@@ -72,6 +72,9 @@ require("./app/routes/flightPlanExperience.routes.js")(app);
 require("./app/routes/semester.routes.js")(app);
 
 
+require("./app/routes/notification.routes.js")(app);
+
+
 // Set the server to listen on a specified port
 const PORT = process.env.PORT || 3032;
 app.listen(PORT, () => {
