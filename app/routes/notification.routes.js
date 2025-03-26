@@ -35,7 +35,7 @@ module.exports = (app) => {
     );
     router.delete(
       "/:id",
-      [authenticate, hasAccess(ENUM.ADD_NOTIFICATION)],
+      [authenticate],
       notification.delete
     );
   

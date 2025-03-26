@@ -14,6 +14,7 @@ exports.create = (req, res) => {
   // Define the data object for the new Notification entry
   const NotificationData = {
     id: req.body.id,
+    title: req.body.title,
     desc: req.body.desc,
     path: req.body.path,
     goodNews: req.body.goodNews
@@ -134,23 +135,31 @@ exports.update = (req, res) => {
 };
 
 // Delete an Notification entry by ID
-exports.delete = (req, res) => {
+exports.delete = async (req, res) => {
   const id = req.params.id;
-  Notification.destroy({ where: { id: id } })
-    .then((num) => {
-      if (num == 1) {
-        res.send({ message: "Notification entry was deleted successfully!" });
-      } else {
-        res.status(404).send({
-          message: `Could not delete Notification entry with id=${id}.`,
+  
+  let token = req.headers.authorization.replace("Bearer ", "")
+
+  let session = await Session.findOne({where: {token: token}})
+  
+  if (session.userId != id) {res.status(401); res.send({message: "Unauthorized to delete this notification"})}
+  else {
+    Notification.destroy({ where: { id: id } })
+      .then((num) => {
+        if (num == 1) {
+          res.send({ message: "Notification entry was deleted successfully!" });
+        } else {
+          res.status(404).send({
+            message: `Could not delete Notification entry with id=${id}.`,
+          });
+        }
+      })
+      .catch((err) => {
+        res.status(500).send({
+          message:
+            err.message ||
+            `Error deleting Notification entry with id=${id}.`,
         });
-      }
-    })
-    .catch((err) => {
-      res.status(500).send({
-        message:
-          err.message ||
-          `Error deleting Notification entry with id=${id}.`,
       });
-    });
+  }
 };
