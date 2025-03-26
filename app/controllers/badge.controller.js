@@ -12,15 +12,23 @@ exports.create = (req, res) => {
     return;
   }
 
-  // Create a badge
-  const badge = {
-    id: req.body.id,
+  // Validate the image URL (if it's provided)
+  if (!req.body.imageUrl) {
+    res.status(400).send({
+      message: "Must contain an image URL",
+    });
+    return;
+  }
+
+  // Create a badge object with the image URL
+  const badgeData = {
     name: req.body.name,
     desc: req.body.desc,
+    imageUrl: req.body.imageUrl, // Store the image URL
   };
 
   // Save badge in the database
-  badge.create(badge)
+  badge.create(badgeData)
     .then((data) => {
       res.send(data);
     })
@@ -67,33 +75,33 @@ exports.findOne = (req, res) => {
     });
 };
 
-
 // Update a badge by the id in the request
 exports.update = (req, res) => {
   const id = req.params.id;
 
+  // Update the badge with image URL and other properties
   badge.update(req.body, {
     where: { id: id },
   })
     .then((num) => {
       if (num == 1) {
         res.send({
-          message: "badge\ was updated successfully.",
+          message: "badge was updated successfully.",
         });
       } else {
         res.send({
-          message: `Cannot update badge\ with id=${id}. Maybe badge\ was not found or req.body is empty!`,
+          message: `Cannot update badge with id=${id}. Maybe badge was not found or req.body is empty!`,
         });
       }
     })
     .catch((err) => {
       res.status(500).send({
-        message: "Error updating badge\ with id=" + id,
+        message: "Error updating badge with id=" + id,
       });
     });
 };
 
-// Delete a badge\ with the specified id in the request
+// Delete a badge with the specified id in the request
 exports.delete = (req, res) => {
   const id = req.params.id;
 
@@ -107,7 +115,7 @@ exports.delete = (req, res) => {
         });
       } else {
         res.send({
-          message: `Cannot delete badge with id=${id}. Maybe badge\ was not found!`,
+          message: `Cannot delete badge with id=${id}. Maybe badge was not found!`,
         });
       }
     })
