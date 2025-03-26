@@ -8,7 +8,7 @@ module.exports = (app) => {
     const ENUM = require("../config/PermisionsENUM.js"); 
     var router = require("express").Router();
   
-    router.post("/", [authenticate],hasAccess(ENUM.CHANGE_STUDENT_INFO),studentInfo.create); 
+    router.post("/", [authenticate],studentInfo.create);  
     router.put("/:userId",studentInfo.update); 
     router.get("/user/:userId", [authenticate], studentInfo.findAllByUserId);
 

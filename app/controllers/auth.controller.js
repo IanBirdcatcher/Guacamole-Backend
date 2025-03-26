@@ -19,7 +19,9 @@ const roles = [
   { id: 1, name: 'student' },
   { id: 2, name: 'student worker' },
   { id: 3, name: 'admin' },
-  { id: 4, name: 'professor' }
+  { id: 4, name: 'professor' },
+  { id: 5, name: 'wantToBeAdmin' }
+
 ];
 
 const createRolesIfNotExist = async () => {
@@ -149,7 +151,7 @@ exports.login = async (req, res) => {
       await assignDefaultRoleToUser(user.id); 
       return res.send({ message: "User was registered successfully!" }); 
     } catch (err) {
-      return res.status(500).send({ message: "user not created 94 " + err.message });
+      return res.status(500).send({ message: "user not created 94 " + err.message }); 
     }
   } else {
     console.log(user);

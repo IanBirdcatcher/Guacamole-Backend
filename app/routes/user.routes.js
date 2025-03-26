@@ -4,13 +4,17 @@ module.exports = (app) => {
   const ENUM = require("../config/PermisionsENUM");
   var router = require("express").Router();
 
+
+  router.get("/wantToBeAdmin/all", [authenticate], user.getwantToBeAdmin);
+  router.get("/firstLogin/:userId", [authenticate], user.getFirstLogin);
+
   router.post("/", [authenticate], user.create);
   router.get("/", [authenticate, hasAccess(ENUM.READ_STUDENT_INFO)], user.findAll);
   router.get("/:id", [authenticate], user.findOne);
   router.put("/:id", [authenticate, hasAccess(ENUM.CHANGE_STUDENT_INFO)], user.update);
   router.delete("/:id", [authenticate, hasAccess(ENUM.CHANGE_STUDENT_INFO)], user.delete);
 
-  router.get("/firstLogin/:userId", [authenticate], user.getFirstLogin); 
+
 
 
   app.use("/flight-plan-t2/user", router);
