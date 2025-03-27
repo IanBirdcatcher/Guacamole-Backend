@@ -5,13 +5,17 @@ module.exports = (sequelize, Sequelize) => {
         autoIncrement: true,
         primaryKey: true,
       },
+      title: {
+        type: Sequelize.STRING,
+        allowNull: false,
+      },
       desc: {
         type: Sequelize.STRING,
         allowNull: false,
       },
       path: {
         type: Sequelize.STRING,
-        allowNull: false,
+        allowNull: true,
       },
       goodNews: {
         type: Sequelize.BOOLEAN,
