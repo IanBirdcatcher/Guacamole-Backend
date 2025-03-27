@@ -12,13 +12,13 @@ db.sequelize.sync();
 
 // Configure CORS options
 var corsOptions = {
-  origin: "http://localhost:8081",
+  origin: "http://localhost:8081",  // Your frontend URL
 };
 app.use(cors(corsOptions));
 app.options("*", cors());
 
 // Parse requests with JSON payloads
-app.use(express.json());
+app.use(express.json({ limit: '10mb' }));
 
 // Parse requests with URL-encoded payloads
 app.use(express.urlencoded({ extended: true }));
@@ -30,6 +30,8 @@ app.get("/", (req, res) => {
 
 // Import routes
 require("./app/routes/auth.routes.js")(app);
+require("./app/routes/user.routes")(app);
+require("./app/routes/reward.routes.js")(app);
 require("./app/routes/user.routes.js")(app);
 require("./app/routes/event.routes.js")(app);
 require("./app/routes/type.routes.js")(app);
@@ -71,6 +73,8 @@ require("./app/routes/flightPlanTask.routes.js")(app);
 require("./app/routes/flightPlanExperience.routes.js")(app);
 require("./app/routes/semester.routes.js")(app);
 
+// Icon Routes
+require("./app/routes/icon.routes.js")(app); 
 
 require("./app/routes/notification.routes.js")(app);
 
