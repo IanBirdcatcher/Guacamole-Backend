@@ -142,7 +142,11 @@ exports.delete = async (req, res) => {
 
   let session = await Session.findOne({where: {token: token}})
   
-  if (session.userId != id) {res.status(401); res.send({message: "Unauthorized to delete this notification"})}
+  let notification = await Notification.findByPk(id)
+
+
+  if (notification.userId != session.userId) {
+    res.status(401); res.send({message: "Unauthorized to delete this notification"})}
   else {
     Notification.destroy({ where: { id: id } })
       .then((num) => {
