@@ -15,7 +15,7 @@ module.exports = (sequelize, Sequelize) => {
       },
       points: {
         type: Sequelize.INTEGER,
-        allowNull: false,
+        allowNull: true,
       },
       type: {
         type: Sequelize.STRING,
@@ -31,6 +31,16 @@ module.exports = (sequelize, Sequelize) => {
         defaultValue: false,
         allowNull: false,
       },
+      denied: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: false,
+        allowNull: true,
+      },
+      pastRequested: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: false,
+        allowNull: true,
+      },
       subtext: {
         type: Sequelize.STRING,
         allowNull: true,
@@ -41,15 +51,15 @@ module.exports = (sequelize, Sequelize) => {
       },
       semestersFromGraduation: {
         type: Sequelize.INTEGER,
-        allowNull: false,
+        allowNull: true,
       },
       reflectionRequired: {
         type: Sequelize.BOOLEAN,
-        allowNull: false,
+        allowNull: true,
       },
       documentRequired: {
         type: Sequelize.BOOLEAN,
-        allowNull: false,
+        allowNull: true,
       },
     });
   
