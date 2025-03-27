@@ -28,6 +28,11 @@ module.exports = (app) => {
       [authenticate],
       flightPlanExperience.findByUser
     );
+    router.get(
+      "/events/byExperience/:id",
+      [authenticate],
+      flightPlanExperience.findEventsForExperience
+    );
     router.put(
       "/:id",
       [authenticate, hasAccess(ENUM.CHANGE_STUDENT_INFO)],
