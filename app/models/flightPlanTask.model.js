@@ -12,6 +12,10 @@ module.exports = (sequelize, Sequelize) => {
     subtext: {
       type: Sequelize.STRING,
       allowNull: true,
+    },
+    pending: {
+      type: Sequelize.BOOLEAN,
+      allowNull: true,
     }
   });
 
