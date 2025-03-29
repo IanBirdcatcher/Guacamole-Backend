@@ -20,7 +20,7 @@ module.exports = (app) => {
     );
     router.get(
       "/:id",
-      [authenticate, hasAccess(ENUM.READ_TASK)],
+      [authenticate, hasAccess(ENUM.ADD_TASK)],
       task.findOne
     );
     router.put(
