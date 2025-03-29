@@ -73,6 +73,10 @@ module.exports = (sequelize, Sequelize) => {
         type: Sequelize.BOOLEAN,
         allowNull: false,
       },
+      addNotification: {
+        type: Sequelize.BOOLEAN,
+        allowNull: false,
+      },
     });
   
     return permission;
