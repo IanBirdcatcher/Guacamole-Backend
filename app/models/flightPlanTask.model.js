@@ -13,6 +13,10 @@ module.exports = (sequelize, Sequelize) => {
       type: Sequelize.STRING,
       allowNull: true,
     },
+    comment: {
+      type: Sequelize.STRING,
+      allowNull: true,
+    },
     pending: {
       type: Sequelize.BOOLEAN,
       allowNull: true,

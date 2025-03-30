@@ -68,13 +68,7 @@ exports.findAll = (req, res) => {
 exports.findPending = (req, res) => {
   FlightPlanTask.findAll({where: {pending: 1}})
     .then((data) => {
-      if (data && data.length > 0) {
-        res.send(data);
-      } else {
-        res.status(404).send({
-          message: `No FlightPlanTask entries found.`,
-        });
-      }
+      res.send(data);
     })
     .catch((err) => {
       res.status(500).send({
