@@ -17,7 +17,8 @@ exports.create = (req, res) => {
     title: req.body.title,
     desc: req.body.desc,
     path: req.body.path,
-    goodNews: req.body.goodNews
+    goodNews: req.body.goodNews,
+    userId: req.body.userId, 
   };
 
   // Save the Notification entry in the database
