@@ -11,11 +11,14 @@ exports.create = (req, res) => {
     desc: req.body.desc,
     points: req.body.points,
     type: req.body.type,
+    requestedByStudent: req.body.requestedByStudent,
+    approved: req.body.approved,
     subtext: req.body.subtext,
     priority: req.body.priority,
     reflectionRequired: req.body.reflectionRequired,
     semestersFromGraduation: req.body.semestersFromGraduation,
     documentRequired: req.body.documentRequired,
+    studentInfoId: req.body.studentInfoId,
     userId: req.body.userId,
   };
   // Save the Experience entry in the database

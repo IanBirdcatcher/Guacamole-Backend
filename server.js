@@ -74,7 +74,7 @@ require("./app/routes/flightPlanExperience.routes.js")(app);
 require("./app/routes/semester.routes.js")(app);
 
 // Icon Routes
-require("./app/routes/icon.routes.js")(app); 
+// require("./app/routes/icon.routes.js")(app); 
 
 require("./app/routes/notification.routes.js")(app);
 

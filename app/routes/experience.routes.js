@@ -10,7 +10,6 @@ module.exports = (app) => {
   router.post(
     "/",
     [authenticate],
-    hasAccess(ENUM.ADD_EXPERIENCE),
     experience.create
   );
   router.get(
@@ -30,7 +29,7 @@ module.exports = (app) => {
   );
   router.delete(
     "/:id",
-    [authenticate, hasAccess(ENUM.ADD_EXPERIENCE)],
+    [authenticate],
     experience.delete
   );
 
