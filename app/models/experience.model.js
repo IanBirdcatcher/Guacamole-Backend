@@ -19,7 +19,7 @@ module.exports = (sequelize, Sequelize) => {
       },
       type: {
         type: Sequelize.STRING,
-        allowNull: false,
+        allowNull: true,
       },
       requestedByStudent: {
         type: Sequelize.BOOLEAN,
