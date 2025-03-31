@@ -20,7 +20,7 @@ module.exports = (app) => {
   );
   router.get(
     "/:id",
-    [authenticate, hasAccess(ENUM.READ_EXPERIENCE)],
+    [authenticate, hasAccess(ENUM.ADD_EXPERIENCE)],
     experience.findOne
   );
   router.put(
