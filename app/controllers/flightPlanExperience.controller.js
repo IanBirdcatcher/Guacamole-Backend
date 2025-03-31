@@ -68,7 +68,7 @@ exports.findAll = (req, res) => {
 
 // Retrieve all FlightPlanTask entries
 exports.findPending = (req, res) => {
-  FlightPlanExperience.findAll({where: {reflection: {[Op.ne]: null}}})
+  FlightPlanExperience.findAll({where: {reflection: {[Op.ne]: null}, pending: 1}})
     .then((data) => {
       res.send(data);
     })
