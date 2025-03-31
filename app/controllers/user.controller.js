@@ -2,6 +2,8 @@ const db = require("../models");
 const User = db.user;
 const Op = db.Sequelize.Op;
 const roleUser = db.roleUser
+const experience = db.experience
+const studentInfo = db.studentInfo
 
 // Create and Save a new User
 exports.create = (req, res) => {
@@ -114,6 +116,63 @@ exports.getwantToBeAdmin = async (req, res) => {
     console.error("Error in getwantToBeAdmin:", error);
     res.status(500).send({
       message: "An error occurred while retrieving user details for roleId = 5.",
+    });
+  }
+};
+
+exports.getExperienceRequestsUsers = async (req, res) => {
+  try {
+    // Step 1: Retrieve all experience requests where requestedByStudent is true
+    const experienceRequests = await experience.findAll({
+      where: { requestedByStudent: true },
+      attributes: ['id', 'studentInfoId', 'name', 'desc'],
+    });
+
+    if (!experienceRequests.length) {
+      return res.send({ experienceRequests: [] });
+    }
+
+    // Step 2: Extract unique studentInfoIds from the experience requests
+    const studentInfoIds = [...new Set(experienceRequests.map((request) => request.studentInfoId))];
+
+    // Step 3: Retrieve studentInfo records for the extracted IDs
+    const studentInfos = await studentInfo.findAll({
+      where: { id: studentInfoIds },
+      attributes: ['id','studentId', 'userId'], 
+    });
+
+    if (!studentInfos.length) {
+      return res.send({ experienceRequests: [] });
+    }
+
+    // Step 4: Extract unique userIds from the studentInfo records
+    const userIds = [...new Set(studentInfos.map((info) => info.userId))];
+
+    // Step 5: Retrieve user records for the extracted IDs
+    const users = await User.findAll({
+      where: { id: userIds },
+      attributes: ['id', 'fName', 'lName', 'email'],
+    });
+
+    // Step 6: Create maps for quick lookup
+    const userMap = Object.fromEntries(users.map((user) => [user.id, user]));
+    const studentInfoMap = Object.fromEntries(studentInfos.map((info) => [info.id, info]));
+
+    // Step 7: Map experience requests to include user details
+    const response = experienceRequests.map((request) => {
+      const studentInfo = studentInfoMap[request.studentInfoId];
+      const user = studentInfo ? userMap[studentInfo.userId] : null;
+      return {
+        ...request.dataValues,
+        user: user || null,
+      };
+    });
+
+    res.send({ experienceRequests: response });
+  } catch (error) {
+    console.error("Error in getExperienceRequestsUsers:", error);
+    res.status(500).send({
+      message: "An error occurred while retrieving user details for experience requests.",
     });
   }
 };
