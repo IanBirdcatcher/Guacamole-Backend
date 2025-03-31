@@ -73,6 +73,8 @@ require("./app/routes/flightPlanTask.routes.js")(app);
 require("./app/routes/flightPlanExperience.routes.js")(app);
 require("./app/routes/semester.routes.js")(app);
 
+//badge Routes
+require("./app/routes/badge.routes.js")(app);
 // Icon Routes
 require("./app/routes/icon.routes.js")(app); 
 
