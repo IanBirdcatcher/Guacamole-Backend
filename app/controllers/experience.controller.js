@@ -1,6 +1,7 @@
 const db = require("../models");
 const Experience = db.experience;
 const Op = db.Sequelize.Op;
+const studentInfo = db.studentInfo;
 
 // Create and Save a new Experience entry
 exports.create = (req, res) => {
@@ -11,11 +12,15 @@ exports.create = (req, res) => {
     desc: req.body.desc,
     points: req.body.points,
     type: req.body.type,
+    requestedByStudent: req.body.requestedByStudent,
+    approved: req.body.approved,
+    denided: req.body.denied,
     subtext: req.body.subtext,
     priority: req.body.priority,
     reflectionRequired: req.body.reflectionRequired,
     semestersFromGraduation: req.body.semestersFromGraduation,
     documentRequired: req.body.documentRequired,
+    studentInfoId: req.body.studentInfoId,
     userId: req.body.userId,
   };
   // Save the Experience entry in the database
@@ -93,30 +98,50 @@ exports.findOne = (req, res) => {
 };
 
 // Update an Experience entry by ID
-exports.update = (req, res) => {
+exports.update = async (req, res) => {
   const id = req.params.id;
-  Experience.update(req.body, { where: { id: id } })
-    .then((num) => {
-      if (num == 1) {
-        res.send({ message: "Experience entry was updated successfully." });
-      } else {
-        res.status(400).send({
-          message: `Could not update Experience entry with id=${id}.`,
+  const points = req.body.points;
+  const approved = req.body.approved;
+
+  try {
+    // Update the Experience entry
+    const [num] = await Experience.update(req.body, { where: { id: id } });
+
+    if (num !== 1) {
+      return res.status(400).send({
+        message: `Could not update Experience entry with id=${id}.`,
+      });
+    }
+
+    // If approved, update the studentInfo points
+    if (approved) {
+      const studentInfoUpdate = await studentInfo.update(
+        {
+          currentPoints: db.sequelize.literal(`currentpoints + ${points}`),
+          earnedPoints: db.sequelize.literal(`earnedPoints + ${points}`), 
+        },
+        { where: { userId: req.body.userId } } 
+      );
+
+      if (studentInfoUpdate[0] !== 1) {
+        return res.status(400).send({
+          message: `Could not update StudentInfo entry for userId=${req.body.userId}.`,
         });
       }
-    })
-    .catch((err) => {
-      if (err.message.includes("foreign key constraint fails")) {
-        const missingField = err.message.includes("userId");
-        res
-          .status(404)
-          .send({ message: `The ${missingField} could not be found.` });
-      } else {
-        res.status(500).send({
-          message: err.message || "Error updating the Experience entry.",
-        });
-      }
+    }
+
+    // Send success response
+    res.send({ message: "Experience entry and related updates were successful." });
+  } catch (err) {
+    if (err.message.includes("foreign key constraint fails")) {
+      const missingField = err.message.includes("userId") ? "userId" : "unknown field";
+      return res.status(404).send({ message: `The ${missingField} could not be found.` });
+    }
+
+    res.status(500).send({
+      message: err.message || "Error updating the Experience entry.",
     });
+  }
 };
 
 // Delete an Experience entry by ID
