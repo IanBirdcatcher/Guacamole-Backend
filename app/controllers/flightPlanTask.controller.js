@@ -63,6 +63,22 @@ exports.findAll = (req, res) => {
     });
 };
 
+
+// Retrieve all FlightPlanTask entries
+exports.findPending = (req, res) => {
+  FlightPlanTask.findAll({where: {pending: 1}})
+    .then((data) => {
+      res.send(data);
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message:
+          err.message ||
+          `Error retrieving FlightPlanTask entries.`,
+      });
+    });
+};
+
 // Retrieve a single FlightPlanTask entry by ID
 exports.findByUser = (req, res) => {
   const userId = req.params.id;

@@ -76,7 +76,7 @@ require("./app/routes/semester.routes.js")(app);
 //badge Routes
 require("./app/routes/badge.routes.js")(app);
 // Icon Routes
-require("./app/routes/icon.routes.js")(app); 
+// require("./app/routes/icon.routes.js")(app); 
 
 require("./app/routes/notification.routes.js")(app);
 

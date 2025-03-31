@@ -45,7 +45,7 @@ exports.update = (req, res) => {
     return res.status(400).send({ message: "User ID is missing!" });
   }
 
-  StudentInfo.update(req.body, { where: { id: id } })
+  StudentInfo.update(req.body, { where: { userId: id } })
     .then((num) => {
       if (num == 1) {
         res.send({ message: "StudentInfo entry was updated successfully." });

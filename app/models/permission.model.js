@@ -80,6 +80,10 @@ module.exports = (sequelize, Sequelize) => {
       removeBadge: {
         type: Sequelize.BOOLEAN,
         allowNull: false,
+      },
+      addNotification: {
+        type: Sequelize.BOOLEAN,
+        allowNull: false,
       }
     });
   

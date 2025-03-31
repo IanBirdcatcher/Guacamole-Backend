@@ -17,7 +17,8 @@ exports.create = (req, res) => {
     title: req.body.title,
     desc: req.body.desc,
     path: req.body.path,
-    goodNews: req.body.goodNews
+    goodNews: req.body.goodNews,
+    userId: req.body.userId, 
   };
 
   // Save the Notification entry in the database
@@ -69,13 +70,7 @@ exports.getByUser = async (req, res) => {
 
   Notification.findAll({where: {userId: session.userId}})
     .then((data) => {
-      if (data && data.length > 0) {
-        res.send(data);
-      } else {
-        res.status(404).send({
-          message: `No Notification entries found.`,
-        });
-      }
+      res.send(data);
     })
     .catch((err) => {
       res.status(500).send({
@@ -144,26 +139,28 @@ exports.delete = async (req, res) => {
   
   let notification = await Notification.findByPk(id)
 
-
-  if (notification.userId != session.userId) {
-    res.status(401); res.send({message: "Unauthorized to delete this notification"})}
+  if (!notification) {res.status(200); res.send({message: "No notification found"})}
   else {
-    Notification.destroy({ where: { id: id } })
-      .then((num) => {
-        if (num == 1) {
-          res.send({ message: "Notification entry was deleted successfully!" });
-        } else {
-          res.status(404).send({
-            message: `Could not delete Notification entry with id=${id}.`,
+    if (notification.userId != session.userId) {
+      res.status(401); res.send({message: "Unauthorized to delete this notification"})}
+    else {
+      Notification.destroy({ where: { id: id } })
+        .then((num) => {
+          if (num == 1) {
+            res.send({ message: "Notification entry was deleted successfully!" });
+          } else {
+            res.status(404).send({
+              message: `Could not delete Notification entry with id=${id}.`,
+            });
+          }
+        })
+        .catch((err) => {
+          res.status(500).send({
+            message:
+              err.message ||
+              `Error deleting Notification entry with id=${id}.`,
           });
-        }
-      })
-      .catch((err) => {
-        res.status(500).send({
-          message:
-            err.message ||
-            `Error deleting Notification entry with id=${id}.`,
         });
-      });
+    }
   }
 };
