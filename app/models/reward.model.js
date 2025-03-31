@@ -13,6 +13,10 @@ module.exports = (sequelize, Sequelize) => {
       type: Sequelize.STRING,
       allowNull: false,
     },
+    image: {
+      type: Sequelize.STRING,
+      allowNull: true,
+    },
     requiredPoints: {
       type: Sequelize.INTEGER,
       allowNull: true,

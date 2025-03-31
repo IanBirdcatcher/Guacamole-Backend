@@ -104,4 +104,7 @@ dist
 .dynamodb/
 
 # TernJS port file
-.tern-port
+.tern-
+
+# ingnores upload files from testing
+uploads/*

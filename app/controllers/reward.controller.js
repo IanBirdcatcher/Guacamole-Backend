@@ -16,6 +16,7 @@ exports.create = (req, res) => {
   const reward = {
     id: req.body.id,
     name: req.body.name,
+    image: req.body.image,
     desc: req.body.desc,
     requiredPoints: req.body.requiredPoints,
   };
