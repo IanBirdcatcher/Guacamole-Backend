@@ -7,6 +7,7 @@ module.exports = (app) => {
 
   router.get("/wantToBeAdmin/all", [authenticate], user.getwantToBeAdmin);
   router.get("/firstLogin/:userId", [authenticate], user.getFirstLogin);
+  router.get("/get/requests/getAllRequests", [authenticate], user.getExperienceRequestsUsers);
 
   router.post("/", [authenticate], user.create);
   router.get("/", [authenticate, hasAccess(ENUM.READ_STUDENT_INFO)], user.findAll);
