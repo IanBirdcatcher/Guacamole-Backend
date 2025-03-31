@@ -73,10 +73,18 @@ module.exports = (sequelize, Sequelize) => {
         type: Sequelize.BOOLEAN,
         allowNull: false,
       },
-      addNotification: {
+      addBadge: {
         type: Sequelize.BOOLEAN,
         allowNull: false,
       },
+      removeBadge: {
+        type: Sequelize.BOOLEAN,
+        allowNull: false,
+      },
+      addNotification: {
+        type: Sequelize.BOOLEAN,
+        allowNull: false,
+      }
     });
   
     return permission;
