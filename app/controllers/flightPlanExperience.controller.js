@@ -66,6 +66,21 @@ exports.findAll = (req, res) => {
     });
 };
 
+// Retrieve all FlightPlanTask entries
+exports.findPending = (req, res) => {
+  FlightPlanExperience.findAll({where: {reflection: {[Op.ne]: null}}})
+    .then((data) => {
+      res.send(data);
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message:
+          err.message ||
+          `Error retrieving FlightPlanTask entries.`,
+      });
+    });
+};
+
 exports.findEventsForExperience = async (req, res) => {
   const experienceId = req.params.id
   let foundEvents = []
