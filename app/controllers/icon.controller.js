@@ -3,6 +3,7 @@ const icon = db.icon;
 const Op = db.Sequelize.Op;
 const path = require('path');
 const multer = require('multer');
+const fs = require('fs'); 
 
 // Set up storage engine for multer to save the image in a directory
 const storage = multer.diskStorage({
@@ -61,23 +62,34 @@ exports.findAll = (req, res) => {
 
 // Find a single icon with an id
 exports.findOne = (req, res) => {
-  const id = req.params.id;
-  icon.findByPk(id)
-    .then((data) => {
-      if (data) {
-        res.send(data);
+  const id = req.params.image;
+  try {
+    const iconPath = safeJoin(path.join(__dirname, '../../uploads'), id);
+    if (iconPath) {
+      if (fs.existsSync(iconPath)) {
+        res.sendFile(iconPath);
       } else {
-        res.status(404).send({
-          message: `Cannot find icon with id=${id}.`,
-        });
+        res.status(404).send('File not found');
       }
-    })
-    .catch((err) => {
-      res.status(500).send({
-        message: "Error retrieving icon with id=" + id,
-      });
+    } else {
+      throw new Error("Invalid icon path");
+    }
+  } catch (err) {
+    res.status(500).send({
+      message: "Some error occurred while retrieving icons.",
     });
+  }
 };
+
+function safeJoin(base, userInput) {
+  const targetPath = path.normalize(path.join(base, userInput));
+  console.log(targetPath);
+  if (targetPath.startsWith(base)) {
+    return targetPath;
+  }
+  return null; // or throw an error, indicating an invalid path
+}
+
 
 // Update a icon by ID
 exports.update = (req, res) => {

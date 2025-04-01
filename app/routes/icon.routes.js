@@ -63,7 +63,7 @@ module.exports = (app) => {
 
   router.post("/", [authenticate, icon.uploadIcon], hasAccess(ENUM.ADD_icon), icon.create);
   router.get("/", [authenticate], icon.findAll);
-  router.get("/:id", [authenticate], icon.findOne);
+  router.get("/:image", [authenticate], icon.findOne);
   router.put("/:id", [authenticate], hasAccess(ENUM.ADD_icon), icon.update);
   router.delete("/:id", [authenticate], hasAccess(ENUM.REMOVE_icon), icon.delete);
 
