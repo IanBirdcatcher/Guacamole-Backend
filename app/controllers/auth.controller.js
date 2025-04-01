@@ -1,8 +1,8 @@
 const db = require("../models");
 const authconfig = require("../config/auth.config");
 const User = db.user;
-const Role = db.role; 
-const RoleUser = db.roleUser; 
+const Role = db.role;
+const RoleUser = db.roleUser;
 const studentInfo = db.studentInfo;
 const Session = db.session;
 const Op = db.Sequelize.Op;
@@ -16,12 +16,11 @@ let googleUser = {};
 const google_id = process.env.CLIENT_ID;
 
 const roles = [
-  { id: 1, name: 'student' },
-  { id: 2, name: 'student worker' },
-  { id: 3, name: 'admin' },
-  { id: 4, name: 'professor' },
-  { id: 5, name: 'wantToBeAdmin' }
-
+  { id: 1, name: "student" },
+  { id: 2, name: "student worker" },
+  { id: 3, name: "admin" },
+  { id: 4, name: "professor" },
+  { id: 5, name: "wantToBeAdmin" },
 ];
 
 const createRolesIfNotExist = async () => {
@@ -32,7 +31,7 @@ const createRolesIfNotExist = async () => {
         await Role.create(role);
       }
     } catch (err) {
-      console.error(`Error creating role ${role.name}: ${err.message}`);
+      console.error(`Error creating role ${role.name}: ${err}`);
     }
   });
   await Promise.all(rolePromises);
@@ -43,43 +42,50 @@ const studentInfoIfNotExist = async (userId) => {
     userId: userId,
     earnedPoints: 0,
     spentPoints: 0,
-    graduationSemester: 'spring 2025',
+    graduationSemester: "spring 2025",
     semestersTillGraduation: 8,
-    studentId: '0000',
-    startingSemester: 'freshman 1',
+    studentId: "0000",
+    startingSemester: "freshman 1",
     firstLogin: true,
   };
 
   try {
-    const existingStudentInfo = await studentInfo.findOne({ where: { userId: userId } });
-    if (!existingStudentInfo) { 
+    const existingStudentInfo = await studentInfo.findOne({
+      where: { userId: userId },
+    });
+    if (!existingStudentInfo) {
       await studentInfo.create(studentInfoData);
       console.log(`Created studentInfo for user ${userId}`);
     } else {
       console.log(`studentInfo already exists for user ${userId}`);
     }
   } catch (err) {
-    console.error(`Error creating studentInfo for user ${userId}: ${err.message}`);
+    console.error(
+      `Error creating studentInfo for user ${userId}: ${err}`
+    );
   }
 };
 
 const assignDefaultRoleToUser = async (userId) => {
-  const defaultRoleId = 1; 
+  const defaultRoleId = 1;
   try {
     await RoleUser.create({ userId, roleId: defaultRoleId });
     console.log(`Assigned default role ${defaultRoleId} to user ${userId}`);
   } catch (err) {
-    console.error(`Error assigning default role to user ${userId}: ${err.message}`);
+    console.error(
+      `Error assigning default role to user ${userId}: ${err}`
+    );
   }
 };
 
 exports.login = async (req, res) => {
   console.log(req.body);
+  googleUser = {};
 
   var googleToken = req.body.credential;
 
   const { OAuth2Client } = require("google-auth-library");
-  const client = new OAuth2Client(google_id); 
+  const client = new OAuth2Client(google_id);
   async function verify() {
     const ticket = await client.verifyIdToken({
       idToken: googleToken,
@@ -88,12 +94,17 @@ exports.login = async (req, res) => {
     googleUser = ticket.getPayload();
     console.log("Google payload is " + JSON.stringify(googleUser));
   }
-  await verify().catch(console.error);
+  try {
+    await verify();
+  } catch (err) {
+    console.error("Invalid Google token");
+    return res.status(500).send({ message: "Invalid Google token" });
+  }
 
   let email = googleUser.email;
   let firstName = googleUser.given_name;
   let lastName = googleUser.family_name;
-  let profilePicture = googleUser.picture; 
+  let profilePicture = googleUser.picture;
 
   if (
     (email === undefined ||
@@ -112,8 +123,7 @@ exports.login = async (req, res) => {
     email = data.email;
     firstName = data.given_name;
     lastName = data.family_name;
-    profilePicture = data.picture; 
-  
+    profilePicture = data.picture;
   }
 
   console.log(lastName);
@@ -131,11 +141,12 @@ exports.login = async (req, res) => {
         lName: lastName,
         email: email,
         profilePicture: profilePicture,
-
       };
     }
   } catch (err) {
-    return res.status(500).send({ message: "user not found 80 " + err.message });
+    return res
+      .status(500)
+      .send({ message: "user not found 80 " + err });
   }
 
   if (user.id === undefined) {
@@ -143,15 +154,17 @@ exports.login = async (req, res) => {
     console.log(user);
     try {
       const data = await User.create(user);
-      console.log("user was registered"); 
+      console.log("user was registered");
       user = data.dataValues;
       await studentInfoIfNotExist(user.id);
 
       await createRolesIfNotExist();
-      await assignDefaultRoleToUser(user.id); 
-      return res.send({ message: "User was registered successfully!" }); 
+      await assignDefaultRoleToUser(user.id);
+      return res.send({ message: "User was registered successfully!" });
     } catch (err) {
-      return res.status(500).send({ message: "user not created 94 " + err.message }); 
+      return res
+        .status(500)
+        .send({ message: "user not created 94 " + err });
     }
   } else {
     console.log(user);
@@ -164,7 +177,9 @@ exports.login = async (req, res) => {
       if (num == 1) {
         console.log("updated user's name and profile picture");
       } else {
-        console.log(`Cannot update User with id=${user.id}. Maybe User was not found or req.body is empty!`);
+        console.log(
+          `Cannot update User with id=${user.id}. Maybe User was not found or req.body is empty!`
+        );
       }
     } catch (err) {
       console.log("Error updating User with id=" + user.id + " " + err);
@@ -202,7 +217,9 @@ exports.login = async (req, res) => {
     }
   } catch (err) {
     return res.status(500).send({
-      message: " Line 170 " + err.message || "Some error occurred while retrieving sessions.",
+      message:
+        " Line 170 " + err ||
+        "Some error occurred while retrieving sessions.",
     });
   }
 
@@ -218,7 +235,6 @@ exports.login = async (req, res) => {
       expirationDate: tempExpirationDate,
       userId: user.id,
       firstLogin: false,
-
     };
 
     console.log("making a new session");
@@ -236,7 +252,9 @@ exports.login = async (req, res) => {
       };
       return res.send(userInfo);
     } catch (err) {
-      return res.status(500).send({ message: "Cant create session " + err.message });
+      return res
+        .status(500)
+        .send({ message: "Cant create session " + err });
     }
   }
 };
@@ -268,7 +286,7 @@ exports.authorize = async (req, res) => {
       }
     })
     .catch((err) => {
-      res.status(500).send({ message: "Can't find user 238 " + err.message });
+      res.status(500).send({ message: "Can't find user 238 " + err });
       return;
     });
   console.log("user");
@@ -295,7 +313,7 @@ exports.authorize = async (req, res) => {
       res.send(userInfo);
     })
     .catch((err) => {
-      res.status(500).send({ message: "Can't update user 265" + err.message });
+      res.status(500).send({ message: "Can't update user 265" + err });
     });
 
   console.log(tokens);
@@ -315,11 +333,11 @@ exports.logout = async (req, res) => {
   let session = {};
   await Session.destroy({ where: { token: req.body.token } })
     .then(() => {
-      console.log("session destroyed")
+      console.log("session destroyed");
     })
     .catch(() => {
-      console.log("session not destroyed")
-    })
+      console.log("session not destroyed");
+    });
 
   // await Session.findAll({ where: { token: req.body.token } })
   //   .then((data) => {
@@ -328,7 +346,7 @@ exports.logout = async (req, res) => {
   //   .catch((err) => {
   //     res.status(500).send({
   //       message:
-  //         err.message || "Some error occurred while retrieving sessions.",
+  //         err || "Some error occurred while retrieving sessions.",
   //     });
   //     return;
   //   });
