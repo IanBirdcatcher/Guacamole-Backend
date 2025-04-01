@@ -16,6 +16,8 @@ const ENUM = Object.freeze({
     REMOVE_REWARD:'removeReward',
     REDEEM_REWARD:'redeemReward',
     READ_STRENGTHS:'readStrengths',
-    ADD_NOTIFICATION:'addNotificaion'
+    ADD_BADGE: 'addBadge',
+    REMOVE_BADGE: 'removeBadge',
+    ADD_NOTIFICATION:'addNotification'
   });
 module.exports = ENUM;

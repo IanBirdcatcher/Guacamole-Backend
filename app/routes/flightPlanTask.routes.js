@@ -19,6 +19,11 @@ module.exports = (app) => {
       flightPlanTask.findAll
     );
     router.get(
+      "/pending/tasks",
+      [authenticate],
+      flightPlanTask.findPending
+    );
+    router.get(
       "/:id",
       [authenticate],
       flightPlanTask.findOne

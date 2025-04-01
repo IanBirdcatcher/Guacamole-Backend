@@ -11,23 +11,24 @@ exports.create = (req, res) => {
     });
     return;
   }
+  console.log(req.body.id);
+  
+  console.log(req.body.name);
 
-  // Validate the image URL (if it's provided)
-  if (!req.body.imageUrl) {
-    res.status(400).send({
-      message: "Must contain an image URL",
-    });
-    return;
-  }
+  console.log(req.body.desc);
 
   // Create a badge object with the image URL
   const badgeData = {
+    id: req.body.id,
     name: req.body.name,
     desc: req.body.desc,
-    imageUrl: req.body.imageUrl, // Store the image URL
   };
+  
+  
+  console.log(badgeData);
 
   // Save badge in the database
+
   badge.create(badgeData)
     .then((data) => {
       res.send(data);
