@@ -80,6 +80,9 @@ require("./app/routes/badge.routes.js")(app);
 
 require("./app/routes/notification.routes.js")(app);
 
+// Document routes
+require("./app/routes/document.routes.js")(app);
+
 
 // Set the server to listen on a specified port
 const PORT = process.env.PORT || 3032;

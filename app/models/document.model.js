@@ -7,11 +7,11 @@ module.exports = (sequelize, Sequelize) => {
       },
       name: {
         type: Sequelize.STRING,
-        allowNull: false,
+        allowNull: true,
       },
       type: {
         type: Sequelize.STRING,
-        allowNull: false,
+        allowNull: true,
       },
       data: {
         type: Sequelize.BLOB,
