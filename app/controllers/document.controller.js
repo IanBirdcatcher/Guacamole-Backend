@@ -60,7 +60,11 @@ exports.uploadDocument = (req, res) => {
     try {
       // Save file metadata to the database
       const documentData = {
-        data:`/studentUploads/newFile` 
+        data:`/studentUploads/`,
+        name: req.file.originalname,
+        type: req.file.mimetype,
+        comment: req.body.comment || null,
+        flightPlanTaskId: req.body.flightplanTaskId, 
       };
 
       const newDocument = await Document.create(documentData);

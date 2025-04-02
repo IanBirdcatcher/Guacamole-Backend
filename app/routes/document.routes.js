@@ -4,7 +4,6 @@ const documentController = require("../controllers/document.controller");
 
 module.exports = (app) => {
     // Create a new Document
-    router.post("/", documentController.create);
 
     // Retrieve all Documents
     router.get("/", documentController.findAll);
@@ -13,7 +12,6 @@ module.exports = (app) => {
     router.get("/:id", documentController.findOne);
 
     // Update a Document by ID
-    router.put("/:id", documentController.update);
 
     // Delete a Document by ID
     router.delete("/:id", documentController.delete);

@@ -14,7 +14,7 @@ module.exports = (sequelize, Sequelize) => {
         allowNull: true,
       },
       data: {
-        type: Sequelize.BLOB,
+        type: Sequelize.STRING,
         allowNull: true,
       },
       comment: {
