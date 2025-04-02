@@ -28,6 +28,12 @@ module.exports = (app) => {
       [authenticate],
       flightPlanExperience.findByUser
     );
+    
+    router.get(
+      "/pending/experiences",
+      [authenticate],
+      flightPlanExperience.findPending
+    );
     router.get(
       "/events/byExperience/:id",
       [authenticate],
