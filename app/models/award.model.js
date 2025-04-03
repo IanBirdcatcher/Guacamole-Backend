@@ -17,6 +17,26 @@ module.exports = (sequelize, Sequelize) => {
         type: Sequelize.DATE,
         allowNull: true,
       },
+      allCount: {
+        type: Sequelize.INTEGER,
+        allowNull: true,
+      },
+      taskCount: {
+        type: Sequelize.INTEGER,
+        allowNull: true,
+      },
+      experienceCount: {
+        type: Sequelize.INTEGER,
+        allowNull: true,
+      },
+      awardSpecificTaskAND: {
+        type: Sequelize.BOOLEAN,
+        allowNull: true,
+      },
+      awardSpecificExperienceAND: {
+        type: Sequelize.BOOLEAN,
+        allowNull: true,
+      },
     });
   
     return award;
