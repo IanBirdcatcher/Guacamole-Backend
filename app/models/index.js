@@ -65,6 +65,7 @@ db.semester = require("./semester.model.js")(sequelize, Sequelize);
 db.strength = require("./strength.model.js")(sequelize, Sequelize);
 db.studentInfo = require("./studentInfo.model.js")(sequelize, Sequelize);
 db.studentInfoMajor = require("./studentInfoMajor.model.js")(sequelize, Sequelize);
+db.studentInfoEvent = require("./studentInfoEvent.model.js")(sequelize, Sequelize);
 db.task = require("./task.model.js")(sequelize, Sequelize);
 db.taskMajor = require("./taskMajor.model.js")(sequelize, Sequelize);
 db.eventType = require("./eventType.model.js")(sequelize, Sequelize);
@@ -419,6 +420,20 @@ db.studentInfo.hasMany(db.studentInfoMajor, {
   onDelete: "CASCADE",
 });
 db.studentInfoMajor.belongsTo(db.studentInfo, {
+  allowNull: true,
+  onDelete: "CASCADE",
+});
+
+db.event.hasMany(db.studentInfoEvent, {
+  allowNull: true,
+  onDelete: "CASCADE",
+});
+
+db.studentInfo.hasMany(db.studentInfoEvent, {
+  allowNull: true,
+  onDelete: "CASCADE",
+});
+db.studentInfoEvent.belongsTo(db.studentInfo, {
   allowNull: true,
   onDelete: "CASCADE",
 });

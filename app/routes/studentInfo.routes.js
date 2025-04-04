@@ -10,6 +10,7 @@ module.exports = (app) => {
   
     router.post("/", [authenticate],studentInfo.create);  
     router.put("/:userId",studentInfo.update); 
+    router.get("/sid/:sid", [authenticate], studentInfo.findBySID);
     router.get("/user/:userId", [authenticate], studentInfo.findAllByUserId);
 
     app.use("/flight-plan-t2/studentInfo", router);
