@@ -5,9 +5,9 @@ const safeJoin = require('../safeJoinFunction');
 const badge = db.badge;
 const Op = db.Sequelize.Op;
 
+const baseURL = path.join(__dirname, "../../uploads")
 // Create and Save a new badge
 exports.create = (req, res) => {
-  const baseURL = path.join(__dirname, "../../uploads")
   // Validate request
   if (!req.body.name) {
     res.status(400).send({
