@@ -1,11 +1,11 @@
 module.exports = (sequelize, Sequelize) => {
-    const awardTaskType = sequelize.define("awardTaskType", {
+    const badgeSpecificExperience = sequelize.define("badgeSpecificExperience", {
       id: {
         type: Sequelize.INTEGER,
         autoIncrement: true,
         primaryKey: true,
       },
     });
-    return awardTaskType;
+    return badgeSpecificExperience;
   };
   

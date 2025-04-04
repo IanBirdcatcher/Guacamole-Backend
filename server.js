@@ -75,11 +75,12 @@ require("./app/routes/semester.routes.js")(app);
 
 //badge Routes
 require("./app/routes/badge.routes.js")(app);
+require("./app/routes/badgeSpecificExperiences.routes.js")(app);
+require("./app/routes/badgeSpecificTasks.routes.js")(app);
 // Icon Routes
 require("./app/routes/icon.routes.js")(app); 
 
 require("./app/routes/notification.routes.js")(app);
-
 
 // Set the server to listen on a specified port
 const PORT = process.env.PORT || 3032;

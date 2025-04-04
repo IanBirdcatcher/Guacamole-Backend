@@ -35,6 +35,10 @@ db.session = require("./session.model.js")(sequelize, Sequelize);
 db.roleUser = require("./roleUser.model.js")(sequelize, Sequelize);
 db.role = require("./role.model.js")(sequelize, Sequelize);
 db.badge = require("./badge.model.js")(sequelize, Sequelize);
+db.badgeSpecificTask = require("./badgeSpecificTask.model.js")(sequelize, Sequelize);
+db.badgeSpecificExperience = require("./badgeSpecificExperience.model.js")(sequelize, Sequelize);
+db.badgeTaskType = require("./badgeTaskType.model.js")(sequelize, Sequelize);
+db.badgeExperienceType = require("./badgeExperienceType.model.js")(sequelize, Sequelize);
 db.category = require("./category.model.js")(sequelize, Sequelize);
 db.document = require("./document.model.js")(sequelize, Sequelize);
 db.event = require("./event.model.js")(sequelize, Sequelize);
@@ -339,7 +343,60 @@ db.badge.belongsTo(db.event, {
   allowNull: true,
   onDelete: "CASCADE",
 });
+// Badge specific experience prerequisite
+db.badge.hasMany(db.badgeSpecificExperience, {
+  allowNull: true,
+  onDelete: "CASCADE",
+});
+db.experience.hasMany(db.badgeSpecificExperience, {
+  allowNull: true,
+  onDelete: "CASCADE",
+});
+db.badgeSpecificExperience.belongsTo(db.badge, {
+  allowNull: true,
+  onDelete: "CASCADE",
+});
+db.badgeSpecificExperience.belongsTo(db.experience, {
+  allowNull: true,
+  onDelete: "CASCADE",
+});
+// Badge specific task prerequisite
+db.badge.hasMany(db.badgeSpecificTask, {
+  allowNull: true,
+  onDelete: "CASCADE",
+});
+db.task.hasMany(db.badgeSpecificTask, {
+  allowNull: true,
+  onDelete: "CASCADE",
+});
+db.badgeSpecificTask.belongsTo(db.badge, {
+  allowNull: true,
+  onDelete: "CASCADE",
+});
+db.badgeSpecificTask.belongsTo(db.task, {
+  allowNull: true,
+  onDelete: "CASCADE",
+});
 
+// Badge experience type
+db.badge.hasMany(db.badgeExperienceType, {
+  allowNull: true,
+  onDelete: "CASCADE",
+});
+db.badgeExperienceType.belongsTo(db.badge, {
+  allowNull: true,
+  onDelete: "CASCADE",
+});
+
+// Badge task type
+db.badge.hasMany(db.badgeTaskType, {
+  allowNull: true,
+  onDelete: "CASCADE",
+});
+db.badgeTaskType.belongsTo(db.badge, {
+  allowNull: true,
+  onDelete: "CASCADE",
+});
 // db.event.hasOne(db.flightPlanExperience, {
 //   allowNull: true,
 //   onDelete: "CASCADE",
