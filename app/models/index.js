@@ -32,6 +32,7 @@ db.resume = require("./resume.model.js")(sequelize, Sequelize);
 db.session = require("./session.model.js")(sequelize, Sequelize);
 
 // flight plan
+db.studentInfoBadge = require("./studentInfoBadge.model.js")(sequelize, Sequelize);
 db.roleUser = require("./roleUser.model.js")(sequelize, Sequelize);
 db.role = require("./role.model.js")(sequelize, Sequelize);
 db.badge = require("./badge.model.js")(sequelize, Sequelize);
@@ -296,6 +297,23 @@ db.type.hasMany(db.eventType, {
   onDelete: "CASCADE",
 });
 db.eventType.belongsTo(db.type, {
+  allowNull: true,
+  onDelete: "CASCADE",
+});
+
+db.badge.hasMany(db.studentInfoBadge, {
+  allowNull: true,
+  onDelete: "CASCADE",
+});
+db.studentInfo.hasMany(db.studentInfoBadge, {
+  allowNull: true,
+  onDelete: "CASCADE",
+});
+db.studentInfoBadge.belongsTo(db.badge, {
+  allowNull: true,
+  onDelete: "CASCADE",
+});
+db.studentInfoBadge.belongsTo(db.studentInfo, {
   allowNull: true,
   onDelete: "CASCADE",
 });
