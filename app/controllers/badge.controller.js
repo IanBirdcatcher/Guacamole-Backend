@@ -91,7 +91,7 @@ exports.update = async (req, res) => {
   const imagePath = safeJoin(baseURL, req.body.image);
   // Check image URL
   try{
-  const oldBadgeData = await safeJoin(baseURL,badge.findByPk(id).image)
+  const oldBadgeData = await safeJoin(baseURL, (await badge.findByPk(id)).image)
   if( oldBadgeData.image != imagePath) {
     if (fs.existsSync(oldBadgeData)) {
       fs.unlinkSync(oldBadgeData);
@@ -118,9 +118,9 @@ exports.update = async (req, res) => {
       });
     });
   }
-  catch{
+  catch(err){
     return res.status(500).send({
-      message: "Error updating badge with id=" + id,
+      message: "Error updating badge with id=" + err,
     });
   }
 };
