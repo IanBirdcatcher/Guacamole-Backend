@@ -49,6 +49,7 @@ require("./app/routes/roleUser.routes")(app);
 require("./app/routes/permission.routes")(app);
 require("./app/routes/studentInfo.routes.js")(app);
 require("./app/routes/studentInfoMajor.routes.js")(app);
+require("./app/routes/studentInfoEvent.routes.js")(app);
 
 require("./app/routes/user.routes")(app);
 
