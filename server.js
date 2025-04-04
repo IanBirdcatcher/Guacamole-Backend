@@ -77,6 +77,7 @@ require("./app/routes/semester.routes.js")(app);
 require("./app/routes/badge.routes.js")(app);
 require("./app/routes/badgeSpecificExperiences.routes.js")(app);
 require("./app/routes/badgeSpecificTasks.routes.js")(app);
+require("./app/routes/studentInfoBadge.routes.js")(app);
 // Icon Routes
 require("./app/routes/icon.routes.js")(app); 
 
