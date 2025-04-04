@@ -3,13 +3,11 @@ const router = express.Router();
 const documentController = require("../controllers/document.controller");
 
 module.exports = (app) => {
-    // Create a new Document
 
-    // Retrieve all Documents
-    router.get("/", documentController.findAll);
 
     // Retrieve a single Document by ID
     router.get("/:id", documentController.findOne);
+
 
     // Update a Document by ID
 

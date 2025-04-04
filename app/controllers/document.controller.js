@@ -2,50 +2,21 @@ const db = require("../models");
 const Document = db.document;
 const multer = require("multer");
 const path = require("path");
+const fs = require("fs");
 
 // Set up multer storage
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, "studentUploads/"); 
+    cb(null, "studentUploads/");
   },
   filename: function (req, file, cb) {
-    cb(null, `${Date.now()}-${file.originalname}`);
-  }
+    cb(null, `temp-${Date.now()}-${file.originalname}`);
+  },
 });
 
-// File upload limits and validation
 const upload = multer({
   storage: storage,
-}).single("file"); // Expecting a single file upload with the field name 'file'
-
-// Create and Save a new Document
-exports.create = (req, res) => {
-  // Validate request
-  if (!req.body.name || !req.body.type) {
-    return res.status(400).send({
-      message: "Name and type are required fields.",
-    });
-  }
-
-  // Create a Document
-  const documentData = {
-    name: req.body.name,
-    type: req.body.type,
-    data: req.body.data || null,
-    comment: req.body.comment || null,
-  };
-
-  // Save Document in the database
-  Document.create(documentData)
-    .then((data) => {
-      res.send(data);
-    })
-    .catch((err) => {
-      res.status(500).send({
-        message: err.message || "Some error occurred while creating the Document.",
-      });
-    });
-};
+}).single("file");
 
 // Upload and Save a new Document
 exports.uploadDocument = (req, res) => {
@@ -54,24 +25,83 @@ exports.uploadDocument = (req, res) => {
       return res.status(400).json({ message: err.message });
     }
 
+    if (!req.file) {
+      return res.status(400).json({ message: "No file uploaded." });
+    }
 
-    console.log("File uploaded:", req.file); 
+    console.log("File uploaded:", req.file);
 
     try {
-      // Save file metadata to the database
-      const documentData = {
-        data:`/studentUploads/`,
-        name: req.file.originalname,
-        type: req.file.mimetype,
-        comment: req.body.comment || null,
-        flightPlanTaskId: req.body.flightplanTaskId, 
-      };
+      // Check if a document with the same flightPlanTaskId and name already exists
+      const existingDocument = await Document.findOne({
+        where: {
+          flightPlanTaskId: req.body.flightplanTaskId,
+        },
+      });
 
-      const newDocument = await Document.create(documentData);
+      let document;
+      if (existingDocument) {
+        // Overwrite the existing document
+        console.log("Overwriting existing document:", existingDocument.id);
+
+        // Generate the old file path
+        const oldFilePath = path.join(
+          __dirname,
+          "../../studentUploads",
+          `${existingDocument.id}-${existingDocument.name}`
+        );
+
+        // Delete the old file so no duplicate files are left
+        if (fs.existsSync(oldFilePath)) {
+          fs.unlinkSync(oldFilePath);
+          console.log("Deleted old file:", oldFilePath);
+        }
+
+        // Generate the new file path
+        const newFileName = `${existingDocument.id}-${req.file.originalname}`;
+        const newFilePath = `studentUploads/${newFileName}`;
+
+        // Rename the uploaded file
+        fs.renameSync(req.file.path, newFilePath);
+
+        // Update the existing document's data
+        existingDocument.name = req.file.originalname;
+        existingDocument.data = `/studentUploads/${newFileName}`;
+        existingDocument.type = req.file.mimetype;
+        existingDocument.comment = req.body.comment || null;
+        await existingDocument.save();
+
+        document = existingDocument;
+      } else {
+        // Create a new document
+        const documentData = {
+          data: `/studentUploads/`, // Placeholder path
+          name: req.file.originalname,
+          type: req.file.mimetype,
+          comment: req.body.comment || null,
+          flightPlanTaskId: req.body.flightplanTaskId,
+        };
+
+        const newDocument = await Document.create(documentData);
+
+        // Generate the new file path
+        const newFileName = `${newDocument.id}-${req.file.originalname}`;
+        const newFilePath = `studentUploads/${newFileName}`;
+
+        // Rename the uploaded file
+        fs.renameSync(req.file.path, newFilePath);
+
+        // Update the new document's data
+        newDocument.data = `/studentUploads/${newFileName}`;
+        await newDocument.save();
+
+        document = newDocument;
+      }
 
       res.status(201).json({
         message: "File uploaded successfully",
-        document: newDocument,
+        document: document,
+        filePath: document.data,
       });
     } catch (error) {
       console.error("Upload error:", error);
@@ -80,39 +110,47 @@ exports.uploadDocument = (req, res) => {
   });
 };
 
-// Retrieve all Documents
-exports.findAll = (req, res) => {
-  Document.findAll()
-    .then((data) => {
-      res.send(data);
-    })
-    .catch((err) => {
-      res.status(500).send({
-        message: err.message || "Some error occurred while retrieving documents.",
-      });
-    });
-};
-
-// Retrieve a single Document by ID
+// Find a single document by flightPlanTaskId
 exports.findOne = (req, res) => {
-  const id = req.params.id;
+  const flightPlanTaskId = req.params.id;
+  
 
-  Document.findByPk(id)
-    .then((data) => {
-      if (data) {
-        res.send(data);
-      } else {
-        res.status(404).send({
-          message: `Cannot find Document with id=${id}.`,
+  Document.findOne({
+    where: { flightPlanTaskId: flightPlanTaskId },
+  })
+    .then((document) => {
+      if (!document) {
+        return res.status(404).json({ message: "Document not found" });
+      }
+      const documentId= document.id.toString();
+      const filePath = path.join(__dirname, '../../studentUploads', `${documentId}-${document.name}`);
+      console.log("File path:", filePath);
+      try {
+        if (filePath) {
+          if (fs.existsSync(filePath)) {
+            res.sendFile(filePath);
+          } else {
+            res.status(404).send('File not found');
+          }
+        } else {
+          throw new Error("Invalid File path");
+        }
+      } catch (err) {
+        res.status(500).send({
+          message: "Some error occurred while retrieving file.",
         });
       }
-    })
-    .catch((err) => {
-      res.status(500).send({
-        message: "Error retrieving Document with id=" + id,
-      });
     });
 };
+
+function safeJoin(base, userInput) {
+  const targetPath = path.normalize(path.join(base, userInput));
+  console.log(targetPath);
+  if (targetPath.startsWith(base)) {
+    return targetPath;
+  }
+  return null; // or throw an error, indicating an invalid path
+}
 
 // Update a Document by ID
 exports.update = (req, res) => {
