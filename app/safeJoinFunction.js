@@ -1,3 +1,5 @@
+const path = require('path');
+
 function safeJoin(base, userInput) {
     const targetPath = path.normalize(path.join(base, userInput));
     console.log(targetPath);
@@ -5,5 +7,6 @@ function safeJoin(base, userInput) {
       return targetPath;
     }
     return null; // or throw an error, indicating an invalid path
-  }
-export default safeJoin;
+}
+
+module.exports = safeJoin;

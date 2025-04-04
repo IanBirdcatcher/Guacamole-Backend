@@ -1,12 +1,13 @@
 const db = require("../models");
 const fs = require("fs");
 const path = require("path");
-const safeJoin = require("../safeJoinFunction");
+const safeJoin = require('../safeJoinFunction');
 const badge = db.badge;
 const Op = db.Sequelize.Op;
 
 // Create and Save a new badge
 exports.create = (req, res) => {
+  const baseURL = path.join(__dirname, "../../uploads")
   // Validate request
   if (!req.body.name) {
     res.status(400).send({
@@ -22,8 +23,12 @@ exports.create = (req, res) => {
     id: req.body.id,
     name: req.body.name,
     desc: req.body.desc,
-    image: req.body.image
-    
+    image: req.body.image,
+    allCount: req.body.allCount,
+    taskCount: req.body.taskCount,
+    experienceCount: req.body.experienceCount,
+    badgeSpecificTaskAND: req.body.badgeSpecificTaskAND,
+    badgeSpecificExperienceAND: req.body.badgeSpecificExperienceAND
   };
 
   console.log(badgeData);
@@ -81,20 +86,19 @@ exports.findOne = (req, res) => {
 };
 
 // Update a badge by the id in the request
-exports.update = (req, res) => {
+exports.update = async (req, res) => {
   const id = req.params.id;
-  const imagePath = safeJoin(
-    path.join(__dirname, "../../uploads"),
-    req.body.image
-  );
-  //if badge file does not exist delete
-  if (fs.existsSync(imagePath)) {
-    fs.unlinkSync(imagePath);
-    console.log("File deleted!");
+  const imagePath = safeJoin(baseURL, req.body.image);
+  // Check image URL
+  try{
+  const oldBadgeData = await safeJoin(baseURL,badge.findByPk(id).image)
+  if( oldBadgeData.image != imagePath) {
+    if (fs.existsSync(oldBadgeData)) {
+      fs.unlinkSync(imagePath);
+      console.log("File deleted!");
+    }
   }
-  // Update the badge with image URL and other properties
-  badge
-    .update(req.body, {
+  badge.update(req.body, {
       where: { id: id },
     })
     .then((num) => {
@@ -113,6 +117,12 @@ exports.update = (req, res) => {
         message: "Error updating badge with id=" + id,
       });
     });
+  }
+  catch{
+    return res.status(500).send({
+      message: "Error updating badge with id=" + id,
+    });
+  }
 };
 
 // Delete a badge with the specified id in the request
