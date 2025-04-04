@@ -94,7 +94,7 @@ exports.update = async (req, res) => {
   const oldBadgeData = await safeJoin(baseURL,badge.findByPk(id).image)
   if( oldBadgeData.image != imagePath) {
     if (fs.existsSync(oldBadgeData)) {
-      fs.unlinkSync(imagePath);
+      fs.unlinkSync(oldBadgeData);
       console.log("File deleted!");
     }
   }
