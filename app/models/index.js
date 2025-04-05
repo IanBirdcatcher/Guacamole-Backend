@@ -112,6 +112,16 @@ db.skillResume = require("./skillResume.model.js")(sequelize, Sequelize);
 
 // flight plan
 
+
+db.document.belongsTo(db.flightPlanTask,{
+  allowNull: true,
+  onDelete: "CASCADE",
+})
+db.task.hasOne(db.document,{
+  allowNull: true,  
+  onDelete: "CASCADE",
+})
+
 db.studentInfo.hasMany(db.rewardStudentInfo, {
   allowNull: true,
   onDelete: "CASCADE",
@@ -148,14 +158,7 @@ db.studentInfo.belongsTo(db.user, {
   onDelete: "CASCADE",
 });
 
-db.studentInfo.hasMany(db.document, {
-  allowNull: true,
-  onDelete: "CASCADE",
-});
-db.document.belongsTo(db.studentInfo, {
-  allowNull: true,
-  onDelete: "CASCADE",
-});
+
 
 db.studentInfo.hasMany(db.semester, {
   allowNull: true,

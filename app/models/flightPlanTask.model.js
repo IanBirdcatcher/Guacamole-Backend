@@ -20,6 +20,10 @@ module.exports = (sequelize, Sequelize) => {
     pending: {
       type: Sequelize.BOOLEAN,
       allowNull: true,
+    },
+    documentName: {
+      type: Sequelize.STRING,
+      allowNull: true,
     }
   });
 

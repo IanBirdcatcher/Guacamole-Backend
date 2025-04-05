@@ -20,7 +20,7 @@ exports.create = (req, res) => {
   const FlightPlanTaskData = {
     id: req.body.id,
     taskId: req.body.taskId,
-    flightPlanId: req.body.flightPlanId
+    flightPlanId: req.body.flightPlanId,
   };
 
   // Save the FlightPlanTask entry in the database
