@@ -20,6 +20,7 @@ app.options("*", cors());
 // Parse requests with JSON payloads
 app.use(express.json({ limit: '10mb' }));
 
+
 // Parse requests with URL-encoded payloads
 app.use(express.urlencoded({ extended: true }));
 
@@ -49,6 +50,7 @@ require("./app/routes/roleUser.routes")(app);
 require("./app/routes/permission.routes")(app);
 require("./app/routes/studentInfo.routes.js")(app);
 require("./app/routes/studentInfoMajor.routes.js")(app);
+require("./app/routes/studentInfoEvent.routes.js")(app);
 
 require("./app/routes/user.routes")(app);
 
@@ -82,7 +84,8 @@ require("./app/routes/studentInfoBadge.routes.js")(app);
 require("./app/routes/icon.routes.js")(app); 
 
 require("./app/routes/notification.routes.js")(app);
-
+// Document routes
+require("./app/routes/document.routes.js")(app);
 // Set the server to listen on a specified port
 const PORT = process.env.PORT || 3032;
 app.listen(PORT, () => {

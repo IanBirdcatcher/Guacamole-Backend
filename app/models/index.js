@@ -70,6 +70,7 @@ db.semester = require("./semester.model.js")(sequelize, Sequelize);
 db.strength = require("./strength.model.js")(sequelize, Sequelize);
 db.studentInfo = require("./studentInfo.model.js")(sequelize, Sequelize);
 db.studentInfoMajor = require("./studentInfoMajor.model.js")(sequelize, Sequelize);
+db.studentInfoEvent = require("./studentInfoEvent.model.js")(sequelize, Sequelize);
 db.task = require("./task.model.js")(sequelize, Sequelize);
 db.taskMajor = require("./taskMajor.model.js")(sequelize, Sequelize);
 db.eventType = require("./eventType.model.js")(sequelize, Sequelize);
@@ -116,6 +117,16 @@ db.skillResume = require("./skillResume.model.js")(sequelize, Sequelize);
 
 // flight plan
 
+
+db.document.belongsTo(db.flightPlanTask,{
+  allowNull: true,
+  onDelete: "CASCADE",
+})
+db.task.hasOne(db.document,{
+  allowNull: true,  
+  onDelete: "CASCADE",
+})
+
 db.studentInfo.hasMany(db.rewardStudentInfo, {
   allowNull: true,
   onDelete: "CASCADE",
@@ -152,14 +163,7 @@ db.studentInfo.belongsTo(db.user, {
   onDelete: "CASCADE",
 });
 
-db.studentInfo.hasMany(db.document, {
-  allowNull: true,
-  onDelete: "CASCADE",
-});
-db.document.belongsTo(db.studentInfo, {
-  allowNull: true,
-  onDelete: "CASCADE",
-});
+
 
 db.studentInfo.hasMany(db.semester, {
   allowNull: true,
@@ -494,6 +498,20 @@ db.studentInfo.hasMany(db.studentInfoMajor, {
   onDelete: "CASCADE",
 });
 db.studentInfoMajor.belongsTo(db.studentInfo, {
+  allowNull: true,
+  onDelete: "CASCADE",
+});
+
+db.event.hasMany(db.studentInfoEvent, {
+  allowNull: true,
+  onDelete: "CASCADE",
+});
+
+db.studentInfo.hasMany(db.studentInfoEvent, {
+  allowNull: true,
+  onDelete: "CASCADE",
+});
+db.studentInfoEvent.belongsTo(db.studentInfo, {
   allowNull: true,
   onDelete: "CASCADE",
 });

@@ -108,3 +108,22 @@ exports.findAllByUserId = (req, res) => {
       });
     });
 };
+
+exports.findBySID = (req, res) => {
+  const sid = req.params.sid;
+  StudentInfo.findOne({where: {studentId: sid}})
+    .then((data) => {
+      if (data) {
+        res.send(data);
+      } else {
+        res.status(404).send({
+          message: `Cannot find studentInfo with sid=${sid}.`,
+        });
+      }
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message: err.message || "Error retrieving studentInfo with sid=" + sid,
+      });
+    });
+};
