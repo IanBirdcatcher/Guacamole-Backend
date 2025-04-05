@@ -5,7 +5,9 @@ module.exports = (app) => {
   
     // Create a new studentInfoBadge
     router.post("/", [authenticate], studentInfoBadge.create);
-  
+    //che
+    router.get("/checkUserBadges/:studentInfoId", [authenticate], studentInfoBadge.checkUserBadges);
+    
     // Get all studentInfoBadges for a specific studentInfo
     router.get("/:studentInfoId", [authenticate], studentInfoBadge.findAllForStudentInfo);
   
@@ -17,4 +19,5 @@ module.exports = (app) => {
   
     app.use("/flight-plan-t2/studentInfoBadge", router);
   };
+
   

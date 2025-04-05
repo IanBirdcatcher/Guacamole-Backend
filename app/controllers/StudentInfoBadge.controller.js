@@ -1,5 +1,9 @@
 const db = require("../models");
 const StudentInfoBadge = db.studentInfoBadge;
+const flightPlanTask = db.flightPlanTask;
+const flightPlanExperience = db.flightPlanExperience;
+const flightPlan = db.flightPlan;
+const badge = db.badge;
 const Op = db.Sequelize.Op;
 
 // Create and Save a new StudentInfoBadge entry
@@ -18,13 +22,10 @@ exports.create = (req, res) => {
     })
     .catch((err) => {
       if (err.message.includes("foreign key constraint fails")) {
-        res
-          .status(404)
-          .send({ message: `The badgeId could not be found.` });
+        res.status(404).send({ message: `The badgeId could not be found.` });
       } else {
         res.status(500).send({
-          message:
-            err.message || "Error creating the StudentInfoBadge entry.",
+          message: err.message || "Error creating the StudentInfoBadge entry.",
         });
       }
     });
@@ -51,29 +52,86 @@ exports.findAll = (req, res) => {
     });
 };
 
-// Retrieve a single StudentInfoBadge entry by ID
-exports.findOne = (req, res) => {
-  const id = req.params.id;
-  StudentInfoBadge.findByPk(id)
-    .then((data) => {
-      if (data) {
-        res.send(data);
-      } else {
-        res
-          .status(404)
-          .send({
-            message: `No StudentInfoBadge entry found with id=${id}.`,
-          });
-      }
-    })
-    .catch((err) => {
-      res.status(500).send({
-        message:
-          err.message ||
-          `Error retrieving StudentInfoBadge entry with id=${id}.`,
-      });
+exports.checkUserBadges = async (req, res) => {
+  const studentInfoId = req.params.studentInfoId;
+  let responseData = {
+    studentInfoId,
+    badges: [],
+  };
+
+  try {
+    const flightplan = await flightPlan.findOne({
+      where: { studentInfoId },
     });
+
+    if (!flightplan) {
+      return res.status(404).send({
+        message: `Flight plan not found for studentInfoId=${studentInfoId}.`,
+      });
+    }
+
+    const flightplanId = flightplan.id;
+
+    const earnedBadges = await StudentInfoBadge.findAll({
+      where: { studentInfoId },
+    });
+
+    const earnedBadgeIds = earnedBadges.map((b) => b.badgeId);
+
+    const userCompletedTasks = await flightPlanTask.count({
+      where: { flightPlanId: flightplanId, completed: 1 },
+    });
+
+    const userCompletedExperiences = await flightPlanExperience.count({
+      where: { flightPlanId: flightplanId, completed: 1 },
+    });
+
+    const allCount = userCompletedTasks + userCompletedExperiences;
+
+    const allBadges = await badge.findAll();
+
+    // Only check badges the user hasn't earned yet
+    const unearnedBadges = allBadges.filter(
+      (b) => !earnedBadgeIds.includes(b.id)
+    );
+
+    unearnedBadges.forEach((badge) => {
+      let meetsAllCriteria = true;
+
+      if (badge.allCount && allCount < badge.allCount) meetsAllCriteria = false;
+      if (badge.experiencesCount && userCompletedExperiences < badge.experiencesCount) meetsAllCriteria = false;
+      if (badge.tasksCount && userCompletedTasks < badge.tasksCount) meetsAllCriteria = false;
+
+      if (meetsAllCriteria) {
+        responseData.badges.push({
+          badgeId: badge.id,
+          badgeName: badge.name,
+          badgeEarned: true,
+        });
+      }
+    });
+
+    if (responseData.badges.length > 0) {
+      responseData.badges.forEach((badge) => {
+        StudentInfoBadge.create({
+          studentInfoId: studentInfoId,
+          badgeId: badge.badgeId,
+        })
+      })
+      res.send(responseData);
+    } else {
+      res.status(404).send({
+        message: `No new badges earned for studentInfoId=${studentInfoId}.`,
+      });
+    }
+  } catch (err) {
+    res.status(500).send({
+      message: `Error checking badges earned for studentInfoId=${studentInfoId}. ${err.message}`,
+    });
+  }
 };
+
+
 
 exports.findAllForStudentInfo = (req, res) => {
   const studentInfoId = req.params.studentInfoId;
@@ -82,18 +140,15 @@ exports.findAllForStudentInfo = (req, res) => {
       if (data && data.length > 0) {
         res.send(data);
       } else {
-        res
-          .status(404)
-          .send({
-            message: `No StudentInfoBadge entries found for studentInfoId=${studentInfoId}.`,
-          });
+        res.status(404).send({
+          message: `No StudentInfoBadge entries found for studentInfoId=${studentInfoId}.`,
+        });
       }
     })
     .catch((err) => {
+      console.log(err);
       res.status(500).send({
-        message:
-          err.message ||
-          `Error retrieving StudentInfoBadge entry with id=${id}.`,
+        message: `Error retrieving StudentInfoBadge entry with id=${id}.`,
       });
     });
 };
@@ -105,11 +160,9 @@ exports.findAllStudentInfosForBadge = (req, res) => {
       if (data && data.length > 0) {
         res.send(data);
       } else {
-        res
-          .status(404)
-          .send({
-            message: `No StudentInfoBadge entries found for badgeId=${badgeId}.`,
-          });
+        res.status(404).send({
+          message: `No StudentInfoBadge entries found for badgeId=${badgeId}.`,
+        });
       }
     })
     .catch((err) => {
@@ -146,8 +199,7 @@ exports.update = (req, res) => {
           .send({ message: `The ${missingField} could not be found.` });
       } else {
         res.status(500).send({
-          message:
-            err.message || "Error updating the StudentInfoBadge entry.",
+          message: err.message || "Error updating the StudentInfoBadge entry.",
         });
       }
     });
