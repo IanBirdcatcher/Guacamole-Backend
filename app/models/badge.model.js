@@ -17,25 +17,30 @@ module.exports = (sequelize, Sequelize) => {
       type: Sequelize.STRING,
       allowNull: true,
     },
+    byCount:{
+      type: Sequelize.BOOLEAN,
+      allowNull: false,
+      defaultValue: true,
+    },
     allCount: {
       type: Sequelize.INTEGER,
-      allowNull: true,
+      allowNull: false,
     },
     taskCount: {
       type: Sequelize.INTEGER,
-      allowNull: true,
+      allowNull: false,
     },
     experienceCount: {
       type: Sequelize.INTEGER,
-      allowNull: true,
+      allowNull: false,
     },
     badgeSpecificTaskAND: {
       type: Sequelize.BOOLEAN,
-      allowNull: true,
+      allowNull: false,
     },
     badgeSpecificExperienceAND: {
       type: Sequelize.BOOLEAN,
-      allowNull: true,
+      allowNull: false,
     },
   });
 
