@@ -75,6 +75,7 @@ const assignDefaultRoleToUser = async (userId) => {
 
 exports.login = async (req, res) => {
   console.log(req.body);
+  googleUser = {};
 
   var googleToken = req.body.credential;
 

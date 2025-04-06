@@ -65,8 +65,6 @@ module.exports = (app) => {
   router.get("/", [authenticate], icon.findAll);
   router.get("/:image", [authenticate], icon.findOne);
   router.put("/:id", [authenticate], hasAccess(ENUM.ADD_icon), icon.update);
-  router.delete("/:id", [authenticate], hasAccess(ENUM.REMOVE_icon), icon.delete);
-
 
   app.use("/flight-plan-t2/icon", router);
 
