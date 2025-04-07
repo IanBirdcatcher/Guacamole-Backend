@@ -5,8 +5,12 @@ const StudentInfo = db.studentInfo;
 exports.create = async (req, res) => {
   try {
     // Validate request
-
-
+    if (!req.body.userId) {
+      res.status(400).send({
+        message: "User ID is required",
+      });
+      return;
+    }
     // Create a StudentInfo
     const studentInfo = {
       userId: req.body.userId, 
@@ -17,7 +21,6 @@ exports.create = async (req, res) => {
       semestersTillGraduation: req.body.semestersTillGraduation,
       graduationSemester: req.body.graduationSemester,
     };
-
     // Save StudentInfo in the database
     const data = await StudentInfo.create(studentInfo);
     res.status(201).send(data);
