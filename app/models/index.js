@@ -112,6 +112,7 @@ db.interestResume = require("./interestResume.model.js")(sequelize, Sequelize);
 db.linkResume = require("./linkResume.model.js")(sequelize, Sequelize);
 db.projectResume = require("./projectResume.model.js")(sequelize, Sequelize);
 db.skillResume = require("./skillResume.model.js")(sequelize, Sequelize);
+db.studentPurchase = require("./studentPurchase.model.js")(sequelize, Sequelize);
 
 // Relations
 
@@ -1020,5 +1021,23 @@ db.roleUser.belongsTo(db.role, {
   allowNull: true,
   onDelete: "CASCADE",
 });
+
+//Student Purchase 
+
+db.studentPurchase.hasMany(db.studentInfo, { 
+  allowNull: true,
+  onDelete: "CASCADE",
+  });
+
+db.studentPurchase.hasMany(db.reward, {
+   allowNull: true,
+   onDelete: "CASCADE",
+  });
+
+db.studentPurchase.belongsTo(db.studentInfo, { 
+  allowNull: true,
+  onDelete: "CASCADE",
+  });
+
 
 module.exports = db;

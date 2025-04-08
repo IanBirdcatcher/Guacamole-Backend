@@ -1,37 +1,95 @@
 const db = require("../models");
-const StudentPurchase = db.studentPurchases;
+const StudentPurchase = db.studentPurchase;
 const Reward = db.reward;
+const User = db.user;
+const { Op } = require("sequelize");
 
-// Get the last 3 purchases of a specific student with related reward details
+// Create a new purchase
+exports.createPurchase = async (req, res) => {
+  try {
+    const { userId, rewardId, requiredPoints } = req.body;
+
+    // Check if user and reward exist
+    const student = await User.findByPk(userId);
+    const rewardItem = await Reward.findByPk(rewardId);
+
+    if (!student || !rewardItem) {
+      return res.status(400).json({ message: "Invalid user or reward." });
+    }
+
+    // Check if user has enough points
+    if (student.currentPoints < requiredPoints) {
+      return res.status(400).json({ message: "Not enough points." });
+    }
+
+    // Deduct points and save user
+    student.currentPoints -= requiredPoints;
+    await student.save();
+
+    // Dynamically calculate the semester
+    const now = new Date();
+    const month = now.getMonth() + 1;
+    const semester =
+      month >= 1 && month <= 5
+        ? `Spring ${now.getFullYear()}`
+        : month >= 6 && month <= 8
+        ? `Summer ${now.getFullYear()}`
+        : `Fall ${now.getFullYear()}`;
+
+    // Create purchase
+    const purchase = await StudentPurchase.create({
+      userId,
+      rewardId,
+      pointsSpent: requiredPoints,
+      semester,
+    });
+
+    // Update reward's purchase count
+    rewardItem.purchaseCount += 1;
+    await rewardItem.save();
+
+    res.status(200).json({ message: "Purchase successful.", purchase });
+  } catch (error) {
+    console.error("Error completing purchase:", error);
+    res.status(500).json({ message: "Error completing purchase." });
+  }
+};
+
+// Get recent 3 purchases per semester for a specific user
 exports.getRecentPurchases = async (req, res) => {
   try {
     const { userId } = req.params;
 
-    // Fetch the last 3 purchases for the given userId, ordered by the most recent
-    const purchases = await StudentPurchase.findAll({
-      where: { userId },
-      order: [['createdAt', 'DESC']],
-      limit: 3,
-      include: [{
-        model: Reward,
-        attributes: ['name', 'requiredPoints', 'purchaseCount'], // Include only the necessary fields from the Reward model
-      }],
-      attributes: ['createdAt'], // Include the createdAt field from the StudentPurchase model
-    });
-
-    if (purchases.length === 0) {
-      return res.status(404).json({ message: "No purchases found for this user." });
+    if (!userId) {
+      return res.status(400).json({ message: "User ID is required." });
     }
 
-    // Format the response to include rewardName, requiredPoints, purchaseCount alongside createdAt
-    const response = purchases.map(purchase => ({
-      rewardName: purchase.reward.name,
-      requiredPoints: purchase.reward.requiredPoints,
-      purchaseCount: purchase.reward.purchaseCount,
-      createdAt: purchase.createdAt,
-    }));
+    // Get all purchases for the user, include reward info
+    const purchases = await StudentPurchase.findAll({
+      where: { userId },
+      include: [
+        {
+          model: Reward,
+          as: "reward",
+          attributes: ["id", "name", "desc", "requiredPoints"],
+        },
+      ],
+      order: [["createdAt", "DESC"]],
+    });
 
-    res.status(200).json(response);
+    // Group purchases by semester, limit to 3 per semester
+    const groupedBySemester = {};
+    purchases.forEach((purchase) => {
+      const semester = purchase.semester || "Unknown";
+      if (!groupedBySemester[semester]) {
+        groupedBySemester[semester] = [];
+      }
+      if (groupedBySemester[semester].length < 3) {
+        groupedBySemester[semester].push(purchase);
+      }
+    });
+
+    res.status(200).json({ recentPurchases: groupedBySemester });
   } catch (error) {
     console.error("Error fetching recent purchases:", error);
     res.status(500).json({ message: "Error fetching recent purchases." });
