@@ -9,7 +9,7 @@ module.exports = (app) => {
   
     router.post(
       "/",
-      [authenticate], hasAccess(ENUM.CHANGE_STUDENT_INFO),
+      [authenticate],
       flightPlan.create
     );
     router.get(

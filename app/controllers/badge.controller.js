@@ -20,7 +20,6 @@ exports.create = (req, res) => {
   console.log(req.body.desc);
   // Create a badge object with the image URL
   const badgeData = {
-    id: req.body.id,
     name: req.body.name,
     desc: req.body.desc,
     image: req.body.image,
@@ -32,7 +31,6 @@ exports.create = (req, res) => {
   };
 
   console.log(badgeData);
-
   // Save badge in the database
 
   badge
