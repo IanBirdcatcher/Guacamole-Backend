@@ -12,7 +12,7 @@ module.exports = (sequelize, Sequelize) => {
     },
     currentPoints: {
       type: Sequelize.INTEGER,
-      allowNull: yrue,
+      allowNull: true,
       defaultValue: 0,
     },
     studentId: {
