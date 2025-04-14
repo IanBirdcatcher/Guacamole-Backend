@@ -41,10 +41,6 @@ const createRolesIfNotExist = async () => {
 const studentInfoIfNotExist = async (userId) => {
   const studentInfoData = {
     userId: userId, 
-    earnedPoints: 0, 
-    spentPoints: 0,
-    semestersTillGraduation: 8, 
-    studentId: '0000', 
     firstLogin: true,
   };
 
