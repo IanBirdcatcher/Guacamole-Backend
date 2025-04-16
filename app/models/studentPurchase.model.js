@@ -5,27 +5,10 @@ module.exports = (sequelize, Sequelize) => {
       autoIncrement: true,
       primaryKey: true,
     },
-    userId: {
-      type: Sequelize.INTEGER,
-      allowNull: false,
-    },
     rewardId: {
       type: Sequelize.INTEGER,
       allowNull: false,
-    },
-    semester: {
-      type: Sequelize.STRING,
-      allowNull: true,
-    },
-    pointsSpent: {
-      type: Sequelize.INTEGER,
-      allowNull: false,
-    },
-    createdAt: {
-      type: Sequelize.DATE,
-      allowNull: false,
-      defaultValue: Sequelize.NOW,
-    },
+    }
   });
 
   return StudentPurchase;

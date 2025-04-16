@@ -1,97 +1,203 @@
 const db = require("../models");
-const StudentPurchase = db.studentPurchase;
-const Reward = db.reward;
-const User = db.user;
-const { Op } = require("sequelize");
+const StudentInfoPurchase = db.studentPurchase;
+const Op = db.Sequelize.Op;
+const Session = db.session;
+const StudentInfo = db.studentInfo; 
 
-// Create a new purchase
-exports.createPurchase = async (req, res) => {
-  try {
-    const { userId, rewardId, requiredPoints } = req.body;
-
-    // Check if user and reward exist
-    const student = await User.findByPk(userId);
-    const rewardItem = await Reward.findByPk(rewardId);
-
-    if (!student || !rewardItem) {
-      return res.status(400).json({ message: "Invalid user or reward." });
-    }
-
-    // Check if user has enough points
-    if (student.currentPoints < requiredPoints) {
-      return res.status(400).json({ message: "Not enough points." });
-    }
-
-    // Deduct points and save user
-    student.currentPoints -= requiredPoints;
-    await student.save();
-
-    // Dynamically calculate the semester
-    const now = new Date();
-    const month = now.getMonth() + 1;
-    const semester =
-      month >= 1 && month <= 5
-        ? `Spring ${now.getFullYear()}`
-        : month >= 6 && month <= 8
-        ? `Summer ${now.getFullYear()}`
-        : `Fall ${now.getFullYear()}`;
-
-    // Create purchase
-    const purchase = await StudentPurchase.create({
-      userId,
-      rewardId,
-      pointsSpent: requiredPoints,
-      semester,
-    });
-
-    // Update reward's purchase count
-    rewardItem.purchaseCount += 1;
-    await rewardItem.save();
-
-    res.status(200).json({ message: "Purchase successful.", purchase });
-  } catch (error) {
-    console.error("Error completing purchase:", error);
-    res.status(500).json({ message: "Error completing purchase." });
+// Create and Save a new StudentInfoPurchase entry
+exports.create = (req, res) => {
+  // Define the data object for the new StudentInfoPurchase entry
+  const StudentInfoPurchaseData = {
+    rewardId: req.body.rewardId,
+    studentInfoId: req.body.studentInfoId,
   }
+
+  // Save the StudentInfoPurchase entry in the database
+  StudentInfoPurchase.create(StudentInfoPurchaseData)
+    .then((data) => {
+      res.send(data);
+    })
+    .catch((err) => {
+      if (err.message.includes("foreign key constraint fails")) {
+        res
+          .status(404)
+          .send({ message: `The purchaseId could not be found.` });
+      } else {
+        res.status(500).send({
+          message:
+            err.message || "Error creating the StudentInfoPurchase entry.",
+        });
+      }
+    });
 };
 
-// Get recent 3 purchases per semester for a specific user
+// Retrieve all StudentInfoPurchase entries for an studentInfo
+exports.findAll = (req, res) => {
+  StudentInfoPurchase.findAll({
+    where: { studentInfoId: req.params.studentInfoId },
+  })
+    .then((data) => {
+      if (data && data.length > 0) {
+        res.send(data);
+      } else {
+        res.status(404).send({
+          message: `No StudentInfoPurchase entries found for studentInfoId=${req.params.studentInfoId}.`,
+        });
+      }
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message: err.message || `Error retrieving StudentInfoPurchase entries.`,
+      });
+    });
+};
+
+// Retrieve a single StudentInfoPurchase entry by ID
+exports.findOne = (req, res) => {
+  const id = req.params.id;
+  StudentInfoPurchase.findByPk(id)
+    .then((data) => {
+      if (data) {
+        res.send(data);
+      } else {
+        res
+          .status(404)
+          .send({
+            message: `No StudentInfoPurchase entry found with id=${id}.`,
+          });
+      }
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message:
+          err.message ||
+          `Error retrieving StudentInfoPurchase entry with id=${id}.`,
+      });
+    });
+};
+
 exports.getRecentPurchases = async (req, res) => {
-  try {
-    const { userId } = req.params;
+  
+  
+  let token = req.headers.authorization.replace("Bearer ", "")
 
-    if (!userId) {
-      return res.status(400).json({ message: "User ID is required." });
-    }
+  let session = await Session.findOne({where: {token: token}})
+  let studentInfo = await StudentInfo.findOne({where: {userId: session.userId}})
+  StudentInfoPurchase.findAll({ where: {studentInfoId: studentInfo.id}, order: [['createdAt', 'DESC']], limit: 3})
+    .then((data) => {
+      if (data) {
 
-    // Get all purchases for the user, include reward info
-    const purchases = await StudentPurchase.findAll({
-      where: { userId },
-      include: [
-        {
-          model: Reward,
-          as: "reward",
-          attributes: ["id", "name", "desc", "requiredPoints"],
-        },
-      ],
-      order: [["createdAt", "DESC"]],
-    });
-
-    // Group purchases by semester, limit to 3 per semester
-    const groupedBySemester = {};
-    purchases.forEach((purchase) => {
-      const semester = purchase.semester || "Unknown";
-      if (!groupedBySemester[semester]) {
-        groupedBySemester[semester] = [];
+       console.log(`================================================================= ${data}`) 
+        res.send(data);
+      } else {
+        res
+          .status(404)
+          .send({
+            message: `No StudentInfoPurchase entry found with id=${id}.`,
+          });
       }
-      if (groupedBySemester[semester].length < 3) {
-        groupedBySemester[semester].push(purchase);
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message:
+           err.message ||
+          `Error retrieving StudentInfoPurchase entry with id=${id}.`,
+      });
+    });
+};
+
+exports.findAllForStudentInfo = (req, res) => {
+  const studentInfoId = req.params.studentInfoId;
+  StudentInfoPurchase.findAll({ where: { studentInfoId: studentInfoId } })
+    .then((data) => {
+      if (data && data.length > 0) {
+        res.send(data);
+      } else {
+        res
+          .status(404)
+          .send({
+            message: `No StudentInfoPurchase entries found for studentInfoId=${studentInfoId}.`,
+          });
+      }
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message:
+          err.message ||
+          `Error retrieving StudentInfoPurchase entry with id=${id}.`,
+      });
+    });
+};
+
+exports.findAllStudentInfosForPurchase = (req, res) => {
+  const purchaseId = req.params.purchaseId;
+  StudentInfoPurchase.findAll({ where: { purchaseId: purchaseId } })
+    .then((data) => {
+      if (data && data.length > 0) {
+        res.send(data);
+      } else {
+        res
+          .status(404)
+          .send({
+            message: `No StudentInfoPurchase entries found for purchaseId=${purchaseId}.`,
+          });
+      }
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message:
+          err.message ||
+          `Error retrieving StudentInfoPurchase entry with id=${id}.`,
+      });
+    });
+};
+
+// Update an StudentInfoPurchase entry by ID
+exports.update = (req, res) => {
+  const studentInfoId = req.params.studentInfoId;
+  StudentInfoPurchase.update(req.body, {
+    where: { studentInfoId: studentInfoId },
+  })
+    .then((num) => {
+      if (num == 1) {
+        res.send({
+          message: "StudentInfoPurchase entry was updated successfully.",
+        });
+      } else {
+        res.status(400).send({
+          message: `Could not update StudentInfoPurchase entry with id=${studentInfoId}.`,
+        });
+      }
+    })
+    .catch((err) => {
+      if (err.message.includes("foreign key constraint fails")) {
+        const missingField = err.message.includes("userId");
+        res
+          .status(404)
+          .send({ message: `The ${missingField} could not be found.` });
+      } else {
+        res.status(500).send({
+          message:
+            err.message || "Error updating the StudentInfoPurchase entry.",
+        });
       }
     });
+};
 
-    res.status(200).json({ recentPurchases: groupedBySemester });
-  } catch (error) {
-    console.error("Error fetching recent purchases:", error);
-    res.status(500).json({ message: "Error fetching recent purchases." });
-  }
+// Delete an StudentInfoPurchase entry by ID
+exports.delete = (req, res) => {
+  const studentInfoId = req.params.studentInfoId;
+  StudentInfoPurchase.destroy({ where: { studentInfoId: studentInfoId } })
+    .then(() => {
+      res.send({
+        message: "StudentInfoPurchase entry was deleted successfully!",
+      });
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message:
+          err.message ||
+          `Error deleting StudentInfoPurchase entry with id=${studentInfoId}.`,
+      });
+    });
 };
