@@ -28,6 +28,7 @@ db.sequelize = sequelize;
 // Models (user and resume know about all of the resume items)-----------
 db.user = require("./user.model.js")(sequelize, Sequelize);
 db.resume = require("./resume.model.js")(sequelize, Sequelize);
+db.log = require("./log.model.js")(sequelize, Sequelize);
 
 db.session = require("./session.model.js")(sequelize, Sequelize);
 
@@ -78,6 +79,7 @@ db.experienceEventType = require("./experienceEventType.model.js")(
   sequelize,
   Sequelize
 );
+
 // resume items
 db.award = require("./award.model.js")(sequelize, Sequelize);
 db.contactInfo = require("./contactInfo.model.js")(sequelize, Sequelize);
