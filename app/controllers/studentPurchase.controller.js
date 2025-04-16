@@ -17,9 +17,10 @@ exports.create = async (req, res) => {
     studentInfoId: studentInfo.id,
   };
 
-  StudentInfoPurchase.create(StudentInfoPurchaseData)
+  await StudentInfoPurchase.create(StudentInfoPurchaseData);
+  await Reward.increment('purchaseCount', { where: { id: req.body.rewardId } });
 
-    StudentInfoPurchase.findAll({ where: { studentInfoId: studentInfo.id } })
+  StudentInfoPurchase.findAll({ where: { studentInfoId: studentInfo.id } })
     .then((data) => {
       res.send(data);
     })
@@ -125,9 +126,6 @@ exports.findAllForStudentInfo = async (req, res) => {
     });
 };
 
-
-
-
 // exports.findAllStudentInfosForPurchase = (req, res) => {
 //   const purchaseId = req.params.purchaseId;
 //   StudentInfoPurchase.findAll({ where: { purchaseId: purchaseId } })
@@ -146,10 +144,6 @@ exports.findAllForStudentInfo = async (req, res) => {
 //       });
 //     });
 // };
-
-
-
-
 
 // // Update an StudentInfoPurchase entry by ID
 // exports.update = (req, res) => {
