@@ -1039,5 +1039,10 @@ db.studentPurchase.belongsTo(db.studentInfo, {
   onDelete: "CASCADE",
   });
 
+db.studentPurchase.belongsTo(db.reward, {
+  allowNull: true,
+  onDelete: "CASCADE",
+});
+
 
 module.exports = db;
