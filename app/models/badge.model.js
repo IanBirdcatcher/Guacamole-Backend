@@ -5,6 +5,11 @@ module.exports = (sequelize, Sequelize) => {
       autoIncrement: true,
       primaryKey: true,
     },
+    byCount: {
+      type: Sequelize.BOOLEAN,
+      defaultValue: false,
+      allowNull: false,
+    },
     name: {
       type: Sequelize.STRING,
       allowNull: false,
@@ -36,10 +41,12 @@ module.exports = (sequelize, Sequelize) => {
     },
     badgeSpecificTaskAND: {
       type: Sequelize.BOOLEAN,
+      defaultValue: false,
       allowNull: false,
     },
     badgeSpecificExperienceAND: {
       type: Sequelize.BOOLEAN,
+      defaultValue: false,
       allowNull: false,
     },
   });

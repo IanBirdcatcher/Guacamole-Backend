@@ -149,8 +149,7 @@ exports.login = async (req, res) => {
       await studentInfoIfNotExist(user.id);
 
       await createRolesIfNotExist();
-      await assignDefaultRoleToUser(user.id); 
-      return res.send({ message: "User was registered successfully!" }); 
+      await assignDefaultRoleToUser(user.id);
     } catch (err) {
       return res.status(500).send({ message: "user not created 94 " + err.message }); 
     }
