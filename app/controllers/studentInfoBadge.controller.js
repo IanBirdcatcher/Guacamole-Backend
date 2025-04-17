@@ -3,6 +3,8 @@ const StudentInfoBadge = db.studentInfoBadge;
 const flightPlanTask = db.flightPlanTask;
 const flightPlanExperience = db.flightPlanExperience;
 const flightPlan = db.flightPlan;
+const badgeSpecificExperience = db.badgeSpecificExperience;
+const badgeSpecificTask = db.badgeSpecificTask;
 const badge = db.badge;
 const Op = db.Sequelize.Op;
 
@@ -54,84 +56,118 @@ exports.findAll = (req, res) => {
 
 exports.checkUserBadges = async (req, res) => {
   const studentInfoId = req.params.studentInfoId;
-  let responseData = {
-    studentInfoId,
-    badges: [],
-  };
 
   try {
-    const flightplan = await flightPlan.findOne({
-      where: { studentInfoId },
-    });
-
-    if (!flightplan) {
-      return res.status(404).send({
+    const fp = await flightPlan.findOne({ where: { studentInfoId } });
+    if (!fp) {
+      return res.status(404).json({
         message: `Flight plan not found for studentInfoId=${studentInfoId}.`,
       });
     }
+    const flightPlanId = fp.id;
 
-    const flightplanId = flightplan.id;
+    const earned = await StudentInfoBadge.findAll({ where: { studentInfoId } });
+    const earnedIds = earned.map((e) => e.badgeId);
 
-    const earnedBadges = await StudentInfoBadge.findAll({
-      where: { studentInfoId },
+    const tasksDone = await flightPlanTask.findAll({
+      where: { flightPlanId, completed: 1 },
     });
-
-    const earnedBadgeIds = earnedBadges.map((b) => b.badgeId);
-
-    const userCompletedTasks = await flightPlanTask.count({
-      where: { flightPlanId: flightplanId, completed: 1 },
+    const expsDone = await flightPlanExperience.findAll({
+      where: { flightPlanId, completed: 1 },
     });
-
-    const userCompletedExperiences = await flightPlanExperience.count({
-      where: { flightPlanId: flightplanId, completed: 1 },
-    });
-
-    const allCount = userCompletedTasks + userCompletedExperiences;
-
     const allBadges = await badge.findAll();
+    const toCheck = allBadges.filter((b) => !earnedIds.includes(b.id));
 
-    // Only check badges the user hasn't earned yet
-    const unearnedBadges = allBadges.filter(
-      (b) => !earnedBadgeIds.includes(b.id)
-    );
+    const newlyEarned = [];
+    for (const b of toCheck) {
+      let ok = true;
 
-    unearnedBadges.forEach((badge) => {
-      let meetsAllCriteria = true;
-
-      if (badge.allCount && allCount < badge.allCount) meetsAllCriteria = false;
-      if (badge.experiencesCount && userCompletedExperiences < badge.experiencesCount) meetsAllCriteria = false;
-      if (badge.tasksCount && userCompletedTasks < badge.tasksCount) meetsAllCriteria = false;
-
-      if (meetsAllCriteria) {
-        responseData.badges.push({
-          badgeId: badge.id,
-          badgeName: badge.name,
-          badgeEarned: true,
+      if (b.byCount) {
+        const totalDone = tasksDone.length + expsDone.length;
+        if (b.allCount && totalDone < b.allCount) ok = false;
+        if (b.tasksCount && tasksDone.length < b.tasksCount) ok = false;
+        if (b.experiencesCount && expsDone.length < b.experiencesCount)
+          ok = false;
+      } else {
+        const specExps = await badgeSpecificExperience.findAll({
+          where: { badgeId: b.id },
         });
-      }
-    });
+        const specTasks = await badgeSpecificTask.findAll({
+          where: { badgeId: b.id },
+        });
 
-    if (responseData.badges.length > 0) {
-      responseData.badges.forEach((badge) => {
-        StudentInfoBadge.create({
-          studentInfoId: studentInfoId,
-          badgeId: badge.badgeId,
-        })
-      })
-      res.send(responseData);
-    } else {
-      res.status(404).send({
+        if (specExps.length) {
+          if (b.badgeSpecificExperienceAND) {
+            for (const se of specExps) {
+              if (!expsDone.some((e) => e.experienceId === se.experienceId)) {
+                ok = false;
+                break;
+              }
+            }
+          } else {
+            const needed = b.experienceCount || 1;
+            const have = specExps.filter((se) =>
+              expsDone.some((e) => e.experienceId === se.experienceId)
+            ).length;
+            if (have < needed) ok = false;
+          }
+        }
+
+        if (specTasks.length) {
+          if (b.badgeSpecificTaskAND) {
+            for (const st of specTasks) {
+              if (!tasksDone.some((t) => t.taskId === st.taskId)) {
+                ok = false;
+                break;
+              }
+            }
+          } else {
+            const needed = b.taskCount || 1;
+            const have = specTasks.filter((st) =>
+              tasksDone.some((t) => t.taskId === st.taskId)
+            ).length;
+            if (have < needed) ok = false;
+          }
+        }
+
+        if (!specExps.length && !specTasks.length) {
+          const totalDone = tasksDone.length + expsDone.length;
+          if (b.allCount && totalDone < b.allCount) ok = false;
+          if (b.tasksCount && tasksDone.length < b.tasksCount) ok = false;
+          if (b.experiencesCount && expsDone.length < b.experiencesCount)
+            ok = false;
+        }
+      }
+
+      if (ok) newlyEarned.push(b);
+    }
+
+    if (!newlyEarned.length) {
+      return res.status(404).json({
         message: `No new badges earned for studentInfoId=${studentInfoId}.`,
       });
     }
+
+    await Promise.all(
+      newlyEarned.map((b) =>
+        StudentInfoBadge.create({ studentInfoId, badgeId: b.id })
+      )
+    );
+
+    res.json({
+      studentInfoId,
+      badges: newlyEarned.map((b) => ({
+        badgeId: b.id,
+        badgeName: b.name,
+        badgeEarned: true,
+      })),
+    });
   } catch (err) {
-    res.status(500).send({
-      message: `Error checking badges earned for studentInfoId=${studentInfoId}. ${err.message}`,
+    res.status(500).json({
+      message: `Error checking badges for studentInfoId=${studentInfoId}: ${err.message}`,
     });
   }
 };
-
-
 
 exports.findAllForStudentInfo = (req, res) => {
   const studentInfoId = req.params.studentInfoId;
