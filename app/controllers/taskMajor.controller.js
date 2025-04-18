@@ -1,6 +1,11 @@
 const db = require("../models");
 const TaskMajor = db.taskMajor;
 const Op = db.Sequelize.Op;
+const StudentInfo = db.studentInfo;
+const Session = db.session;
+const StudentInfoMajor = db.studentInfoMajor;
+const FlightPlan = db.flightPlan;
+const FlightPlanTask = db.flightPlanTask;
 
 // Create and Save a new TaskMajor entry
 exports.create = (req, res) => {
@@ -9,10 +14,29 @@ exports.create = (req, res) => {
     majorId: req.body.majorId,
     taskId: req.body.taskId,
   };
+  
 
   // Save the TaskMajor entry in the database
   TaskMajor.create(TaskMajorData)
-    .then((data) => {
+    .then( async (data) => {
+      let token = req.headers.authorization.replace("Bearer ", "")
+      let session = await Session.findOne({where: {token: token}})
+      let currStudent = await StudentInfo.findOne({where: {userId: session.userId}})
+      let studentInfos = await StudentInfo.findAll({where: {semestersTillGraduation: currStudent.dataValues.semestersTillGraduation}})
+      let studentInfoMajors = await StudentInfoMajor.findAll({where: {majorId: req.body.majorId}})
+      let flightPlan = null;
+      studentInfos.forEach((si) => {
+        studentInfoMajors.forEach( async (sim) => {
+          if (si.dataValues.id == sim.dataValues.studentInfoId) {
+            flightPlan = await FlightPlan.findOne({where: {studentInfoId: si.dataValues.id}})
+            let check = await FlightPlanTask.findOne({where: {taskId: req.body.taskId}})
+            if (!check) {
+              FlightPlanTask.create({flightPlanId: flightPlan.dataValues.id, taskId: req.body.taskId})
+            }
+          }
+        })
+      })
+
       res.send(data);
     })
     .catch((err) => {
@@ -27,6 +51,8 @@ exports.create = (req, res) => {
         });
       }
     });
+
+    
 };
 
 // Retrieve all TaskMajor entries for an task
