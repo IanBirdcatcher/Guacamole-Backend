@@ -14,5 +14,4 @@ module.exports = (app) => {
     router.get("/user/:userId", [authenticate], studentInfo.findAllByUserId);
 
     app.use("/flight-plan-t2/studentInfo", router);
-    
   }; 
