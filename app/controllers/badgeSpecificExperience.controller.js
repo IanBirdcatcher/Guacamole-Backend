@@ -56,7 +56,7 @@ exports.findAllForBadge= (req, res) => {
 // Delete an BadgeSpecificExperience entry by ID
 exports.deleteForBadgeId = (req, res) => {
   const badgeId = req.params.badgeId;
-  BadgeSpecificTask.destroy({ where: { badgeId: badgeId } })
+  BadgeSpecificExperience.destroy({ where: { badgeId: badgeId } })
     .then(() => {
       res.send({
         message: "BadgeSpecificTask entry was deleted successfully!",

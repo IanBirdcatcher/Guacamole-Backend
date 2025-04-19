@@ -1,11 +1,6 @@
 const db = require("../models");
 const TaskMajor = db.taskMajor;
 const Op = db.Sequelize.Op;
-const StudentInfo = db.studentInfo;
-const Session = db.session;
-const StudentInfoMajor = db.studentInfoMajor;
-const FlightPlan = db.flightPlan;
-const FlightPlanTask = db.flightPlanTask;
 
 // Create and Save a new TaskMajor entry
 exports.create = (req, res) => {
@@ -14,7 +9,6 @@ exports.create = (req, res) => {
     majorId: req.body.majorId,
     taskId: req.body.taskId,
   };
-  
 
   // Save the TaskMajor entry in the database
   TaskMajor.create(TaskMajorData)

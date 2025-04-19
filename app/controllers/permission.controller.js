@@ -26,8 +26,12 @@ exports.create = (req, res) => {
     addEvent: req.body.addEvent,
     changeEvent: req.body.changeEvent,
     removeEvent: req.body.removeEvent,
+    addBadge: req.body.addBadge,
+    removeBadge: req.body.removeBadge,
+    addNotification: req.body.addNotification,
     userId: req.body.userId,
   };
+  
 
   // Save permission in the database
   Permission.create(permissionData)
