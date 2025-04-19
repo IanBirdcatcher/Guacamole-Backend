@@ -7,12 +7,12 @@ module.exports = (sequelize, Sequelize) => {
     },
     earnedPoints: {
       type: Sequelize.INTEGER,
-      allowNull: false,
+      allowNull: true,
       defaultValue: 0,
     },
     currentPoints: {
       type: Sequelize.INTEGER,
-      allowNull: false,
+      allowNull: true,
       defaultValue: 0,
     },
     studentId: {
@@ -32,9 +32,9 @@ module.exports = (sequelize, Sequelize) => {
       allowNull: true,
     },
     firstLogin:{
-      type: Sequelize.BOOLEAN,
+      type: Sequelize.BOOLEAN, 
       allowNull: false,
     },
   });
-  return studentInfo;
+  return studentInfo; 
 };

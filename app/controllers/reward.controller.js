@@ -19,6 +19,7 @@ exports.create = (req, res) => {
     image: req.body.image,
     desc: req.body.desc,
     requiredPoints: req.body.requiredPoints,
+    purchaseCount: 0,
   };
 
   // Save reward in the database

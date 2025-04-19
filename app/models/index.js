@@ -28,6 +28,7 @@ db.sequelize = sequelize;
 // Models (user and resume know about all of the resume items)-----------
 db.user = require("./user.model.js")(sequelize, Sequelize);
 db.resume = require("./resume.model.js")(sequelize, Sequelize);
+db.log = require("./log.model.js")(sequelize, Sequelize);
 
 db.session = require("./session.model.js")(sequelize, Sequelize);
 
@@ -78,6 +79,7 @@ db.experienceEventType = require("./experienceEventType.model.js")(
   sequelize,
   Sequelize
 );
+
 // resume items
 db.award = require("./award.model.js")(sequelize, Sequelize);
 db.contactInfo = require("./contactInfo.model.js")(sequelize, Sequelize);
@@ -112,6 +114,7 @@ db.interestResume = require("./interestResume.model.js")(sequelize, Sequelize);
 db.linkResume = require("./linkResume.model.js")(sequelize, Sequelize);
 db.projectResume = require("./projectResume.model.js")(sequelize, Sequelize);
 db.skillResume = require("./skillResume.model.js")(sequelize, Sequelize);
+db.studentPurchase = require("./studentPurchase.model.js")(sequelize, Sequelize);
 
 // Relations
 
@@ -1020,5 +1023,28 @@ db.roleUser.belongsTo(db.role, {
   allowNull: true,
   onDelete: "CASCADE",
 });
+
+//Student Purchase 
+
+db.studentPurchase.hasMany(db.studentInfo, { 
+  allowNull: true,
+  onDelete: "CASCADE",
+  });
+
+db.studentPurchase.hasMany(db.reward, {
+   allowNull: true,
+   onDelete: "CASCADE",
+  });
+
+db.studentPurchase.belongsTo(db.studentInfo, { 
+  allowNull: true,
+  onDelete: "CASCADE",
+  });
+
+db.studentPurchase.belongsTo(db.reward, {
+  allowNull: true,
+  onDelete: "CASCADE",
+});
+
 
 module.exports = db;
