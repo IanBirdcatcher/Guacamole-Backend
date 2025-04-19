@@ -23,6 +23,24 @@ module.exports = (sequelize, Sequelize) => {
       type: Sequelize.STRING,
       allowNull: true,
     },
+    
+
+    // 👇 Add these two fields if not already added via association
+    flightPlanId: {
+      type: Sequelize.INTEGER,
+      allowNull: false,
+    },
+    experienceId: {
+      type: Sequelize.INTEGER,
+      allowNull: false,
+    }
+  }, {
+    indexes: [
+      {
+        unique: true,
+        fields: ['flightPlanId', 'experienceId'] // 👈 Enforce uniqueness
+      }
+    ]
   });
 
   return flightPlanExperience;
