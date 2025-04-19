@@ -25,7 +25,10 @@ module.exports = (sequelize, Sequelize) => {
       type: Sequelize.STRING,
       allowNull: true,
     },
-
+    link: {
+      type: Sequelize.STRING,
+      allowNull: true,
+    },
     // 👇 Add these two fields if not already added via association
     flightPlanId: {
       type: Sequelize.INTEGER,
