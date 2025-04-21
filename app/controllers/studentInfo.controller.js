@@ -14,12 +14,7 @@ exports.create = async (req, res) => {
     // Create a StudentInfo
     const studentInfo = {
       userId: req.body.userId, 
-      earnedPoints: req.body.earnedPoints,
-      currentPoints: req.body.spentPoints,
-      studentId: req.body.studentId,
-      startingSemester: req.body.startingSemester, 
       semestersTillGraduation: req.body.semestersTillGraduation,
-      graduationSemester: req.body.graduationSemester,
     };
     // Save StudentInfo in the database
     const data = await StudentInfo.create(studentInfo);
