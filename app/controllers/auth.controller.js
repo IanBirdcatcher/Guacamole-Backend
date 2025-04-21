@@ -176,7 +176,7 @@ exports.login = async (req, res) => {
       session = data.dataValues;
       if (session.expirationDate < Date.now()) {
         session.token = "";
-        await Session.destroy(session, { where: { id: session.id } });
+        await Session.destroy( { where: { id: session.id } });
         console.log("successfully logged out");
         session = {};
       } else {
