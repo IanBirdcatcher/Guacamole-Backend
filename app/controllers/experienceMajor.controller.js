@@ -1,6 +1,11 @@
 const db = require("../models");
 const ExperienceMajor = db.experienceMajor;
 const Op = db.Sequelize.Op;
+const StudentInfo = db.studentInfo;
+const Session = db.session;
+const StudentInfoMajor = db.studentInfoMajor;
+const FlightPlan = db.flightPlan;
+const FlightPlanExperience = db.flightPlanExperience;
 
 // Create and Save a new ExperienceMajor entry
 exports.create = (req, res) => {
@@ -12,7 +17,26 @@ exports.create = (req, res) => {
 
   // Save the ExperienceMajor entry in the database
   ExperienceMajor.create(ExperienceMajorData)
-    .then((data) => {
+    .then( async (data) => {
+      
+      let token = req.headers.authorization.replace("Bearer ", "")
+      let session = await Session.findOne({where: {token: token}})
+      let currStudent = await StudentInfo.findOne({where: {userId: session.userId}})
+      let studentInfos = await StudentInfo.findAll({where: {semestersTillGraduation: currStudent.dataValues.semestersTillGraduation}})
+      let studentInfoMajors = await StudentInfoMajor.findAll({where: {majorId: req.body.majorId}})
+      let flightPlan = null;
+      studentInfos.forEach((si) => {
+        studentInfoMajors.forEach( async (sim) => {
+          if (si.dataValues.id == sim.dataValues.studentInfoId) {
+            flightPlan = await FlightPlan.findOne({where: {studentInfoId: si.dataValues.id}})
+            let check = await FlightPlanExperience.findOne({where: {experienceId: req.body.experienceId}})
+            if (!check) {
+              FlightPlanExperience.create({flightPlanId: flightPlan.dataValues.id, experienceId: req.body.experienceId})
+            }
+          }
+        })
+      })
+
       res.send(data);
     })
     .catch((err) => {
