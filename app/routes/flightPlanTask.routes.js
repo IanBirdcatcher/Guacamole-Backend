@@ -33,6 +33,12 @@ module.exports = (app) => {
       [authenticate],
       flightPlanTask.findByUser
     );
+    router.get(
+      "/byUser/:id/fromSemester",
+      [authenticate],
+      flightPlanTask.findAllTasksFromSemester
+    );
+    
     router.put(
       "/:id",
       [authenticate, hasAccess(ENUM.CHANGE_STUDENT_INFO)],

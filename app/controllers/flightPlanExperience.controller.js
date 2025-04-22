@@ -170,6 +170,54 @@ exports.findByUser = (req, res) => {
   });
 };
 
+// Get all FlightPlanExperiences for semestersToGrad >= selectedSemester
+exports.findAllExperiencesFromSemester = (req, res) => {
+  const userId = req.params.id;
+  const selectedSemester = parseInt(req.query.semester);
+
+  if (isNaN(selectedSemester)) {
+    return res.status(400).send({ message: "semester query param is required" });
+  }
+
+  let experienceList = { Experiences: [] };
+
+  StudentInfo.findOne({ where: { userId } })
+    .then(studentInfo => {
+      if (!studentInfo) return res.status(404).send({ message: "StudentInfo not found." });
+
+      FlightPlan.findAll({
+        where: {
+          studentInfoId: studentInfo.id,
+          semestersToGrad: { [Op.gte]: selectedSemester },
+        },
+      }).then(flightPlans => {
+        if (!flightPlans || flightPlans.length === 0)
+          return res.status(404).send({ message: "No FlightPlans found." });
+
+        const flightPlanIds = flightPlans.map(fp => fp.id);
+
+        FlightPlanExperience.findAll({
+          where: { flightPlanId: { [Op.in]: flightPlanIds } },
+        }).then(async (flightPlanExperiences) => {
+          for (const fpe of flightPlanExperiences) {
+            const exp = await Experience.findByPk(fpe.experienceId);
+            if (exp) {
+              experienceList.Experiences.push({
+                ExperienceId: fpe.experienceId,
+                Experience: exp,
+                flightPlanExperience: fpe,
+              });
+            }
+          }
+          res.send(experienceList);
+        });
+      });
+    })
+    .catch(err => res.status(500).send({ message: err.message }));
+};
+
+
+
 // Retrieve a single FlightPlanExperience entry by ID
 exports.findOne = (req, res) => {
   const id = req.params.id;
