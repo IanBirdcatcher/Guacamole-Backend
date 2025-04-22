@@ -18,6 +18,10 @@ module.exports = (app) => {
   // New route to get type information by event ID
   router.get("/typeInfo/:eventId", [authenticate], eventType.getTypeInfoByEventId);
 
+  
+  // New route to get EventType information by event ID
+  router.get("/event/:eventId", [authenticate], eventType.getByEventId)
+
   // Update event type
   router.put("/:eventId/type", [authenticate], eventType.updateEventType); 
   

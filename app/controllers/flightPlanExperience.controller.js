@@ -111,6 +111,32 @@ exports.findEventsForExperience = async (req, res) => {
   res.send(sortedData.filter((item) => {return item !== undefined}))
 }
 
+exports.AttendByEventType = async (req, res) => {
+  const eventType = req.params.type;
+
+  try {
+    const experienceEventTypes = await ExperienceEventType.findAll({
+      where: { eventTypeId: eventType },
+    });
+
+    if (experienceEventTypes.length === 0) {
+      return res.status(404).send({ message: "No experiences found for this event type." });
+    }
+
+    const experienceIds = experienceEventTypes.map(eET => eET.experienceId);
+
+    const [updatedCount] = await FlightPlanExperience.update(
+      { attended: true, subtext: "Attendance Recorded" },
+      { where: { experienceId: experienceIds } }
+    );
+
+    res.send({ message: `Marked ${updatedCount} experiences as attended.` });
+  } catch (err) {
+    console.error("Error updating attendance:", err);
+    res.status(500).send({ message: "Internal server error." });
+  }
+};
+
 
 // Retrieve a single FlightPlanExperience entry by ID
 exports.findByUser = (req, res) => {

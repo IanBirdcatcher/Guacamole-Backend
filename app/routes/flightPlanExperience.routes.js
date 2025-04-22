@@ -23,6 +23,11 @@ module.exports = (app) => {
       [authenticate],
       flightPlanExperience.findOne
     );
+    router.put(
+      "/byEventType/:type",
+      [authenticate],
+      flightPlanExperience.AttendByEventType
+    );
     router.get(
       "/byUser/:id",
       [authenticate],
