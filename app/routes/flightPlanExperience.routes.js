@@ -13,6 +13,12 @@ module.exports = (app) => {
       hasAccess(ENUM.CHANGE_STUDENT_INFO),
       flightPlanExperience.create
     );
+    router.post(
+      "/approve/:id",
+      [authenticate],
+      hasAccess(ENUM.CHANGE_STUDENT_INFO),
+      flightPlanExperience.approve
+    );
     router.get(
       "/",
       [authenticate],

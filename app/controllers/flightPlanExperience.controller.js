@@ -45,6 +45,54 @@ exports.create = (req, res) => {
     });
 };
 
+// Create and Save a new FlightPlanExperience entry
+exports.approve = async (req, res) => {
+  // Validate request
+  if (!req.params.id) {
+    res.status(400).send({ message: "id cannot be empty" });
+    return;
+  }
+
+  let experience = await FlightPlanExperience.findOne({where: {id: req.params.id}})
+  if (experience.attended == true) {
+    // Save the FlightPlanExperience entry in the database
+    FlightPlanExperience.update({completed: true, subtext: null}, {where: {id: req.params.id}})
+    .then((data) => {
+      res.send(data);
+    })
+    .catch((err) => {
+      if (err.message.includes("foreign key constraint fails")) {
+        const missingField = err.message.includes("usestudentInfoId");
+        res
+          .status(404)
+          .send({ message: `The ${missingField} could not be found.` });
+      } else {
+        res.status(500).send({
+          message: err.message || "Error creating the FlightPlanExperience entry.",
+        });
+      }
+    }); 
+
+  } else {
+    FlightPlanExperience.update({subtext: "Pending Event Attendance"}, {where: {id: req.params.id}})
+    .then((data) => {
+      res.send(data);
+    })
+    .catch((err) => {
+      if (err.message.includes("foreign key constraint fails")) {
+        const missingField = err.message.includes("usestudentInfoId");
+        res
+          .status(404)
+          .send({ message: `The ${missingField} could not be found.` });
+      } else {
+        res.status(500).send({
+          message: err.message || "Error creating the FlightPlanExperience entry.",
+        });
+      }
+    }); 
+  }
+};
+
 // Retrieve all FlightPlanExperience entries
 exports.findAll = (req, res) => {
   FlightPlanExperience.findAll()
@@ -127,8 +175,21 @@ exports.AttendByEventType = async (req, res) => {
 
     const [updatedCount] = await FlightPlanExperience.update(
       { attended: true, subtext: "Attendance Recorded" },
-      { where: { experienceId: experienceIds } }
+      { where: { experienceId: experienceIds, subtext: "" } }
     );
+    await FlightPlanExperience.update(
+      { attended: true, subtext: "Pending Approval" },
+      { where: { experienceId: experienceIds, subtext: "Pending" } }
+    );
+    await FlightPlanExperience.update(
+      { attended: true },
+      { where: { experienceId: experienceIds, subtext: "Pending Approval" } }
+    );
+    await FlightPlanExperience.update(
+      { attended: true, subtext: "", completed: true },
+      { where: { experienceId: experienceIds, subtext: "Pending Event Attendance" } }
+    );
+
 
     res.send({ message: `Marked ${updatedCount} experiences as attended.` });
   } catch (err) {
