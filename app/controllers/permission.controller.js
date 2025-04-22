@@ -5,7 +5,7 @@ const User = db.user;
 const Op = db.Sequelize.Op;
 
 // Create a new permission
-exports.create = (req, res) => {
+exports.create = async (req, res) => {
   // Create a permission
   const permissionData = {
     id: req.body.id,
@@ -32,18 +32,72 @@ exports.create = (req, res) => {
     userId: req.body.userId,
   };
   
+  const updateData = {
+    readAttendance: req.body.readAttendance,
+    writeAttendance: req.body.writeAttendance,
+    addTask: req.body.addTask,
+    removeTask: req.body.removeTask,
+    addExperience: req.body.addExperience,
+    removeExperience: req.body.removeExperience,
+    changePermissions: req.body.changePermissions,
+    readLogs: req.body.readLogs,
+    readStudentInfo: req.body.readStudentInfo,
+    changeStudentInfo: req.body.changeStudentInfo,
+    addReward: req.body.addReward,
+    removeReward: req.body.removeReward,
+    redeemReward: req.body.redeemReward,
+    readStrengths: req.body.readStrengths,
+    addEvent: req.body.addEvent,
+    changeEvent: req.body.changeEvent,
+    removeEvent: req.body.removeEvent,
+    addBadge: req.body.addBadge,
+    removeBadge: req.body.removeBadge,
+    addNotification: req.body.addNotification
+  };
+  
+  let token = req.headers.authorization.replace("Bearer ", "")
 
-  // Save permission in the database
-  Permission.create(permissionData)
-    .then((data) => {
-      res.send(data);
+  let session = await Session.findOne({where: {token: token}})
+
+  let existingPerm = await Permission.findOne({where: {userId: session.userId}})
+  if (existingPerm) {
+    console.log("update")
+    console.log(updateData)
+    await Permission.update(updateData, {
+      where: { id: existingPerm.id },
     })
-    .catch((err) => {
-      res.status(500).send({
-        message:
-          err.message || "Some error occurred while creating permission.",
+      .then((num) => {
+        if (num == 1) {
+          res.send({
+            message: "Permission was updated successfully.",
+          });
+        } else {
+          res.status(404).send({
+            message: `Cannot update Permission with userId=${session.userId}. Maybe Permission was not found or req.body is empty!`,
+          });
+        }
+      })
+      .catch((err) => {
+        res.status(500).send({
+          message:
+            err.message || "Error updating Permission with userId=" + session.userId,
+        });
       });
-    });
+    
+  } else {
+    console.log("create")
+    // Save permission in the database
+    Permission.create(permissionData)
+      .then((data) => {
+        res.send(data);
+      })
+      .catch((err) => {
+        res.status(500).send({
+          message:
+            err.message || "Some error occurred while creating permission.",
+        });
+      });
+    }
 };
 
 exports.findByUser = (req, res) => {
