@@ -17,28 +17,37 @@ exports.create = (req, res) => {
 
   // Save the ExperienceMajor entry in the database
   ExperienceMajor.create(ExperienceMajorData)
-    .then( async (data) => {
-      
-      let token = req.headers.authorization.replace("Bearer ", "")
-      let session = await Session.findOne({where: {token: token}})
-      let currStudent = await StudentInfo.findOne({where: {userId: session.userId}})
-      let studentInfos = await StudentInfo.findAll({where: {semestersTillGraduation: currStudent.dataValues.semestersTillGraduation}})
-      let studentInfoMajors = await StudentInfoMajor.findAll({where: {majorId: req.body.majorId}})
-      let flightPlan = null;
-      studentInfos.forEach((si) => {
-        studentInfoMajors.forEach( async (sim) => {
-          if (si.dataValues.id == sim.dataValues.studentInfoId) {
-            flightPlan = await FlightPlan.findOne({where: {studentInfoId: si.dataValues.id}})
-            let check = await FlightPlanExperience.findOne({where: {experienceId: req.body.experienceId}})
-            if (!check) {
-              FlightPlanExperience.create({flightPlanId: flightPlan.dataValues.id, experienceId: req.body.experienceId})
-            }
-          }
-        })
-      })
+  .then(async (data) => {
+    let token = req.headers.authorization.replace("Bearer ", "");
+    let session = await Session.findOne({ where: { token: token } });
+    let currStudent = await StudentInfo.findOne({ where: { userId: session.userId } });
+    let studentInfos = await StudentInfo.findAll({
+      where: { semestersTillGraduation: currStudent.dataValues.semestersTillGraduation },
+    });
+    let studentInfoMajors = await StudentInfoMajor.findAll({ where: { majorId: req.body.majorId } });
+    for (const si of studentInfos) {
+      for (const sim of studentInfoMajors) {
+        if (si.dataValues.id === sim.dataValues.studentInfoId) {
+          const flightPlan = await FlightPlan.findOne({ where: { studentInfoId: si.dataValues.id } });
+          const check = await FlightPlanExperience.findOne({
+            where: {
+              flightPlanId: flightPlan.dataValues.id,
+              experienceId: req.body.experienceId,
+            },
+          });
 
-      res.send(data);
-    })
+          if (!check) {
+            await FlightPlanExperience.create({
+              flightPlanId: flightPlan.dataValues.id,
+              experienceId: req.body.experienceId,
+            });
+          }
+        }
+      }
+    }
+
+    res.send(data);
+  })
     .catch((err) => {
       if (err.message.includes("foreign key constraint fails")) {
         res
