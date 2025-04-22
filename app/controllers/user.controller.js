@@ -1,16 +1,18 @@
+const { where } = require("sequelize");
 const db = require("../models");
 const User = db.user;
 const Op = db.Sequelize.Op;
-const roleUser = db.roleUser
-const experience = db.experience
-const studentInfo = db.studentInfo
+const roleUser = db.roleUser;
+const experience = db.experience;
+const studentInfo = db.studentInfo;
+const Session = db.session;
 
 // Create and Save a new User
 exports.create = (req, res) => {
   // Validate request
   if (!req.body.fName) {
     res.status(400).send({
-      message: "Must contain a first name", 
+      message: "Must contain a first name",
     });
     return;
   }
@@ -93,29 +95,30 @@ exports.findByEmail = (req, res) => {
         message: "Error retrieving User with email=" + email,
       });
     });
-  };
+};
 
 exports.getwantToBeAdmin = async (req, res) => {
   try {
     // Step 1: Retrieve all userId values from roleUser where roleId = 5
     const roleUsers = await roleUser.findAll({
       where: { roleId: 5 },
-      attributes: ['userId'], // Only select the userId field
+      attributes: ["userId"], // Only select the userId field
     });
 
     // Step 2: Extract userId values from the result
     const userIds = roleUsers.map((roleUser) => roleUser.userId);
 
     const users = await User.findAll({
-      where: { id: userIds }, 
-      attributes: ['id','fName', 'lName', 'email'], 
+      where: { id: userIds },
+      attributes: ["id", "fName", "lName", "email"],
     });
 
     res.send(users);
   } catch (error) {
     console.error("Error in getwantToBeAdmin:", error);
     res.status(500).send({
-      message: "An error occurred while retrieving user details for roleId = 5.",
+      message:
+        "An error occurred while retrieving user details for roleId = 5.",
     });
   }
 };
@@ -125,7 +128,7 @@ exports.getExperienceRequestsUsers = async (req, res) => {
     // Step 1: Retrieve all experience requests where requestedByStudent is true
     const experienceRequests = await experience.findAll({
       where: { requestedByStudent: true },
-      attributes: ['id', 'studentInfoId', 'name', 'desc'],
+      attributes: ["id", "studentInfoId", "name", "desc"],
     });
 
     if (!experienceRequests.length) {
@@ -133,12 +136,14 @@ exports.getExperienceRequestsUsers = async (req, res) => {
     }
 
     // Step 2: Extract unique studentInfoIds from the experience requests
-    const studentInfoIds = [...new Set(experienceRequests.map((request) => request.studentInfoId))];
+    const studentInfoIds = [
+      ...new Set(experienceRequests.map((request) => request.studentInfoId)),
+    ];
 
     // Step 3: Retrieve studentInfo records for the extracted IDs
     const studentInfos = await studentInfo.findAll({
       where: { id: studentInfoIds },
-      attributes: ['id','studentId', 'userId'], 
+      attributes: ["id", "studentId", "userId"],
     });
 
     if (!studentInfos.length) {
@@ -151,12 +156,14 @@ exports.getExperienceRequestsUsers = async (req, res) => {
     // Step 5: Retrieve user records for the extracted IDs
     const users = await User.findAll({
       where: { id: userIds },
-      attributes: ['id', 'fName', 'lName', 'email'],
+      attributes: ["id", "fName", "lName", "email"],
     });
 
     // Step 6: Create maps for quick lookup
     const userMap = Object.fromEntries(users.map((user) => [user.id, user]));
-    const studentInfoMap = Object.fromEntries(studentInfos.map((info) => [info.id, info]));
+    const studentInfoMap = Object.fromEntries(
+      studentInfos.map((info) => [info.id, info])
+    );
 
     // Step 7: Map experience requests to include user details
     const response = experienceRequests.map((request) => {
@@ -172,7 +179,8 @@ exports.getExperienceRequestsUsers = async (req, res) => {
   } catch (error) {
     console.error("Error in getExperienceRequestsUsers:", error);
     res.status(500).send({
-      message: "An error occurred while retrieving user details for experience requests.",
+      message:
+        "An error occurred while retrieving user details for experience requests.",
     });
   }
 };
@@ -183,7 +191,7 @@ exports.getFirstLogin = (req, res) => {
 
   User.findOne({
     where: { id: userId },
-    attributes: ['firstLogin'], 
+    attributes: ["firstLogin"],
   })
     .then((data) => {
       if (data) {
@@ -199,6 +207,31 @@ exports.getFirstLogin = (req, res) => {
         message: `Error retrieving firstLogin for userId=${userId}: ${err.message}`,
       });
     });
+};
+
+exports.changeTheme = async (req, res) => {
+  try {
+    let auth = req.get("authorization");
+    if (auth != null) {
+      if (
+        auth.startsWith("Bearer ") &&
+        (typeof require !== "string" || require === "token")
+      ) {
+        let token = auth.slice(7);
+        const session = await Session.findOne({ where: { token: token } });
+        let user = await User.findOne({ where: { id: session.userId } });
+        user.darkMode = !user.darkMode;
+        await user.save();
+        return res.send({
+          message: "Theme preference updated successfully.",
+        });
+      }
+    }
+  } catch (err) {
+    return res.status(500).send({
+      message: `Error setting users theme preference`,
+    });
+  }
 };
 
 // Update a User by the id in the request

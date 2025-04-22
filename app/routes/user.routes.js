@@ -13,6 +13,7 @@ module.exports = (app) => {
   router.get("/", [authenticate, hasAccess(ENUM.READ_STUDENT_INFO)], user.findAll);
   router.get("/:id", [authenticate], user.findOne);
   router.put("/:id", [authenticate, hasAccess(ENUM.CHANGE_STUDENT_INFO)], user.update);
+  router.post("/changeTheme", [authenticate, hasAccess(ENUM.CHANGE_STUDENT_INFO)], user.changeTheme);
   router.delete("/:id", [authenticate, hasAccess(ENUM.CHANGE_STUDENT_INFO)], user.delete);
 
 

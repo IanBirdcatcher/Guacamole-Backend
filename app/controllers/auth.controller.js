@@ -186,6 +186,7 @@ exports.login = async (req, res) => {
           lName: user.lName,
           profilePicture: user.profilePicture,
           id: user.id,
+          darkMode: user.darkMode,
           token: session.token,
           firstLogin: true,
         };
@@ -226,6 +227,7 @@ exports.login = async (req, res) => {
         lName: user.lName,
         profilePicture: user.profilePicture,
         id: user.id,
+        darkMode: user.darkMode,
         token: token,
       };
       return res.send(userInfo);
