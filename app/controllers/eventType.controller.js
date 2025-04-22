@@ -131,6 +131,27 @@ exports.getTypeInfoByEventId = (req, res) => {
     });
 };
 
+// New method to get types information by event ID
+exports.getByEventId = (req, res) => {
+  const eventId = req.params.eventId;
+
+  EventType.findOne({where: { eventId: eventId }})
+    .then((data) => {
+      if (data) {
+        res.send(data);
+      } else {
+        res.status(404).send({
+          message: `Cannot find type information for eventId=${eventId}.`,
+        });
+      }
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message: err.message || "Error retrieving type information for event with id=" + eventId,
+      });
+    });
+};
+
 // Update event type
 exports.updateEventType = (req, res) => {
   const eventId = req.params.eventId;
