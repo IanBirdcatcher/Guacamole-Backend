@@ -39,6 +39,11 @@ module.exports = (app) => {
       [authenticate],
       flightPlanExperience.findByUser
     );
+    router.get(
+      "/byUser/:id/fromSemester",
+      [authenticate],
+      flightPlanExperience.findAllExperiencesFromSemester
+    );
     
     router.get(
       "/pending/experiences",
