@@ -165,6 +165,7 @@ exports.findAllTasksFromSemester = (req, res) => {
 
         FlightPlanTask.findAll({
           where: { flightPlanId: { [Op.in]: flightPlanIds } },
+          
         }).then(async (flightPlanTasks) => {
           for (const fpt of flightPlanTasks) {
             const task = await Task.findByPk(fpt.taskId);
